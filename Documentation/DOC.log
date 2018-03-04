@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2017.12.17)  3 MAR 2018 09:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2017.12.17)  4 MAR 2018 10:44
 entering extended mode
 **./DOC.tex
 (DOC.tex
@@ -52,34 +52,54 @@ Package: color 2016/07/10 v1.1e Standard LaTeX Color (DPC)
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package color Info: Driver file: pdftex.def on input line 147.
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\url\url.sty"
+\Urlmuskip=\muskip10
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\caption\caption.sty"
+Package: caption 2016/02/21 v3.3-144 Customizing captions (AR)
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\caption\caption3.sty"
+Package: caption3 2016/05/22 v1.7-166 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 67.
+\captionmargin=\dimen105
+\captionmargin@=\dimen106
+\captionwidth=\dimen107
+\caption@tempdima=\dimen108
+\caption@indent=\dimen109
+\caption@parindent=\dimen110
+\caption@hangindent=\dimen111
+)
+\c@ContinuedFloat=\count87
 ) (DOC.aux)
 \openout1 = `DOC.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
-LaTeX Font Info:    ... okay on input line 5.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 5.
-LaTeX Font Info:    ... okay on input line 5.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 5.
-LaTeX Font Info:    ... okay on input line 5.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 5.
-LaTeX Font Info:    ... okay on input line 5.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 5.
-LaTeX Font Info:    ... okay on input line 5.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 5.
-LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
 
 ("C:\Program Files\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count87
-\scratchdimen=\dimen105
+\scratchcounter=\count88
+\scratchdimen=\dimen112
 \scratchbox=\box26
-\nofMPsegments=\count88
-\nofMParguments=\count89
+\nofMPsegments=\count89
+\nofMParguments=\count90
 \everyMPshowfont=\toks15
-\MPscratchCnt=\count90
-\MPscratchDim=\dimen106
-\MPnumerator=\count91
-\makeMPintoPDFobject=\count92
+\MPscratchCnt=\count91
+\MPscratchDim=\dimen113
+\MPnumerator=\count92
+\makeMPintoPDFobject=\count93
 \everyMPtoPDFconversion=\toks16
 ) ("C:\Program Files\MiKTeX 2.9\tex\latex\oberdiek\epstopdf-base.sty"
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
@@ -133,19 +153,21 @@ Package grfext Info: Graphics extension search list:
 G,.JBIG2,.JB2,.eps]
 (grfext)             \AppendGraphicsExtensions on input line 456.
 )
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
 <IMG/AGH.png, id=1, 305.14pt x 593.21625pt>
 File: IMG/AGH.png Graphic file (type png)
 <use IMG/AGH.png>
-Package pdftex.def Info: IMG/AGH.png  used on input line 17. on input line 17.
+Package pdftex.def Info: IMG/AGH.png  used on input line 21. on input line 21.
 Package pdftex.def Info: Requested size: 137.9979pt x 268.2845pt on input line 
-17.
+21.
 <IMG/WIMIR.png, id=3, 110.814pt x 37.0986pt>
 File: IMG/WIMIR.png Graphic file (type png)
 <use IMG/WIMIR.png>
-Package pdftex.def Info: IMG/WIMIR.png  used on input line 22. on input line 22
+Package pdftex.def Info: IMG/WIMIR.png  used on input line 26. on input line 26
 .
 Package pdftex.def Info: Requested size: 137.9979pt x 46.19933pt on input line 
-22.
+26.
 Missing character: There is no Å in font cmbx12!
 Missing character: There is no ‚ in font cmbx12!
  [1{C:/Users/Damian/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
@@ -160,31 +182,90 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 \openout3 = `DOC.toc'.
 
  [1]
-Underfull \hbox (badness 10000) in paragraph at lines 47--48
+<IMG/Bebionic_V2_Hand.png, id=17, 1027.84pt x 521.95pt>
+File: IMG/Bebionic_V2_Hand.png Graphic file (type png)
+<use IMG/Bebionic_V2_Hand.png>
+Package pdftex.def Info: IMG/Bebionic_V2_Hand.png  used on input line 67. on in
+put line 67.
+Package pdftex.def Info: Requested size: 172.5pt x 87.59142pt on input line 67.
+
+ [2 <./IMG/Bebionic_V2_Hand.png>]
+<IMG/fingerMech2.png, id=23, 499.11469pt x 191.21437pt>
+File: IMG/fingerMech2.png Graphic file (type png)
+<use IMG/fingerMech2.png>
+Package pdftex.def Info: IMG/fingerMech2.png  used on input line 74. on input l
+ine 74.
+Package pdftex.def Info: Requested size: 345.0pt x 132.17438pt on input line 74
+.
+
+Underfull \hbox (badness 10000) in paragraph at lines 78--79
 
  []
 
+<IMG/fingerMech.jpg, id=24, 853.1875pt x 945.5325pt>
+File: IMG/fingerMech.jpg Graphic file (type jpg)
+<use IMG/fingerMech.jpg>
+Package pdftex.def Info: IMG/fingerMech.jpg  used on input line 83. on input li
+ne 83.
+Package pdftex.def Info: Requested size: 172.5pt x 191.1663pt on input line 83.
 
-Underfull \hbox (badness 10000) in paragraph at lines 55--56
+
+Underfull \hbox (badness 10000) in paragraph at lines 87--88
 
  []
 
-[2] (DOC.aux) ) 
+[3 <./IMG/fingerMech2.png> <./IMG/fingerMech.jpg>]
+<IMG/stringMech.jpg, id=29, 5203.44pt x 3468.96pt>
+File: IMG/stringMech.jpg Graphic file (type jpg)
+<use IMG/stringMech.jpg>
+Package pdftex.def Info: IMG/stringMech.jpg  used on input line 92. on input li
+ne 92.
+Package pdftex.def Info: Requested size: 172.5pt x 114.96829pt on input line 92
+.
+
+Underfull \hbox (badness 10000) in paragraph at lines 96--97
+
+ []
+
+<IMG/airMuscle.jpg, id=30, 378.41376pt x 299.1175pt>
+File: IMG/airMuscle.jpg Graphic file (type jpg)
+<use IMG/airMuscle.jpg>
+Package pdftex.def Info: IMG/airMuscle.jpg  used on input line 102. on input li
+ne 102.
+Package pdftex.def Info: Requested size: 137.9979pt x 109.07884pt on input line
+ 102.
+[4 <./IMG/stringMech.jpg> <./IMG/airMuscle.jpg>] [5]
+Underfull \hbox (badness 1466) in paragraph at lines 121--122
+[]\OT1/cmr/m/n/10 SOLIDWORKS. Re-trieved from $\OT1/cmtt/m/n/10 http : / / blog
+s . solidworks . com / tech /
+ []
+
+
+Underfull \hbox (badness 4569) in paragraph at lines 123--125
+[]\OT1/cmr/m/n/10 Peter Scarfe, Euan Lind-say \OT1/cmr/m/it/10 Air Mus-cle Ac-t
+u-ated Low Cost Hu-
+ []
+
+[6] (DOC.aux) ) 
 Here is how much of TeX's memory you used:
- 1481 strings out of 493312
- 21166 string characters out of 3138895
- 77451 words of memory out of 3000000
- 5036 multiletter control sequences out of 15000+200000
- 6370 words of font info for 23 fonts, out of 3000000 for 9000
+ 2663 strings out of 493312
+ 42173 string characters out of 3138895
+ 99524 words of memory out of 3000000
+ 6198 multiletter control sequences out of 15000+200000
+ 7491 words of font info for 27 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 41i,8n,25p,463b,349s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 41i,8n,39p,489b,362s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx
 10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><
-C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Progra
-m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb>
-Output written on DOC.pdf (3 pages, 94713 bytes).
+C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Progra
+m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/M
+iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9
+/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
+e1/public/amsfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publi
+c/amsfonts/cm/cmtt10.pfb>
+Output written on DOC.pdf (7 pages, 5769517 bytes).
 PDF statistics:
- 33 PDF objects out of 1000 (max. 8388607)
+ 69 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 36 words of extra memory for PDF output out of 10000 (max. 10000000)
 
