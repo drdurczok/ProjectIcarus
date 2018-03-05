@@ -1,0 +1,23 @@
+# depslib dependency file v1.0
+1520237972 source:/home/dan/Prog/C++/ICARUS/src/ICARUS/source.cpp
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<iostream>
+
+1520258742 source:/home/dan/Documents/ProjectIcarus/ICARUS/src/Eyes.cpp
+	"Eyes.h"
+
+1520257955 /home/dan/Documents/ProjectIcarus/ICARUS/include/Eyes.h
+	<opencv2/opencv.hpp>
+	<opencv2/core/core.hpp>
+	<opencv2/highgui/highgui.hpp>
+	<opencv2/imgproc/imgproc.hpp>
+	<opencv2/calib3d.hpp>
+	<string>
+	<utility>
+	<iostream>
+
+1520258394 source:/home/dan/Documents/ProjectIcarus/ICARUS/main.cpp
+	"include/Eyes.h"
+
