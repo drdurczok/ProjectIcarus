@@ -3,6 +3,8 @@
 \usepackage{color}
 \usepackage{url}
 \usepackage[font=small,labelfont=bf]{caption}
+\usepackage[a4paper, total={16cm, 24cm}]{geometry}
+\usepackage{indentfirst}
 
 
 
@@ -28,7 +30,7 @@
 		\vspace{1cm}
     \end{figure}
 
-    \Huge \textbf{Project ICARUS}s
+    \Huge \textbf{Project ICARUS}
         
     \vspace{0.8cm}
     \LARGE 
@@ -36,10 +38,10 @@
     \color{black}
             
     \vspace{0.8cm}       
-    \textbf{Damian Durczok\\Mikołaj Gacek\\Adam Kolusz}        
+    \textbf{Damian Durczok\\Mikolaj Gacek\\Adam Kolusz}        
     \vfill       
     \vspace{0.8cm}    
-    03.03.2018
+    07.03.2018
         
     \end{center}
 \end{titlepage}
@@ -48,17 +50,15 @@
 \break
 
 \section{State of Art}
-A typical mechatronic device encompasses many fields of technological engineering. This includes mechanical engineering, electronics, computer engineering, systems and control engineering. 
-
-To thoroughly design such a system with awareness of all its elements during each step of the process requires the foresight and knowledge of all the components and relations between individual elements. This is the purpose of the state of art - a prerequisite to the initialization of a project. By the end of this section we will have explored existing technologies and solutions to our problem and drawn up a basic model of the mechatronic device.
+A typical mechatronic device encompasses many fields of technological engineering. This includes mechanical engineering, electronics, computer engineering, systems and control engineering.\\[12pt] 
+\indent To thoroughly design such a system with awareness of all its elements during each step of the process requires the foresight and knowledge of all the components and relations between individual elements. This is the purpose of the state of art - a prerequisite to the initialization of a project. By the end of this section we will have explored existing technologies and solutions to our problem and drawn up a basic model of the mechatronic device.
 
 \subsection{The Problem}
 Certain situations that endanger human life benefit from the intervention of a robotic device. However, these robots may be limited in functionality compared to the human counterpart. In cases such as bomb disposal, nuclear power station decommissioning or handling of dangerous substances the dexterity of a human hand is significantly important.
 
 \subsection{The Solution}
-The mechanical hand is a device that has been iterated on many times in recent history. Control of such a hand is either by machine or human. For automated tasks, a machine controlled hand is more than sufficient. However, in unpredictable environments human intervention is still necessary.
-
-This is where the idea stems together. A mechanical hand with the full dexterity of its real counterpart controlled in an intuitive way by a human. The control will be based on the idea of mimicking the operators limbs. Pairing this with a strategically placed camera and a virtual reality headset, we have an operator who is fully immersed and in full control of the situation at hand.
+The mechanical hand is a device that has been iterated on many times in recent history. Control of such a hand is either by machine or human. For automated tasks, a machine controlled hand is more than sufficient. However, in unpredictable environments human intervention is still necessary.\\[12pt]
+\indent This is where the idea stems together. A mechanical hand with the full dexterity of its real counterpart controlled in an intuitive way by a human. The control will be based on the idea of mimicking the operators limbs. Pairing this with a strategically placed camera and a virtual reality headset, we have an operator who is fully immersed and in full control of the situation at hand.
 
 \subsection{Mechanical Hand}
 Most modern innovations of the mechanical hand are related to the development of prosthetics. BeBionic \cite{bebionic} and Vincent Systems \cite{vincent} among many others have developed such devices that accurately mimic the likeness.
@@ -71,7 +71,7 @@ Most modern innovations of the mechanical hand are related to the development of
 The most popular actuation method is a combination of a DC motor and either a worm gear or lead screw. The size of the hand leaves us with a very small working area, as a result the driving motors must be very small with high gear reductions.
 
 \begin{center}
-\includegraphics[width=\textwidth]{IMG/fingerMech2.png}
+\includegraphics[width=0.6\textwidth]{IMG/fingerMech2.png}
 \captionof{figure}{Mechanics of a finger \cite{JRRD}}
 \end{center}
 
@@ -79,7 +79,7 @@ Another issue to contend with is the weight and speed of the mechanism. For pros
 \indent The limited working space also forces certain optimization. For instance, not all joints need to be independently driven. We may simplify the model by involving mechanisms that create a fixed relationship between joints.
 
 \begin{center}
-\includegraphics[width=0.5\textwidth]{IMG/fingerMech.jpg}
+\includegraphics[width=0.3\textwidth]{IMG/fingerMech.jpg}
 \captionof{figure}{Reducing degrees of freedom mechanically \cite{JRRD}}
 \end{center}
 
@@ -87,22 +87,20 @@ A final feature commonly observed is a certain flexion compliance level. Under a
 \indent Many hobbyists opt out for a different solution that includes a motor and line. The joints are controlled in one direction by the contraction of a line and in the other by a spring or flexible material. This greatly simplifies the design process by allowing the motors to be located elsewhere. Potentially allowing for much larger drives and a greater gripping force along with greater movement speeds and accelerations. This system also naturally includes flexion compliance.
 
 \begin{center}
-\includegraphics[width=0.5\textwidth]{IMG/stringMech.jpg}
+\includegraphics[width=0.3\textwidth]{IMG/stringMech.jpg}
 \captionof{figure}{Solidworks solution \cite{stringHand}}
 \end{center}
 
 This solution isn't as well researched as the earlier method and will require a longer prototyping faze. \\[12pt]
 \indent Pneumatics may offer another solution. All the fingers are actuated by a pneumatic air muscle. These prove to have very high grip strength with favourable dynamic characteristics. All however comes with the price of size, to drive such a system a constant supply of compressed air is necessary to accurately position the stroke-length of each air muscle. Additionally a large valve system is necessary to control such a device.
 
-
 \begin{center}
 \includegraphics[width=0.4\textwidth]{IMG/airMuscle.jpg}
 \captionof{figure}{Air Muscle}
 \end{center}
-\break
-In summary, we may consider driving our mechanism with either an electric motor or a pneumatic device. The pneumatic device may allow for much better dynamic performance such as limb velocity, acceleration and grip strength. However requires an entire pneumatic system in place which may prove expensive and resource heavy. The DC motor compromises on dynamic performance in place for a more ergonomic design.
 
-The driving mechanism may be optimized by involving dependent joints. These joints may be driven directly or at a distance using lines. A line driven mechanism alleviates the problem of having to work in a small working area by removing the largest elements externally. 
+In summary, we may consider driving our mechanism with either an electric motor or a pneumatic device. The pneumatic device may allow for much better dynamic performance such as limb velocity, acceleration and grip strength. However requires an entire pneumatic system in place which may prove expensive and resource heavy. The DC motor compromises on dynamic performance in place for a more ergonomic design.\\[12pt]
+\indent The driving mechanism may be optimized by involving dependent joints. These joints may be driven directly or at a distance using lines. A line driven mechanism alleviates the problem of having to work in a small working area by removing the largest elements externally. 
 
 \subsection{Sensors}
 For the human hand to control the mechanical counterpart a set of sensors are necessary. For simplicity, we will only track the position of individual fingers. Although data sets such as grip strength, velocity or acceleration of fingers may inadvertently be natural features of some of the concepts.\\[12pt]
@@ -117,6 +115,7 @@ For the human hand to control the mechanical counterpart a set of sensors are ne
 \indent Plenty of other approaches also exist. One of the most popular is the usage of flex sensors. The concept is very simple, a change of resistance occurs with deflection, ie the flexing of a joint. The main disadvantage of such a solution is very low cost/efficiency ratio. However this method takes up very little space and low power consumption.\\[12pt] 
 \indent Another accurate positioning method is with the use of multiple MPUs placed in carefully selected positions. If connected via a I2C protocol we may connect many along a single bus. These sensors are quite inexpensive compared to the flex sensor and provide acceptable accuracy when paired with suitable filters such as a Kalman filter. If not taken into account, the position obtained drifts over time resulting in a high error. However this can easily be mitigated.\\[12pt] 
 \indent With a strategically placed camera and a line emitting IR blaster we may create a vision system that proves to be much more reliable than the previous concept. DIGITS \cite{Digits} is the realization of such a device. It is capable of emulating the human hand in a virtual environment with great success.
+
 \begin{center}
 \includegraphics[width=0.5\textwidth]{IMG/HandSens02.png}
 \captionof{figure}{A finger position method by Digits \cite{Digits}}
@@ -129,8 +128,10 @@ For the human hand to control the mechanical counterpart a set of sensors are ne
 For an electronic control system we may consider two distinct architectures that will be ideal for our device; an FPGA board or a microcomputer like the Raspberry Pi. Both devices are capable of image signal processing with the use of the OpenCV library, therefore all techniques discussed above are viable. In extension, OpenCL (an official and supported extension to OpenCV) can be used inplace of HDL in FPGA to improve design productivity. The main advantage of FPGA over a CPU is parallelism\cite{FPGA}. In a system where many sensors and actuators are present, and a quick response of a mechanical hand is essential this can become a major advantage over traditional microcomputers. However, this comes with a cost of complexity.\\[12pt]
 \indent Both systems are also capable of signal filtering and noise reduction. This can reduce micro motions and sensor imperfections to create a much more fluid movement of the hand. Additionally, machine learning could incorporate a decision making process that could create precise maneuvers even if the operator isn't fully trained or capable of them.  Potentially becoming an enhanced extension of the human by providing stability and limiting the motion to avoid accidental jerks or unwanted reflexes.
 
-
-
+\section{Concept}
+\subsection{Mechanics}
+\subsection{Sensors}
+\subsection{Control}
 
 
 
