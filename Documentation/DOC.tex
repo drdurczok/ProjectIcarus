@@ -104,7 +104,7 @@ In summary, we may consider driving our mechanism with either an electric motor 
 
 The driving mechanism may be optimized by involving dependent joints. These joints may be driven directly or at a distance using lines. A line driven mechanism alleviates the problem of having to work in a small working area by removing the largest elements externally. 
 
-\subsection{Control}
+\subsection{Sensors}
 For the human hand to control the mechanical counterpart a set of sensors are necessary. For simplicity, we will only track the position of individual fingers. Although data sets such as grip strength, velocity or acceleration of fingers may inadvertently be natural features of some of the concepts.\\[12pt]
 \indent A vision system introduces a non-invasive and non-contact method. Free to the public libraries such as OpenCV paired with a stereo camera system allow for creation of depth perception maps. After calibration of each camera and synchronization of frames, such a system will allow for accurate tracking.
 
@@ -113,7 +113,28 @@ For the human hand to control the mechanical counterpart a set of sensors are ne
 \captionof{figure}{Visualization of hand recognition software}
 \end{center}
 
-\indent Microsoft released another interpretation of a motion sensing input design with the Xbox Kinect \cite{kinect}. The device includes an additional IR light source and an infrared camera for depth mapping and an RGB color VGA video camera for image recognition. The camera is capable of isolating the human from the background and with image recognition track individual limbs. The Microsoft SDK package for the system also includes access to the massive database for image recognition. This has been shown to work with small children using sign language learning software.
+\indent Microsoft released another interpretation of a motion sensing input design with the Xbox Kinect \cite{kinect}. The device includes an additional IR light source and an infrared camera for depth mapping and an RGB color VGA video camera for image recognition. The camera is capable of isolating the human from the background and with image recognition track individual limbs. The Microsoft SDK package for the system also includes access to the massive database for image recognition. This has been shown to work with small children using sign language learning software.\\[12pt]
+\indent Plenty of other approaches also exist. One of the most popular is the usage of flex sensors. The concept is very simple, a change of resistance occurs with deflection, ie the flexing of a joint. The main disadvantage of such a solution is very low cost/efficiency ratio. However this method takes up very little space and low power consumption.\\[12pt] 
+\indent Another accurate positioning method is with the use of multiple MPUs placed in carefully selected positions. If connected via a I2C protocol we may connect many along a single bus. These sensors are quite inexpensive compared to the flex sensor and provide acceptable accuracy when paired with suitable filters such as a Kalman filter. If not taken into account, the position obtained drifts over time resulting in a high error. However this can easily be mitigated.\\[12pt] 
+\indent With a strategically placed camera and a line emitting IR blaster we may create a vision system that proves to be much more reliable than the previous concept. DIGITS \cite{Digits} is the realization of such a device. It is capable of emulating the human hand in a virtual environment with great success.
+\begin{center}
+\includegraphics[width=0.5\textwidth]{IMG/HandSens02.png}
+\captionof{figure}{A finger position method by Digits \cite{Digits}}
+\end{center}
+
+\indent The IR blaster greatly increases the image recognition performance by giving it obvious vision cues. The wrist mounted device may also benefit from an additional MPU sensor that will provide us with information on the placement of the arm. Such a system is not limited by the environment; lighting levels and surrounding colors wouldn't have a significant impact on the performance of the mechanism.
+
+\subsection{Control}
+
+For an electronic control system we may consider two distinct architectures that will be ideal for our device; an FPGA board or a microcomputer like the Raspberry Pi. Both devices are capable of image signal processing with the use of the OpenCV library, therefore all techniques discussed above are viable. In extension, OpenCL (an official and supported extension to OpenCV) can be used inplace of HDL in FPGA to improve design productivity. The main advantage of FPGA over a CPU is parallelism\cite{FPGA}. In a system where many sensors and actuators are present, and a quick response of a mechanical hand is essential this can become a major advantage over traditional microcomputers. However, this comes with a cost of complexity.\\[12pt]
+\indent Both systems are also capable of signal filtering and noise reduction. This can reduce micro motions and sensor imperfections to create a much more fluid movement of the hand. Additionally, machine learning could incorporate a decision making process that could create precise maneuvers even if the operator isn't fully trained or capable of them.  Potentially becoming an enhanced extension of the human by providing stability and limiting the motion to avoid accidental jerks or unwanted reflexes.
+
+
+
+
+
+
+
 
 \break
 \begin{thebibliography}{1}
@@ -125,7 +146,16 @@ For the human hand to control the mechanical counterpart a set of sensors are ne
 	\bibitem{airMuscle} Peter Scarfe, Euan Lindsay {\em Air Muscle Actuated Low Cost Humanoid Hand}. Retrieved from {\url{ http://cdn.intechopen.com/pdfs/4176/InTech-Air_muscle_actuated_low_cost_humanoid_hand.pdf
 }} 
 	\bibitem{kinect} Kinect. Retrieved from {\url{https://www.jameco.com/jameco/workshop/howitworks/xboxkinect.html}}
-	
+	\bibitem{Digits} DIGITS. Retrieved from {\url{https://spectrum.ieee.org/video/consumer-electronics/audiovideo/digits-hands-free-3d}}	
+	\bibitem{ALTERA} Altera, Video and Image Processing Design Using FPGAs. Retrieved from {\url{https://www.altera.com/en_US/pdfs/literature/wp/wp-video0306.pdf}}
+	\bibitem{CpuFpga} Brandon Treece ,VisionSystems Design. Retrieved from {\url{https://www.vision-systems.com/articles/print/volume-22/issue-8/features/cpu-or-fpga-for-image-processing-which-is-best.html	}}
+	\bibitem{FPGA} FPGA in Robotics. Retrieved from {\url{https://robotics.stackexchange.com/questions/1153/when-should-fpgas-be-used-in-robotics}}
+	\bibitem{CpuFpga02} APUs vs FPGAs. Retrieved from {\url{http://www.electronicdesign.com/microprocessors/apus-vs-fpgas-battle-smart-camera-processing-supremacy}}
+	\bibitem{Intel} Intel FPGA SDK for OpenCL. Retrieved from {\url{https://www.altera.com/en_US/pdfs/literature/hb/opencl-sdk/aocl_programming_guide.pdf}}
+	\bibitem{OpenCL} OpenCL. Retrieved from {\url{https://opencv.org/platforms/opencl.html}}
+	\bibitem{VisionProcessing} Video and Image Processing Suite Intel FPGA IP. Retrieved from {\url{https://www.altera.com/products/intellectual-property/ip/dsp/m-alt-vipsuite.html}}
+
+
 \end{thebibliography}
   
 \end{document}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.1.15)  6 MAR 2018 18:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.1.15)  7 MAR 2018 08:20
 entering extended mode
 **./DOC.tex
 (DOC.tex
@@ -229,32 +229,86 @@ Package pdftex.def Info: Requested size: 172.5pt x 115.84239pt on input line 11
 2.
 
 [5 <./IMG/HandSens.png>]
-Underfull \hbox (badness 1466) in paragraph at lines 124--125
+<IMG/HandSens02.png, id=39, 1329.96875pt x 783.92876pt>
+File: IMG/HandSens02.png Graphic file (type png)
+<use IMG/HandSens02.png>
+Package pdftex.def Info: IMG/HandSens02.png  used on input line 121. on input l
+ine 121.
+Package pdftex.def Info: Requested size: 172.5pt x 101.67508pt on input line 12
+1.
+ [6 <./IMG/HandSens02.png (PNG copy)>] [7]
+Underfull \hbox (badness 1466) in paragraph at lines 145--146
 []\OT1/cmr/m/n/10 SOLIDWORKS. Re-trieved from $\OT1/cmtt/m/n/10 http : / / blog
 s . solidworks . com / tech /
  []
 
 
-Underfull \hbox (badness 4569) in paragraph at lines 125--127
+Underfull \hbox (badness 4569) in paragraph at lines 146--148
 []\OT1/cmr/m/n/10 Peter Scarfe, Euan Lind-say \OT1/cmr/m/it/10 Air Mus-cle Ac-t
 u-ated Low Cost Hu-
  []
 
 
-Underfull \hbox (badness 7273) in paragraph at lines 127--128
+Underfull \hbox (badness 7273) in paragraph at lines 148--149
 []\OT1/cmr/m/n/10 Kinect. Re-trieved from $\OT1/cmtt/m/n/10 https : / / www . j
 ameco . com / jameco / workshop /
  []
 
-[6] (DOC.aux) ) 
+
+Underfull \hbox (badness 10000) in paragraph at lines 149--150
+[]\OT1/cmr/m/n/10 DIGITS. Re-trieved from $\OT1/cmtt/m/n/10 https : / / spectru
+m . ieee . org / video /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 150--151
+\OT1/cmtt/m/n/10 https : / / www . altera . com / en _ US / pdfs / literature /
+ wp / wp-[]video0306 .
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 151--152
+[]\OT1/cmr/m/n/10 Brandon Treece ,Vi-sion-Sys-tems De-sign. Re-trieved from $\O
+T1/cmtt/m/n/10 https :
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 151--152
+\OT1/cmtt/m/n/10 / / www . vision-[]systems . com / articles / print / volume-[
+]22 / issue-[]8 /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 153--154
+[]\OT1/cmr/m/n/10 APUs vs FP-GAs. Re-trieved from $\OT1/cmtt/m/n/10 http :
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 153--154
+\OT1/cmtt/m/n/10 / / www . electronicdesign . com / microprocessors /
+ []
+
+
+Underfull \hbox (badness 1286) in paragraph at lines 156--157
+[]\OT1/cmr/m/n/10 Video and Im-age Pro-cess-ing Suite In-tel FPGA IP. Re-trieve
+d from
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--157
+\OT1/cmtt/m/n/10 https : / / www . altera . com / products / intellectual-[]pro
+perty / ip / dsp /
+ []
+
+[8] (DOC.aux) ) 
 Here is how much of TeX's memory you used:
- 2669 strings out of 493312
- 42271 string characters out of 3138899
- 99527 words of memory out of 3000000
- 6203 multiletter control sequences out of 15000+200000
+ 2682 strings out of 493312
+ 42451 string characters out of 3138899
+ 101556 words of memory out of 3000000
+ 6215 multiletter control sequences out of 15000+200000
  7491 words of font info for 27 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 41i,8n,39p,599b,362s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 41i,8n,39p,762b,362s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx
 10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><
 C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Progra
@@ -263,9 +317,9 @@ iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9
 /fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
 e1/public/amsfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publi
 c/amsfonts/cm/cmtt10.pfb>
-Output written on DOC.pdf (7 pages, 5780772 bytes).
+Output written on DOC.pdf (9 pages, 6488058 bytes).
 PDF statistics:
- 71 PDF objects out of 1000 (max. 8388607)
+ 78 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 41 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 46 words of extra memory for PDF output out of 10000 (max. 10000000)
 
