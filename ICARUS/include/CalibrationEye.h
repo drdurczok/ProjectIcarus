@@ -6,6 +6,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <fstream>
+#include <string>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -20,17 +21,27 @@ class CalibrationEye
     public:
         CalibrationEye();
         unsigned readSettings();
-        unsigned calibration();
+        unsigned calibration(bool,bool);
+
+    private:
         void cameraCalibration(vector<Mat>, Size, float, Mat&, Mat&);
         bool saveCameraCalibration(string, Mat, Mat);
         void createKnownBoardPosition(Size, float, vector<Point3f>&);
         void getChessboardCorners(vector<Mat>, vector<vector<Point2f>>&, bool);
 
-    private:
-
-
         const float calibrationSquareDimension = 0.026f; //meters
         const Size chessboardDimensions = Size(6,9);
+
+        struct camera{
+            Mat frame;
+            Mat drawToFrame;
+            Mat cameraMatrix = Mat::eye(3,3, CV_64F);
+            Mat distanceCoefficients;
+            vector<Mat> savedImages;
+            ostringstream name;
+            ostringstream nameOverlay;
+            int i=1;
+        };
 };
 
 #endif // CALIBRATIONEYE_H

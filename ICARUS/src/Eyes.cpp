@@ -10,13 +10,48 @@ Eyes::~Eyes()
     //dtor
 }
 
-unsigned arucoMarker(){
+bool Eyes::loadCameraCalibration(string name, Mat& cameraMatrix, Mat& distanceCoefficient){
+    ifstream inStream(name);
+    if(inStream){
+        uint16_t rows;
+        uint16_t columns;
 
+        inStream >> rows;
+        inStream >> columns;
+
+        cameraMatrix = Mat(Size(columns, rows), CV_64F);
+
+        for(int r=0; r<rows; r++){
+            for(int c=0; c<columns; c++){
+                double read = 0.0f;
+                inStream >> read;
+                cameraMatrix.at<double>(r,c) = read;
+                cout << cameraMatrix.at<double>(r,c) << "\n";
+            }
+        }
+        //Distance Coefficients
+        inStream >> rows;
+        inStream >> columns;
+
+        distanceCoefficient = Mat::zeros(rows, columns, CV_64F);
+
+        for(int r=0; r<rows; r++){
+            for(int c=0; c<columns; c++){
+                double read = 0.0f;
+                inStream >> read;
+                distanceCoefficient.at<double>(r,c) = read;
+                cout << distanceCoefficient.at<double>(r,c) << "\n";
+            }
+        }
+        inStream.close();
+        return true;
+    }
+    return false;
 }
 
 void Eyes::depthMap(){
     cv::VideoCapture Rcam(1);
-    cv::VideoCapture Lcam(0);
+    cv::VideoCapture Lcam(2);
 
     cv::Mat LeftImgOrg;
     cv::Mat RightImgOrg;

@@ -40,6 +40,9 @@ bool CalibrationEye::saveCameraCalibration(string name, Mat cameraMatrix, Mat di
         uint16_t rows = cameraMatrix.rows;
         uint16_t columns = cameraMatrix.cols;
 
+        outStream << rows << endl;
+        outStream << columns << endl;
+
         for(int r=0; r<rows; r++){
             for(int c=0; c<columns; c++){
                 double value = cameraMatrix.at<double>(r,c);
@@ -49,6 +52,9 @@ bool CalibrationEye::saveCameraCalibration(string name, Mat cameraMatrix, Mat di
 
         rows = distanceCoefficients.rows;
         columns = distanceCoefficients.cols;
+
+        outStream << rows << endl;
+        outStream << columns << endl;
 
          for(int r=0; r<rows; r++){
             for(int c=0; c<columns; c++){
@@ -80,38 +86,41 @@ void CalibrationEye::cameraCalibration(vector<Mat> calibrationImages, Size board
     calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVectors, tVectors);
 }
 
-unsigned CalibrationEye::calibration(){
-    Mat frame;
-    Mat drawToFrame;
-
-    Mat cameraMatrix = Mat::eye(3,3, CV_64F);
-
-    Mat distanceCoefficients;
-
-    vector<Mat> savedImages;
-
-    vector<vector<Point2f>> markerCorners, rejectedCandidates;
+unsigned CalibrationEye::calibration(bool saveData, bool dual){
+    camera cam, cam2;
 
     VideoCapture vid(1);
+    VideoCapture vid2(2);
+    if(!vid.isOpened()) return 0;
 
-    if(!vid.isOpened()) {return 0;}
+    namedWindow("Cam", CV_WINDOW_AUTOSIZE);
+    if (dual == 1) namedWindow("Cam2", CV_WINDOW_AUTOSIZE);
 
     int framesPerSecond = 20;
 
-    namedWindow("Cam", CV_WINDOW_AUTOSIZE);
-
     while(true){
-        if(!vid.read(frame)) break;
+        if(!vid.read(cam.frame)) break;
 
         vector<Vec2f> foundPoints;
         bool found = false;
 
-        found = findChessboardCorners(frame, chessboardDimensions, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
-        frame.copyTo(drawToFrame);
-        drawChessboardCorners(drawToFrame, chessboardDimensions, foundPoints, found);
+        found = findChessboardCorners(cam.frame, chessboardDimensions, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
+        cam.frame.copyTo(cam.drawToFrame);
+        drawChessboardCorners(cam.drawToFrame, chessboardDimensions, foundPoints, found);
 
-        if(found) imshow("Cam", drawToFrame);
-        else imshow("Cam", frame);
+        if(found) imshow("Cam", cam.drawToFrame);
+        else imshow("Cam", cam.frame);
+
+        if (dual == 1) {
+            if(!vid2.read(cam2.frame)) break;
+
+            found = findChessboardCorners(cam2.frame, chessboardDimensions, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
+            cam2.frame.copyTo(cam2.drawToFrame);
+            drawChessboardCorners(cam2.drawToFrame, chessboardDimensions, foundPoints, found);
+
+            if(found) imshow("Cam2", cam2.drawToFrame);
+            else imshow("Cam2", cam2.frame);
+        }
 
         char character = waitKey(1000/framesPerSecond);
 
@@ -120,15 +129,44 @@ unsigned CalibrationEye::calibration(){
                 //saving image
                 if(found){
                     Mat temp;
-                    frame.copyTo(temp);
-                    savedImages.push_back(temp);
+                    cam.frame.copyTo(temp);
+                    cam.savedImages.push_back(temp);
+                    if(saveData == 1) {
+                        cam.name.str("");
+                        cam.nameOverlay.str("");
+                        cam.name << "../CalibrationPictures/CAM01_calib" << cam.i << ".jpg";
+                        cam.nameOverlay << "../CalibrationPictures/CAM01_calib" << cam.i << "_overlay.jpg";
+                        cam.i++;
+                        imwrite(cam.name.str(),temp);
+                        imwrite(cam.nameOverlay.str(),cam.drawToFrame);
+                    }
+
+                    if (dual == 1) {
+                        Mat temp2;
+                        cam2.frame.copyTo(temp2);
+                        cam2.savedImages.push_back(temp2);
+                        if(saveData == 1) {
+                            cam2.name.str("");
+                            cam2.nameOverlay.str("");
+                            cam2.name << "../CalibrationPictures/CAM02_calib" << cam2.i << ".jpg";
+                            cam2.nameOverlay << "../CalibrationPictures/CAM02_calib" << cam2.i << "_overlay.jpg";
+                            cam2.i++;
+                            imwrite(cam2.name.str(),temp2);
+                            imwrite(cam2.nameOverlay.str(),cam2.drawToFrame);
+                        }
+                    }
                 }
                 break;
             case 13:    //enter
                 //start calibration
-                if(savedImages.size() > 15){
-                    cameraCalibration(savedImages, chessboardDimensions, calibrationSquareDimension, cameraMatrix, distanceCoefficients);
-                    saveCameraCalibration("CameraCalibration", cameraMatrix, distanceCoefficients);
+                if(cam.savedImages.size() > 15){
+                    cameraCalibration(cam.savedImages, chessboardDimensions, calibrationSquareDimension, cam.cameraMatrix, cam.distanceCoefficients);
+                    saveCameraCalibration("CameraCalibration", cam.cameraMatrix, cam.distanceCoefficients);
+
+                     if (dual == 1) {
+                        cameraCalibration(cam2.savedImages, chessboardDimensions, calibrationSquareDimension, cam2.cameraMatrix, cam2.distanceCoefficients);
+                        saveCameraCalibration("CameraCalibration_2", cam2.cameraMatrix, cam2.distanceCoefficients);
+                     }
                 }
                 break;
             case 27:       //escape
@@ -138,4 +176,3 @@ unsigned CalibrationEye::calibration(){
         }
     }
 }
-
