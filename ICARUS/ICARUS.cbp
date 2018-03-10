@@ -46,8 +46,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="include/CalibrationEye.h" />
 		<Unit filename="include/Eyes.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/CalibrationEye.cpp" />
 		<Unit filename="src/Eyes.cpp" />
 		<Extensions>
 			<code_completion />

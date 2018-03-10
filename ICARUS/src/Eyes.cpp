@@ -10,6 +10,10 @@ Eyes::~Eyes()
     //dtor
 }
 
+unsigned arucoMarker(){
+
+}
+
 void Eyes::depthMap(){
     cv::VideoCapture Rcam(1);
     cv::VideoCapture Lcam(0);
