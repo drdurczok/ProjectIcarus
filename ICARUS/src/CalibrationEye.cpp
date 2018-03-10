@@ -46,7 +46,7 @@ void CalibrationEye::cameraCalibration(vector<Mat> calibrationImages, Size board
     calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVectors, tVectors);
 }
 
-unsigned CalibrationEye::calibration(unsigned cam_num, bool saveData, bool dual){
+unsigned CalibrationEye::calibration(unsigned cam_num = 0, bool saveData = true, bool dual = false, unsigned picIter = 1){
     camera cam, cam2;
 
     VideoCapture vid(cam_num);
@@ -57,6 +57,9 @@ unsigned CalibrationEye::calibration(unsigned cam_num, bool saveData, bool dual)
     if (dual == 1) namedWindow("Cam2", CV_WINDOW_AUTOSIZE);
 
     int framesPerSecond = 20;
+
+    cam.i = picIter;
+    cam2.i = picIter;
 
     while(true){
         if(!vid.read(cam.frame)) break;
@@ -121,11 +124,11 @@ unsigned CalibrationEye::calibration(unsigned cam_num, bool saveData, bool dual)
                 //start calibration
                 if(cam.savedImages.size() > 15){
                     cameraCalibration(cam.savedImages, chessboardDimensions, calibrationSquareDimension, cam.cameraMatrix, cam.distanceCoefficients);
-                    saveCameraCalibration("CameraCalibration", cam.cameraMatrix, cam.distanceCoefficients);
+                    saveCameraCalibration("CameraCalibration01", cam.cameraMatrix, cam.distanceCoefficients);
 
                      if (dual == 1) {
                         cameraCalibration(cam2.savedImages, chessboardDimensions, calibrationSquareDimension, cam2.cameraMatrix, cam2.distanceCoefficients);
-                        saveCameraCalibration("CameraCalibration_2", cam2.cameraMatrix, cam2.distanceCoefficients);
+                        saveCameraCalibration("CameraCalibration02", cam2.cameraMatrix, cam2.distanceCoefficients);
                      }
                 }
                 break;

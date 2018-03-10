@@ -7,7 +7,7 @@ class CalibrationEye: public EyeBase
 {
     public:
         CalibrationEye();
-        unsigned calibration(unsigned,bool,bool);
+        unsigned calibration(unsigned,bool,bool,unsigned);
         unsigned calibrationFromFiles(unsigned);
 
     private:
