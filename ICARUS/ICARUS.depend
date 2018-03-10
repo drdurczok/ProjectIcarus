@@ -5,10 +5,23 @@
 	<opencv2/imgproc/imgproc.hpp>
 	<iostream>
 
-1520692137 source:/home/dan/Documents/ProjectIcarus/ICARUS/src/Eyes.cpp
+1520696141 source:/home/dan/Documents/ProjectIcarus/ICARUS/src/Eyes.cpp
 	"Eyes.h"
 
-1520692099 /home/dan/Documents/ProjectIcarus/ICARUS/include/Eyes.h
+1520696255 /home/dan/Documents/ProjectIcarus/ICARUS/include/Eyes.h
+	"EyeBase.h"
+
+1520694663 source:/home/dan/Documents/ProjectIcarus/ICARUS/main.cpp
+	"include/Eyes.h"
+	"include/CalibrationEye.h"
+
+1520696262 /home/dan/Documents/ProjectIcarus/ICARUS/include/CalibrationEye.h
+	"EyeBase.h"
+
+1520695830 source:/home/dan/Documents/ProjectIcarus/ICARUS/src/CalibrationEye.cpp
+	"CalibrationEye.h"
+
+1520696427 /home/dan/Documents/ProjectIcarus/ICARUS/include/EyeBase.h
 	<iostream>
 	<sstream>
 	<time.h>
@@ -23,22 +36,6 @@
 	<opencv2/aruco.hpp>
 	<opencv2/calib3d.hpp>
 
-1520693440 source:/home/dan/Documents/ProjectIcarus/ICARUS/main.cpp
-	"include/Eyes.h"
-	"include/CalibrationEye.h"
-
-1520689818 /home/dan/Documents/ProjectIcarus/ICARUS/include/CalibrationEye.h
-	<iostream>
-	<sstream>
-	<time.h>
-	<stdio.h>
-	<fstream>
-	<string>
-	<opencv2/core/core.hpp>
-	<opencv2/imgproc/imgproc.hpp>
-	<opencv2/calib3d/calib3d.hpp>
-	<opencv2/highgui/highgui.hpp>
-
-1520691583 source:/home/dan/Documents/ProjectIcarus/ICARUS/src/CalibrationEye.cpp
-	"CalibrationEye.h"
+1520695939 source:/home/dan/Documents/ProjectIcarus/ICARUS/src/EyeBase.cpp
+	"EyeBase.h"
 

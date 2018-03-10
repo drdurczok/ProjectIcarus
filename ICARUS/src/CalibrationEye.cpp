@@ -5,10 +5,6 @@ CalibrationEye::CalibrationEye()
 
 }
 
-unsigned CalibrationEye::readSettings(){
-    return 0;
-}
-
 void CalibrationEye::createKnownBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f>& corners){
     for(int i=0; i<boardSize.height; i++){
         for(int j=0; j<boardSize.width; j++){
@@ -32,42 +28,6 @@ void CalibrationEye::getChessboardCorners(vector<Mat> images, vector<vector<Poin
             waitKey(0);
         }
     }
-}
-
-bool CalibrationEye::saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoefficients){
-    ofstream outStream(name);
-    if(outStream){
-        uint16_t rows = cameraMatrix.rows;
-        uint16_t columns = cameraMatrix.cols;
-
-        outStream << rows << endl;
-        outStream << columns << endl;
-
-        for(int r=0; r<rows; r++){
-            for(int c=0; c<columns; c++){
-                double value = cameraMatrix.at<double>(r,c);
-                outStream<<value<<endl;
-            }
-        }
-
-        rows = distanceCoefficients.rows;
-        columns = distanceCoefficients.cols;
-
-        outStream << rows << endl;
-        outStream << columns << endl;
-
-         for(int r=0; r<rows; r++){
-            for(int c=0; c<columns; c++){
-                double value = distanceCoefficients.at<double>(r,c);
-                outStream<<value<<endl;
-            }
-        }
-
-        outStream.close();
-        return true;
-    }
-
-    return false;
 }
 
 void CalibrationEye::cameraCalibration(vector<Mat> calibrationImages, Size boardSize, float squaredEdgeLength, Mat& cameraMatrix, Mat& distanceCoefficients){
