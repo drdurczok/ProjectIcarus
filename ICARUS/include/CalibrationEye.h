@@ -7,7 +7,8 @@ class CalibrationEye: public EyeBase
 {
     public:
         CalibrationEye();
-        unsigned calibration(bool,bool);
+        unsigned calibration(unsigned,bool,bool);
+        unsigned calibrationFromFiles(unsigned);
 
     private:
         void cameraCalibration(vector<Mat>, Size, float, Mat&, Mat&);

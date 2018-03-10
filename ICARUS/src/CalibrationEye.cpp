@@ -46,11 +46,11 @@ void CalibrationEye::cameraCalibration(vector<Mat> calibrationImages, Size board
     calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVectors, tVectors);
 }
 
-unsigned CalibrationEye::calibration(bool saveData, bool dual){
+unsigned CalibrationEye::calibration(unsigned cam_num, bool saveData, bool dual){
     camera cam, cam2;
 
-    VideoCapture vid(1);
-    VideoCapture vid2(2);
+    VideoCapture vid(cam_num);
+    VideoCapture vid2(cam_num+1);
     if(!vid.isOpened()) return 0;
 
     namedWindow("Cam", CV_WINDOW_AUTOSIZE);
@@ -94,8 +94,8 @@ unsigned CalibrationEye::calibration(bool saveData, bool dual){
                     if(saveData == 1) {
                         cam.name.str("");
                         cam.nameOverlay.str("");
-                        cam.name << "../CalibrationPictures/CAM01_calib" << cam.i << ".jpg";
-                        cam.nameOverlay << "../CalibrationPictures/CAM01_calib" << cam.i << "_overlay.jpg";
+                        cam.name << "../CalibrationPictures/Cam01/CAM01_calib" << cam.i << ".jpg";
+                        cam.nameOverlay << "../CalibrationPictures/CalibrationPicturesOverlay/CAM01_calib" << cam.i << "_overlay.jpg";
                         cam.i++;
                         imwrite(cam.name.str(),temp);
                         imwrite(cam.nameOverlay.str(),cam.drawToFrame);
@@ -108,8 +108,8 @@ unsigned CalibrationEye::calibration(bool saveData, bool dual){
                         if(saveData == 1) {
                             cam2.name.str("");
                             cam2.nameOverlay.str("");
-                            cam2.name << "../CalibrationPictures/CAM02_calib" << cam2.i << ".jpg";
-                            cam2.nameOverlay << "../CalibrationPictures/CAM02_calib" << cam2.i << "_overlay.jpg";
+                            cam2.name << "../CalibrationPictures/Cam02/CAM02_calib" << cam2.i << ".jpg";
+                            cam2.nameOverlay << "../CalibrationPictures/CalibrationPicturesOverlay/CAM02_calib" << cam2.i << "_overlay.jpg";
                             cam2.i++;
                             imwrite(cam2.name.str(),temp2);
                             imwrite(cam2.nameOverlay.str(),cam2.drawToFrame);
@@ -136,3 +136,36 @@ unsigned CalibrationEye::calibration(bool saveData, bool dual){
         }
     }
 }
+
+unsigned CalibrationEye::calibrationFromFiles(unsigned u){
+    camera cam;
+
+    for(int i=0; i<500; i++){
+        cam.name.str("");
+        cam.name << "../CalibrationPictures/Cam0" << u << "/CAM0" << u << "_calib" << i << ".jpg";
+        ifstream file(cam.name.str());
+        if(file.good()){
+            Mat temp = imread(cam.name.str());
+            cam.savedImages.push_back(temp);
+            file.close();
+        }
+    }
+
+    cam.name.str("");
+    cam.name << "CameraCalibration0" << u;
+
+    cameraCalibration(cam.savedImages, chessboardDimensions, calibrationSquareDimension, cam.cameraMatrix, cam.distanceCoefficients);
+    saveCameraCalibration(cam.name.str(), cam.cameraMatrix, cam.distanceCoefficients);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+

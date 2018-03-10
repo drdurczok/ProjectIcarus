@@ -7,7 +7,8 @@ int main( int argc, const char** argv)
     bool saveData = true;
 
     CalibrationEye calib;
-    calib.calibration(saveData,dualCameras);
+    //calib.calibration(saveData,dualCameras);
+    calib.calibrationFromFiles(2);
 
     Eyes sight;
     //sight.undistortImg();
