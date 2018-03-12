@@ -139,13 +139,31 @@ The primary attributes of our mechanical hand will be its gripping capabilities 
 \indent The final three fingers will be combined into one larger finger. Since these fingers are usually used for gripping and handling of objects, they will be mounted with larger motors and the larger surface area will provide a better gripping surface. The joint mobility will be similar to the index finger. \\[12pt]
 \indent The last area to cover is the palm. The metacarpals is responsibly for its shape. We have two metacarpals that have flexion compliance and one on the thumb that is driven. This means the palm has the capability of adjusting its shape to a gripped object.
 
-\subsection{Sensors}
+\subsection{Control and Sensors}
 
 With the mechanical end of the project providing advantages gripping mechanisms and variable grip strength, the control of the device may be much more forgiving and the use of haptic feedback isn't as necessary. With this in mind, we may create a completely non invasive human operated controller with the use of vision systems. \\[12pt]
 \indent The system will be made up of two cameras that will provide stereo vision. With proper calibration, we may produce a depth map and isolate a human operator from the background. Once isolated, it is a matter of manipulating the image and developing algorithms that may track geometrical features. Libraries such as OpenCV already provide most of these features in languages such as Python and C++. \\[12pt]
 \indent The readings from the camera may be further improved by adding a layer of machine decision making. Certain filters for noise reduction are certainly necessary, however we may also include pre-programmed operations that may assist the human and become an extension of him. For instance, we may limit the velocity of fingers to reduce abrupt movements in certain situations or remember the gripping position for a certain object. This way the operator carries out the general movement required of the robot and the robot decides on the precise movements that may be difficult for the user to control. 
 
-\subsection{Control}
+\subsection{Electronics}
+
+The entire vision system will be run on the Raspberry pi.
+
+Parameter overview
+
+It will communicate with an Arduino which is attached to the hand. The Arduino will control the motors.
+
+Motor Types (servo, DC plus worm gear etc) 
+
+Motor drivers.
+
+Raspberry pi and Arduino communication.
+
+Mechanical hand power supply (both battery and mains)
+
+Raspberry pi power supply (both options)
+
+Force sensors
 
 
 
