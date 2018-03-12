@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.1.15)  12 MAR 2018 09:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.1.15)  12 MAR 2018 10:15
 entering extended mode
 **./DOC.tex
 (DOC.tex
@@ -296,43 +296,43 @@ ine 120.
 Package pdftex.def Info: Requested size: 227.62204pt x 134.16325pt on input lin
 e 120.
  [5 <./IMG/HandSens02.png (PNG copy)>] [6] [7]
-Underfull \hbox (badness 10000) in paragraph at lines 160--161
+Underfull \hbox (badness 10000) in paragraph at lines 178--179
 []\OT1/cmr/m/n/10 SOLIDWORKS. Re-trieved from $\OT1/cmtt/m/n/10 http : / / blog
 s . solidworks . com / tech / 2016 / 08 /
  []
 
 
-Underfull \hbox (badness 3049) in paragraph at lines 163--164
+Underfull \hbox (badness 3049) in paragraph at lines 181--182
 []\OT1/cmr/m/n/10 Kinect. Re-trieved from $\OT1/cmtt/m/n/10 https : / / www . j
 ameco . com / jameco / workshop / howitworks / xboxkinect .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 164--165
+Underfull \hbox (badness 10000) in paragraph at lines 182--183
 []\OT1/cmr/m/n/10 DIGITS. Re-trieved from $\OT1/cmtt/m/n/10 https : / / spectru
 m . ieee . org / video / consumer-[]electronics /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 166--167
+Underfull \hbox (badness 10000) in paragraph at lines 184--185
 []\OT1/cmr/m/n/10 Brandon Treece ,Vi-sion-Sys-tems De-sign. Re-trieved from $\O
 T1/cmtt/m/n/10 https : / /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 166--167
+Underfull \hbox (badness 10000) in paragraph at lines 184--185
 \OT1/cmtt/m/n/10 www . vision-[]systems . com / articles / print / volume-[]22 
 / issue-[]8 / features /
  []
 
 
-Underfull \hbox (badness 6493) in paragraph at lines 168--169
+Underfull \hbox (badness 6493) in paragraph at lines 186--187
 []\OT1/cmr/m/n/10 APUs vs FP-GAs. Re-trieved from $\OT1/cmtt/m/n/10 http : / / 
 www . electronicdesign . com / microprocessors /
  []
 
 
-Underfull \hbox (badness 7504) in paragraph at lines 169--170
+Underfull \hbox (badness 7504) in paragraph at lines 187--188
 []\OT1/cmr/m/n/10 Intel FPGA SDK for OpenCL. Re-trieved from $\OT1/cmtt/m/n/10 
 https : / / www . altera . com / en _ US / pdfs /
  []
@@ -354,7 +354,7 @@ iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9
 /fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
 e1/public/amsfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publi
 c/amsfonts/cm/cmtt10.pfb>
-Output written on DOC.pdf (9 pages, 6492266 bytes).
+Output written on DOC.pdf (9 pages, 6492750 bytes).
 PDF statistics:
  78 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
