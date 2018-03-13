@@ -30,12 +30,11 @@
 		\vspace{1cm}
     \end{figure}
 
-    \Huge \textbf{Project ICARUS}
+    \Huge \textbf{Vision Controlled Mechanical Hand}
         
     \vspace{0.8cm}
     \LARGE 
-    \color{red} ONLY FOR AUTHORIZED PERSONNEL
-    \color{black}
+    \color{black} 
             
     \vspace{0.8cm}       
     \textbf{Damian Durczok\\Mikolaj Gacek\\Adam Kolusz}        
@@ -134,7 +133,7 @@ For an electronic control system we may consider two distinct architectures that
 The primary attributes of our mechanical hand will be its gripping capabilities and precision. To achieve this while keeping the entire project within acceptable dimensions we need to introduce dependent joints with certain flexion compliance. \\[12pt] 
 \indent Some of the dependent joints will have an additional mechanism extended from it. This mechanism will usually consist of a spring that is pushing on a lever. With no external forces, the lever will be sitting in a locked maximum position. The moment it comes into contact with something and depending on the amount of force applied, the lever hinges back. This gives the dependent joint a certain amount of restricted movement that mimics the joints of the hand in a similar fashion. This sort of compliance will greatly increase the hands holding capabilities by being able to mechanically adapt to the objects geometrical features. \\[12pt]
 \indent A single hand will be comprised of three digits, each with two degrees of controlled motion. However, due to flexion compliance it will have many more degrees of freedom. The human hand has four bones for each finger and three for the thumb. The bones go as follows from the tip of the finger to the wrist; distal phalanges, medial phalanges, proximal phalanges and the metacarpals. With the thumb lacking the medial phalanges. Each finger has four degrees of freedom except for the thumb by only having three. Next we will explore all our joints and describe how we plan to resolve them. \\[12pt]
-\indent The first is the opposable thumb, which will have three joints and two degrees of controlled motion. The distal phalanges and metacarpals will be motor driven, while the proximal phalanges will have flexion compliance. The thumb needs to be as universal as its counterpart. Both grip strength and precision tasks paired with the other fingers are important. \\[12pt]
+\indent The first is the opposable thumb, which will have two joints and one degree of controlled motion. The distal phalanges will have flexion compliance, while the metacarpal will be driven by a larger motor to match the cumulative force of the other joints. The thumb needs to be as universal as its counterpart. Both grip strength and precision tasks paired with the other fingers are important. \\[12pt]
 \indent The index finger will have four joints and also two degrees of motion. The distal phalanges will have 90 degree flexion compliance and is dependent on the angle of the medial phalanges. The medial phalanges and proximal phalanges will be each driven by a motor, while the metacarpals will be attached by ball joint and given minimal flexion compliance. \\[12pt]
 \indent The final three fingers will be combined into one larger finger. Since these fingers are usually used for gripping and handling of objects, they will be mounted with larger motors and the larger surface area will provide a better gripping surface. The joint mobility will be similar to the index finger. \\[12pt]
 \indent The last area to cover is the palm. The metacarpals is responsibly for its shape. We have two metacarpals that have flexion compliance and one on the thumb that is driven. This means the palm has the capability of adjusting its shape to a gripped object.
@@ -145,25 +144,16 @@ With the mechanical end of the project providing advantages gripping mechanisms 
 \indent The system will be made up of two cameras that will provide stereo vision. With proper calibration, we may produce a depth map and isolate a human operator from the background. Once isolated, it is a matter of manipulating the image and developing algorithms that may track geometrical features. Libraries such as OpenCV already provide most of these features in languages such as Python and C++. \\[12pt]
 \indent The readings from the camera may be further improved by adding a layer of machine decision making. Certain filters for noise reduction are certainly necessary, however we may also include pre-programmed operations that may assist the human and become an extension of him. For instance, we may limit the velocity of fingers to reduce abrupt movements in certain situations or remember the gripping position for a certain object. This way the operator carries out the general movement required of the robot and the robot decides on the precise movements that may be difficult for the user to control. 
 
-\subsection{Electronics}
+\subsection{Electronics and Actuating}
 
-The entire vision system will be run on the Raspberry pi.
+Since the image signals from two cameras have to be processed in real-time it is important to consider a capable computer. We decided that the entire Vision System will be run on Raspberry Pi 3 Model B microcomputer. This device possesses a quad-core 64bit processor and 1GB RAM, hence is capable of performing desired operations. Further reassurance of its capabilities is the many camera modules and OpenCV projects already developed for the Raspberry.\\[12pt]
+\indent The robotic fingers will be actuated by six servomotors controlled by an Arduino Uno R3 attached to the hand. The Arduino Uno R3 has 14 digital input/output pins (of which 6 can be used as PWM outputs). The wireless connection between the Raspberry Pi 3 B and the Arduino will be implemented with the use of a Bluetooth protocol. The Raspberry has a built-in Bluetooth module and Arduino can be easily extended with a HC-0x series Bluetooth module.\\[12pt] 
+\indent	The Arduino controller and motors will be energized by an individual power supply with a voltage stabilizer. The Raspberry Pi will be energized by a set of 18650 cells through a voltage stabilizer.
 
-Parameter overview
 
-It will communicate with an Arduino which is attached to the hand. The Arduino will control the motors.
 
-Motor Types (servo, DC plus worm gear etc) 
 
-Motor drivers.
 
-Raspberry pi and Arduino communication.
-
-Mechanical hand power supply (both battery and mains)
-
-Raspberry pi power supply (both options)
-
-Force sensors
 
 
 

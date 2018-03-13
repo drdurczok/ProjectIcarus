@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.1.15)  12 MAR 2018 10:15
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.1.15)  13 MAR 2018 20:44
 entering extended mode
 **./DOC.tex
 (DOC.tex
@@ -244,95 +244,95 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 <IMG/Bebionic_V2_Hand.png, id=17, 1027.84pt x 521.95pt>
 File: IMG/Bebionic_V2_Hand.png Graphic file (type png)
 <use IMG/Bebionic_V2_Hand.png>
-Package pdftex.def Info: IMG/Bebionic_V2_Hand.png  used on input line 67. on in
-put line 67.
+Package pdftex.def Info: IMG/Bebionic_V2_Hand.png  used on input line 66. on in
+put line 66.
 Package pdftex.def Info: Requested size: 227.62204pt x 115.58595pt on input lin
-e 67.
+e 66.
 <IMG/fingerMech2.png, id=18, 499.11469pt x 191.21437pt>
 File: IMG/fingerMech2.png Graphic file (type png)
 <use IMG/fingerMech2.png>
-Package pdftex.def Info: IMG/fingerMech2.png  used on input line 74. on input l
-ine 74.
+Package pdftex.def Info: IMG/fingerMech2.png  used on input line 73. on input l
+ine 73.
 Package pdftex.def Info: Requested size: 273.14922pt x 104.64886pt on input lin
-e 74.
+e 73.
  [2 <./IMG/Bebionic_V2_Hand.png>]
 <IMG/fingerMech.jpg, id=24, 853.1875pt x 945.5325pt>
 File: IMG/fingerMech.jpg Graphic file (type jpg)
 <use IMG/fingerMech.jpg>
-Package pdftex.def Info: IMG/fingerMech.jpg  used on input line 82. on input li
-ne 82.
+Package pdftex.def Info: IMG/fingerMech.jpg  used on input line 81. on input li
+ne 81.
 Package pdftex.def Info: Requested size: 136.5746pt x 151.346pt on input line 8
-2.
+1.
 <IMG/stringMech.jpg, id=25, 5203.44pt x 3468.96pt>
 File: IMG/stringMech.jpg Graphic file (type jpg)
 <use IMG/stringMech.jpg>
-Package pdftex.def Info: IMG/stringMech.jpg  used on input line 90. on input li
-ne 90.
+Package pdftex.def Info: IMG/stringMech.jpg  used on input line 89. on input li
+ne 89.
 Package pdftex.def Info: Requested size: 136.5746pt x 91.04303pt on input line 
-90.
+89.
 
 [3 <./IMG/fingerMech2.png> <./IMG/fingerMech.jpg> <./IMG/stringMech.jpg>]
 <IMG/airMuscle.jpg, id=30, 378.41376pt x 299.1175pt>
 File: IMG/airMuscle.jpg Graphic file (type jpg)
 <use IMG/airMuscle.jpg>
-Package pdftex.def Info: IMG/airMuscle.jpg  used on input line 98. on input lin
-e 98.
+Package pdftex.def Info: IMG/airMuscle.jpg  used on input line 97. on input lin
+e 97.
 Package pdftex.def Info: Requested size: 182.09485pt x 143.93533pt on input lin
-e 98.
+e 97.
 <IMG/HandSens.png, id=31, 275.0275pt x 184.69pt>
 File: IMG/HandSens.png Graphic file (type png)
 <use IMG/HandSens.png>
-Package pdftex.def Info: IMG/HandSens.png  used on input line 110. on input lin
-e 110.
+Package pdftex.def Info: IMG/HandSens.png  used on input line 109. on input lin
+e 109.
 Package pdftex.def Info: Requested size: 227.62204pt x 152.86147pt on input lin
-e 110.
+e 109.
 
 [4 <./IMG/airMuscle.jpg> <./IMG/HandSens.png>]
 <IMG/HandSens02.png, id=36, 1329.96875pt x 783.92876pt>
 File: IMG/HandSens02.png Graphic file (type png)
 <use IMG/HandSens02.png>
-Package pdftex.def Info: IMG/HandSens02.png  used on input line 120. on input l
-ine 120.
+Package pdftex.def Info: IMG/HandSens02.png  used on input line 119. on input l
+ine 119.
 Package pdftex.def Info: Requested size: 227.62204pt x 134.16325pt on input lin
-e 120.
+e 119.
  [5 <./IMG/HandSens02.png (PNG copy)>] [6] [7]
-Underfull \hbox (badness 10000) in paragraph at lines 178--179
+Underfull \hbox (badness 10000) in paragraph at lines 168--169
 []\OT1/cmr/m/n/10 SOLIDWORKS. Re-trieved from $\OT1/cmtt/m/n/10 http : / / blog
 s . solidworks . com / tech / 2016 / 08 /
  []
 
 
-Underfull \hbox (badness 3049) in paragraph at lines 181--182
+Underfull \hbox (badness 3049) in paragraph at lines 171--172
 []\OT1/cmr/m/n/10 Kinect. Re-trieved from $\OT1/cmtt/m/n/10 https : / / www . j
 ameco . com / jameco / workshop / howitworks / xboxkinect .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 182--183
+Underfull \hbox (badness 10000) in paragraph at lines 172--173
 []\OT1/cmr/m/n/10 DIGITS. Re-trieved from $\OT1/cmtt/m/n/10 https : / / spectru
 m . ieee . org / video / consumer-[]electronics /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 184--185
+Underfull \hbox (badness 10000) in paragraph at lines 174--175
 []\OT1/cmr/m/n/10 Brandon Treece ,Vi-sion-Sys-tems De-sign. Re-trieved from $\O
 T1/cmtt/m/n/10 https : / /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 184--185
+Underfull \hbox (badness 10000) in paragraph at lines 174--175
 \OT1/cmtt/m/n/10 www . vision-[]systems . com / articles / print / volume-[]22 
 / issue-[]8 / features /
  []
 
 
-Underfull \hbox (badness 6493) in paragraph at lines 186--187
+Underfull \hbox (badness 6493) in paragraph at lines 176--177
 []\OT1/cmr/m/n/10 APUs vs FP-GAs. Re-trieved from $\OT1/cmtt/m/n/10 http : / / 
 www . electronicdesign . com / microprocessors /
  []
 
 
-Underfull \hbox (badness 7504) in paragraph at lines 187--188
+Underfull \hbox (badness 7504) in paragraph at lines 177--178
 []\OT1/cmr/m/n/10 Intel FPGA SDK for OpenCL. Re-trieved from $\OT1/cmtt/m/n/10 
 https : / / www . altera . com / en _ US / pdfs /
  []
@@ -354,7 +354,7 @@ iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9
 /fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
 e1/public/amsfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publi
 c/amsfonts/cm/cmtt10.pfb>
-Output written on DOC.pdf (9 pages, 6492750 bytes).
+Output written on DOC.pdf (9 pages, 6490224 bytes).
 PDF statistics:
  78 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
