@@ -15,7 +15,7 @@ tar -xvzf 3.4.1.tar.gz
 wget https://github.com/opencv/opencv_contrib/archive/3.4.1.zip
 unzip 3.4.1.zip
 cd opencv-3.4.1
-***Incase of error ImportError: /usr/local/lib/libopencv_freetype.so.3.2: undefined symbol: hb_shape execute the following code
+#Incase of error ImportError: /usr/local/lib/libopencv_freetype.so.3.2: undefined symbol: hb_shape execute the following code
 sed -i 's/${freetype2_LIBRARIES} ${harfbuzz_LIBRARIES}/${FREETYPE_LIBRARIES} ${HARFBUZZ_LIBRARIES}/g' ../opencv_contrib-3.4.1/modules/freetype/CMakeLists.txt
 mkdir build
 cd build
