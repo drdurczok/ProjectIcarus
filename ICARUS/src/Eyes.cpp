@@ -1,4 +1,4 @@
-#include "Eyes.h"
+#include "../include/Eyes.h"
 
 Eyes::Eyes()
 {
