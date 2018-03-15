@@ -6,5 +6,5 @@
 \contentsline {subsection}{\numberline {1.5}Control}{5}
 \contentsline {section}{\numberline {2}Concept}{6}
 \contentsline {subsection}{\numberline {2.1}Mechanics}{6}
-\contentsline {subsection}{\numberline {2.2}Sensors}{6}
-\contentsline {subsection}{\numberline {2.3}Control}{6}
+\contentsline {subsection}{\numberline {2.2}Control and Sensors}{6}
+\contentsline {subsection}{\numberline {2.3}Electronics and Actuating}{7}
