@@ -1,0 +1,38 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+PKG[0]="festival"
+PKG[1]="alsa-base"
+PKG[2]="libsphinxbase3"
+PKG[3]="libpocketsphinx3"
+PKG[4]="pocketsphinx-doc"
+#PKG[]=""
+
+echo "Checking if all packages are installed..."
+
+i=0
+n=0
+while [ $i -lt ${#PKG[@]} ]; do
+	if [ $(dpkg-query -W -f='${Status}' ${PKG[$i]} 2>/dev/null | grep -c "ok installed") -eq 0 ]
+	then
+		echo -e "${RED}${PKG[$i]}${NC}: not found"
+		INSTALL[n]=${PKG[$i]}
+		n+=1
+	else
+		echo -en "${GREEN}${PKG[$i]}${NC}: "
+		dpkg-query -W -f='${Status} ${Version}\n' ${PKG[$i]} 
+	fi
+	let i+=1
+done
+
+n=0
+while [ $n -lt ${#INSTALL[@]} ]; do
+	echo "Install ${INSTALL[$n]}"
+	apt-get install ${INSTALL[$n]};
+	n+=1
+done
+
