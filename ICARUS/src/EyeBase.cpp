@@ -21,7 +21,7 @@ bool EyeBase::loadCameraCalibration(string name, Mat& cameraMatrix, Mat& distanc
                 double read = 0.0f;
                 inStream >> read;
                 cameraMatrix.at<double>(r,c) = read;
-                cout << cameraMatrix.at<double>(r,c) << "\n";
+                //cout << cameraMatrix.at<double>(r,c) << "\n";
             }
         }
         //Distance Coefficients
@@ -35,7 +35,7 @@ bool EyeBase::loadCameraCalibration(string name, Mat& cameraMatrix, Mat& distanc
                 double read = 0.0f;
                 inStream >> read;
                 distanceCoefficient.at<double>(r,c) = read;
-                cout << distanceCoefficient.at<double>(r,c) << "\n";
+                //cout << distanceCoefficient.at<double>(r,c) << "\n";
             }
         }
         inStream.close();

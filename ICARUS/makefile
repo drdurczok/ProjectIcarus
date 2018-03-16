@@ -1,7 +1,7 @@
 CC = g++
 TARGET = icarus
 CFLAGS = -Wall
-LINKER = g++ -o
+LINKER = g++ -o 
 OPENCV = `pkg-config opencv --cflags` `pkg-config opencv --libs`
 
 
