@@ -9,6 +9,8 @@ class CalibrationEye: public EyeBase
         CalibrationEye();
         unsigned calibration(unsigned,bool,bool,unsigned);
         unsigned calibrationFromFiles(unsigned);
+        unsigned stereoCalibration(int);
+
 
     private:
         void cameraCalibration(vector<Mat>, Size, float, Mat&, Mat&);
@@ -16,7 +18,9 @@ class CalibrationEye: public EyeBase
         void getChessboardCorners(vector<Mat>, vector<vector<Point2f>>&, bool);
 
         const float calibrationSquareDimension = 0.026f; //meters
-        const Size chessboardDimensions = Size(6,9);
+        const unsigned board_height = 6;
+        const unsigned board_width = 9;
+        const Size chessboardDimensions = Size(board_height, board_width);
 };
 
 #endif // CALIBRATIONEYE_H

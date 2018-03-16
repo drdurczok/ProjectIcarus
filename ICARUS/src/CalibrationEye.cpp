@@ -97,8 +97,8 @@ unsigned CalibrationEye::calibration(unsigned cam_num = 0, bool saveData = true,
                     if(saveData == 1) {
                         cam.name.str("");
                         cam.nameOverlay.str("");
-                        cam.name << "../CalibrationPictures/Cam01/CAM01_calib" << cam.i << ".jpg";
-                        cam.nameOverlay << "../CalibrationPictures/CalibrationPicturesOverlay/CAM01_calib" << cam.i << "_overlay.jpg";
+                        cam.name << "../../CalibrationPictures/Cam0" << cam_num << "/CAM0" << cam_num << "_calib" << cam.i << ".jpg";
+                        cam.nameOverlay << "../../CalibrationPictures/CalibrationPicturesOverlay/CAM0" << cam_num << "_calib" << cam.i << "_overlay.jpg";
                         cam.i++;
                         imwrite(cam.name.str(),temp);
                         imwrite(cam.nameOverlay.str(),cam.drawToFrame);
@@ -111,8 +111,8 @@ unsigned CalibrationEye::calibration(unsigned cam_num = 0, bool saveData = true,
                         if(saveData == 1) {
                             cam2.name.str("");
                             cam2.nameOverlay.str("");
-                            cam2.name << "../CalibrationPictures/Cam02/CAM02_calib" << cam2.i << ".jpg";
-                            cam2.nameOverlay << "../CalibrationPictures/CalibrationPicturesOverlay/CAM02_calib" << cam2.i << "_overlay.jpg";
+                            cam2.name << "../../CalibrationPictures/Cam02/CAM02_calib" << cam2.i << ".jpg";
+                            cam2.nameOverlay << "../../CalibrationPictures/CalibrationPicturesOverlay/CAM02_calib" << cam2.i << "_overlay.jpg";
                             cam2.i++;
                             imwrite(cam2.name.str(),temp2);
                             imwrite(cam2.nameOverlay.str(),cam2.drawToFrame);
@@ -123,12 +123,14 @@ unsigned CalibrationEye::calibration(unsigned cam_num = 0, bool saveData = true,
             case 13:    //enter
                 //start calibration
                 if(cam.savedImages.size() > 15){
+                    cam.name.str("");
+                    cam.name << "../CameraCalibration0" << cam_num << std::endl;
                     cameraCalibration(cam.savedImages, chessboardDimensions, calibrationSquareDimension, cam.cameraMatrix, cam.distanceCoefficients);
-                    saveCameraCalibration("CameraCalibration01", cam.cameraMatrix, cam.distanceCoefficients);
+                    saveCameraCalibration(cam.name.str(), cam.cameraMatrix, cam.distanceCoefficients);
 
                      if (dual == 1) {
                         cameraCalibration(cam2.savedImages, chessboardDimensions, calibrationSquareDimension, cam2.cameraMatrix, cam2.distanceCoefficients);
-                        saveCameraCalibration("CameraCalibration02", cam2.cameraMatrix, cam2.distanceCoefficients);
+                        saveCameraCalibration("../CameraCalibration02", cam2.cameraMatrix, cam2.distanceCoefficients);
                      }
                 }
                 break;
@@ -145,7 +147,7 @@ unsigned CalibrationEye::calibrationFromFiles(unsigned u){
 
     for(int i=0; i<500; i++){
         cam.name.str("");
-        cam.name << "../CalibrationPictures/Cam0" << u << "/CAM0" << u << "_calib" << i << ".jpg";
+        cam.name << "../../CalibrationPictures/Cam0" << u << "/CAM0" << u << "_calib" << i << ".jpg";
         ifstream file(cam.name.str());
         if(file.good()){
             Mat temp = imread(cam.name.str());
@@ -163,8 +165,102 @@ unsigned CalibrationEye::calibrationFromFiles(unsigned u){
     return 0;
 }
 
+unsigned CalibrationEye::stereoCalibration(int num_imgs) {
+    vector< vector< Point3f > > object_points;
+    vector< vector< Point2f > > imagePoints1, imagePoints2;
+    vector< Point2f > corners1, corners2;
+    vector< vector< Point2f > > left_img_points, right_img_points;
+    
+    Mat img1, img2, gray1, gray2;
 
+    ostringstream nameR, nameL;
 
+    for (int i = 1; i <= num_imgs; i++) {
+        char left_img[100], right_img[100];
+        nameL.str("");
+        nameL << "../../CalibrationPictures/Cam01/CAM01_calib" << i << ".jpg";
+        nameR.str("");
+        nameR << "../../CalibrationPictures/Cam02/CAM02_calib" << i << ".jpg";
+        img1 = imread(nameL.str(), CV_LOAD_IMAGE_COLOR);
+        img2 = imread(nameR.str(), CV_LOAD_IMAGE_COLOR);
+        cvtColor(img1, gray1, CV_BGR2GRAY);
+        cvtColor(img2, gray2, CV_BGR2GRAY);
+
+        bool found1 = false, found2 = false;
+
+        found1 = cv::findChessboardCorners(img1, chessboardDimensions, corners1, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        found2 = cv::findChessboardCorners(img2, chessboardDimensions, corners2, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+
+        if (found1) {
+            cv::cornerSubPix(gray1, corners1, cv::Size(5, 5), cv::Size(-1, -1),
+            cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+            cv::drawChessboardCorners(gray1, chessboardDimensions, corners1, found1);
+        }
+        if (found2) {
+            cv::cornerSubPix(gray2, corners2, cv::Size(5, 5), cv::Size(-1, -1),
+            cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+            cv::drawChessboardCorners(gray2, chessboardDimensions, corners2, found2);
+        }
+
+        vector< Point3f > obj;
+        for (int i = 0; i < board_height; i++)
+            for (int j = 0; j < board_width; j++)
+                obj.push_back(Point3f((float)j * calibrationSquareDimension, (float)i * calibrationSquareDimension, 0));
+
+        if (found1 && found2) {
+              cout << i << ". Found corners!" << endl;
+              imagePoints1.push_back(corners1);
+              imagePoints2.push_back(corners2);
+              object_points.push_back(obj);
+        }
+    }
+    for (int i = 0; i < imagePoints1.size(); i++) {
+    vector< Point2f > v1, v2;
+        for (int j = 0; j < imagePoints1[i].size(); j++) {
+            v1.push_back(Point2f((double)imagePoints1[i][j].x, (double)imagePoints1[i][j].y));
+            v2.push_back(Point2f((double)imagePoints2[i][j].x, (double)imagePoints2[i][j].y));
+        }
+        left_img_points.push_back(v1);
+        right_img_points.push_back(v2);
+    }
+
+    Mat distanceCoefficientsR, distanceCoefficientsL;
+    Mat cameraMatrixR, cameraMatrixL;
+
+    loadCameraCalibration("../CameraCalibration01", cameraMatrixL, distanceCoefficientsL);
+    loadCameraCalibration("../CameraCalibration02", cameraMatrixR, distanceCoefficientsR);
+
+    Mat R, T, E, F;
+
+    stereoCalibrate(object_points, left_img_points, right_img_points, cameraMatrixL, distanceCoefficientsL, cameraMatrixR, cameraMatrixL, img1.size(), R, T, E, F);
+
+    FileStorage fs1("../CalibrationParam.xml", FileStorage::WRITE);
+    fs1 << "K1" << cameraMatrixL;
+    fs1 << "K2" << cameraMatrixR;
+    fs1 << "D1" << distanceCoefficientsL;
+    fs1 << "D2" << distanceCoefficientsR;
+    fs1 << "R" << R;
+    fs1 << "T" << T;
+    fs1 << "E" << E;
+    fs1 << "F" << F;
+  
+    std::cout << "Done Calibration" << std::endl;
+
+    std::cout << "Starting Rectification" << std::endl;
+
+    Mat R1, R2, P1, P2, Q;
+    stereoRectify(cameraMatrixL, distanceCoefficientsL, cameraMatrixR, distanceCoefficientsR, img1.size(), R, T, R1, R2, P1, P2, Q);
+
+    fs1 << "R1" << R1;
+    fs1 << "R2" << R2;
+    fs1 << "P1" << P1;
+    fs1 << "P2" << P2;
+    fs1 << "Q" << Q;
+
+    std::cout << "Done Rectification" << std::endl;
+
+    return 0;
+}
 
 
 
