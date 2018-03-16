@@ -1,3 +1,7 @@
+# ARIES
+
+Installing SpinxBase, PocketSphinx, Alsa, Festival and Speech Tools
+
 ```bash
 #SphinxBase install
 sudo apt-get install bison swig
