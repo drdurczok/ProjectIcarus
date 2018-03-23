@@ -124,7 +124,7 @@ unsigned CalibrationEye::calibration(unsigned cam_num = 0, bool saveData = true,
                 //start calibration
                 if(cam.savedImages.size() > 15){
                     cam.name.str("");
-                    cam.name << "../CameraCalibration0" << cam_num << std::endl;
+                    cam.name << "../CameraCalibration0" << cam_num;
                     cameraCalibration(cam.savedImages, chessboardDimensions, calibrationSquareDimension, cam.cameraMatrix, cam.distanceCoefficients);
                     saveCameraCalibration(cam.name.str(), cam.cameraMatrix, cam.distanceCoefficients);
 
