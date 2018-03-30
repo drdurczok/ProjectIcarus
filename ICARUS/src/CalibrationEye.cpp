@@ -140,6 +140,7 @@ unsigned CalibrationEye::calibration(unsigned cam_num = 0, bool saveData = true,
                 break;
         }
     }
+    return 0;
 }
 
 unsigned CalibrationEye::calibrationFromFiles(unsigned u){
@@ -167,22 +168,20 @@ unsigned CalibrationEye::calibrationFromFiles(unsigned u){
 
 unsigned CalibrationEye::stereoCalibration(int num_imgs) {
     vector< vector< Point3f > > object_points;
-    vector< vector< Point2f > > imagePoints1, imagePoints2;
     vector< Point2f > corners1, corners2;
-    vector< vector< Point2f > > left_img_points, right_img_points;
+    vector< vector< Point2f > > imgPoints[2], imgPoints_n[2];
     
     Mat img1, img2, gray1, gray2;
 
-    ostringstream nameR, nameL;
+    ostringstream name[2];
 
     for (int i = 1; i <= num_imgs; i++) {
-        char left_img[100], right_img[100];
-        nameL.str("");
-        nameL << "../../CalibrationPictures/Cam01/CAM01_calib" << i << ".jpg";
-        nameR.str("");
-        nameR << "../../CalibrationPictures/Cam02/CAM02_calib" << i << ".jpg";
-        img1 = imread(nameL.str(), CV_LOAD_IMAGE_COLOR);
-        img2 = imread(nameR.str(), CV_LOAD_IMAGE_COLOR);
+        name[0].str("");
+        name[0] << "../../CalibrationPictures/Cam01/CAM01_calib" << i << ".jpg";
+        name[1].str("");
+        name[1] << "../../CalibrationPictures/Cam02/CAM02_calib" << i << ".jpg";
+        img1 = imread(name[0].str(), CV_LOAD_IMAGE_COLOR);
+        img2 = imread(name[1].str(), CV_LOAD_IMAGE_COLOR);
         cvtColor(img1, gray1, CV_BGR2GRAY);
         cvtColor(img2, gray2, CV_BGR2GRAY);
 
@@ -203,42 +202,42 @@ unsigned CalibrationEye::stereoCalibration(int num_imgs) {
         }
 
         vector< Point3f > obj;
-        for (int i = 0; i < board_height; i++)
-            for (int j = 0; j < board_width; j++)
+        for (unsigned i = 0; i < board_height; i++)
+            for (unsigned j = 0; j < board_width; j++)
                 obj.push_back(Point3f((float)j * calibrationSquareDimension, (float)i * calibrationSquareDimension, 0));
 
         if (found1 && found2) {
               cout << i << ". Found corners!" << endl;
-              imagePoints1.push_back(corners1);
-              imagePoints2.push_back(corners2);
+              imgPoints[0].push_back(corners1);
+              imgPoints[1].push_back(corners2);
               object_points.push_back(obj);
         }
     }
-    for (int i = 0; i < imagePoints1.size(); i++) {
+    for (unsigned i = 0; i < imgPoints[0].size(); i++) {
     vector< Point2f > v1, v2;
-        for (int j = 0; j < imagePoints1[i].size(); j++) {
-            v1.push_back(Point2f((double)imagePoints1[i][j].x, (double)imagePoints1[i][j].y));
-            v2.push_back(Point2f((double)imagePoints2[i][j].x, (double)imagePoints2[i][j].y));
+        for (unsigned j = 0; j < imgPoints[0][i].size(); j++) {
+            v1.push_back(Point2f((double)imgPoints[0][i][j].x, (double)imgPoints[0][i][j].y));
+            v2.push_back(Point2f((double)imgPoints[1][i][j].x, (double)imgPoints[1][i][j].y));
         }
-        left_img_points.push_back(v1);
-        right_img_points.push_back(v2);
+        imgPoints_n[0].push_back(v1);
+        imgPoints_n[1].push_back(v2);
     }
 
-    Mat distanceCoefficientsR, distanceCoefficientsL;
-    Mat cameraMatrixR, cameraMatrixL;
+    Mat distanceCoefficients[2];
+    Mat cameraMatrix[2];
 
-    loadCameraCalibration("../CameraCalibration01", cameraMatrixL, distanceCoefficientsL);
-    loadCameraCalibration("../CameraCalibration02", cameraMatrixR, distanceCoefficientsR);
+    loadCameraCalibration("../CameraCalibration01", cameraMatrix[0], distanceCoefficients[0]);
+    loadCameraCalibration("../CameraCalibration02", cameraMatrix[1], distanceCoefficients[1]);
 
     Mat R, T, E, F;
 
-    stereoCalibrate(object_points, left_img_points, right_img_points, cameraMatrixL, distanceCoefficientsL, cameraMatrixR, cameraMatrixL, img1.size(), R, T, E, F);
+    stereoCalibrate(object_points, imgPoints_n[0], imgPoints_n[1], cameraMatrix[0], distanceCoefficients[0], cameraMatrix[1], distanceCoefficients[1], img1.size(), R, T, E, F);
 
     FileStorage fs1("../CalibrationParam.xml", FileStorage::WRITE);
-    fs1 << "K1" << cameraMatrixL;
-    fs1 << "K2" << cameraMatrixR;
-    fs1 << "D1" << distanceCoefficientsL;
-    fs1 << "D2" << distanceCoefficientsR;
+    fs1 << "K1" << cameraMatrix[0];
+    fs1 << "K2" << cameraMatrix[1];
+    fs1 << "D1" << distanceCoefficients[0];
+    fs1 << "D2" << distanceCoefficients[1];
     fs1 << "R" << R;
     fs1 << "T" << T;
     fs1 << "E" << E;
@@ -249,15 +248,53 @@ unsigned CalibrationEye::stereoCalibration(int num_imgs) {
     std::cout << "Starting Rectification" << std::endl;
 
     Mat R1, R2, P1, P2, Q;
-    stereoRectify(cameraMatrixL, distanceCoefficientsL, cameraMatrixR, distanceCoefficientsR, img1.size(), R, T, R1, R2, P1, P2, Q);
-
-    fs1 << "R1" << R1;
-    fs1 << "R2" << R2;
-    fs1 << "P1" << P1;
-    fs1 << "P2" << P2;
-    fs1 << "Q" << Q;
+    stereoRectify(cameraMatrix[0], distanceCoefficients[0], cameraMatrix[1], distanceCoefficients[1], img1.size(), R, T, R1, R2, P1, P2, Q);
+    
+    if( fs1.isOpened() ) {
+        fs1 << "R1" << R1;
+        fs1 << "R2" << R2;
+        fs1 << "P1" << P1;
+        fs1 << "P2" << P2;
+        fs1 << "Q" << Q;
+        fs1.release();
+    }
+    else
+        cout << "Error: can not save the extrinsic parameters\n";
 
     std::cout << "Done Rectification" << std::endl;
+
+    // CALIBRATION QUALITY CHECK
+    // because the output fundamental matrix implicitly
+    // includes all the output information,
+    // we can check the quality of calibration using the
+    // epipolar geometry constraint: m2^t*F*m1=0
+    std::cout << "Checking Quality of Calibration" << std::endl;
+
+    double err = 0;
+    int npoints = 0;
+    vector<Vec3f> lines[2];
+    unsigned nimages = 2;
+    for(unsigned i = 0; i < nimages; i++ )
+    {
+        int npt = (int)imgPoints_n[0][i].size();
+        Mat imgpt[2];
+        for(unsigned k = 0; k < 2; k++ )
+        {
+            imgpt[k] = Mat(imgPoints_n[k][i]);
+            undistortPoints(imgpt[k], imgpt[k], cameraMatrix[k], distanceCoefficients[k], Mat(), cameraMatrix[k]);
+            computeCorrespondEpilines(imgpt[k], k+1, F, lines[k]);
+        }
+        for(int j = 0; j < npt; j++ )
+        {
+            double errij = fabs(imgPoints_n[0][i][j].x*lines[1][j][0] +
+                                imgPoints_n[0][i][j].y*lines[1][j][1] + lines[1][j][2]) +
+                           fabs(imgPoints_n[1][i][j].x*lines[0][j][0] +
+                                imgPoints_n[1][i][j].y*lines[0][j][1] + lines[0][j][2]);
+            err += errij;
+        }
+        npoints += npt;
+    }
+    cout << "average epipolar err = " << err/npoints << endl;
 
     return 0;
 }

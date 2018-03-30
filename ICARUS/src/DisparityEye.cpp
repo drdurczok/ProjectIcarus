@@ -14,8 +14,8 @@ void DisparityEye::depthMap(){
     VideoCapture Rcam(1);
     VideoCapture Lcam(2);
 
-    Mat LeftImgOrg;
-    Mat RightImgOrg;
+    Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+    Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
     Mat LeftImgGrey;
     Mat RightImgGrey;
 
@@ -23,16 +23,28 @@ void DisparityEye::depthMap(){
 
     char charKey = 0;
 
-    Mat distanceCoefficients01;
-    Mat cameraMatrix01;
-    Mat distanceCoefficients02;
-    Mat cameraMatrix02;
+    Mat distanceCoefficients[2];
+    Mat cameraMatrix[2], R[2], P[2];
+    Mat rmap[2][2];
 
-    loadCameraCalibration("../CameraCalibration01", cameraMatrix01, distanceCoefficients01);
-    loadCameraCalibration("../CameraCalibration02", cameraMatrix02, distanceCoefficients02);
+    FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
+    fs1["K1"] >> cameraMatrix[0];
+    fs1["K2"] >> cameraMatrix[1];
+    fs1["D1"] >> distanceCoefficients[0];
+    fs1["D2"] >> distanceCoefficients[1];
+    fs1["R1"] >> R[0];
+    fs1["R2"] >> R[1];
+    fs1["P1"] >> P[0];
+    fs1["P2"] >> P[1];
+    fs1.release();
 
-	Mat undistorted01;
-	Mat undistorted02;
+	initUndistortRectifyMap(cameraMatrix[0], distanceCoefficients[0], R[0], P[0], LeftImgOrg.size(), CV_16SC2, rmap[0][0], rmap[0][1]);
+	initUndistortRectifyMap(cameraMatrix[1], distanceCoefficients[1], R[1], P[1], RightImgOrg.size(), CV_16SC2, rmap[1][0], rmap[1][1]);
+    
+    //loadCameraCalibration("../CameraCalibration01", cameraMatrix[0], distanceCoefficients[0]);
+    //loadCameraCalibration("../CameraCalibration02", cameraMatrix[1], distanceCoefficients[1]);
+
+	Mat undistorted[2];
 
 
 	int minDisparity = 0;			//Minimum possible disparity value. Normally, it is zero but sometimes rectification algorithms can shift images, so this parameter needs to be adjusted accordingly.
@@ -46,8 +58,7 @@ void DisparityEye::depthMap(){
     int speckleWindowSize = 0;		//Maximum size of smooth disparity regions to consider their noise speckles and invalidate. Set it to 0 to disable speckle filtering. Otherwise, set it somewhere in the 50-200 range.
     int speckleRange = 0;			//Maximum disparity variation within each connected component. If you do speckle filtering, set the parameter to a positive value, it will be implicitly multiplied by 16. Normally, 1 or 2 is good enough.
     bool fullDP = false;			//False - single pass, 5 directions, Trues - 8 directions
-
-    int state = 0;
+	
 
 	while (charKey != 27 && Rcam.isOpened() && Lcam.isOpened()) {		// until the Esc key is pressed or webcam connection is lost
 		if (!Rcam.read(RightImgOrg) || !Lcam.read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
@@ -55,38 +66,23 @@ void DisparityEye::depthMap(){
 			break;
 		}
 
-		charKey = waitKey(1);			// delay (in ms) and get key press, if any
-		GUI(minDisparity, numDisparities, SADWindowSize, P1, P2, disp12MaxDiff, preFilterCap, uniquenessRatio, speckleWindowSize, speckleRange, fullDP, charKey, state);
+		charKey = waitKey(1);			// delay (in ms) and get key press, if any        
 
-    	undistort(LeftImgOrg, undistorted01, cameraMatrix01, distanceCoefficients01);
-    	undistort(RightImgOrg, undistorted02, cameraMatrix02, distanceCoefficients02);
+        remap(LeftImgOrg, undistorted[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
+        remap(RightImgOrg , undistorted[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
 
-        cvtColor(undistorted01, LeftImgGrey, CV_BGR2GRAY);
-        cvtColor(undistorted02, RightImgGrey, CV_BGR2GRAY);
-        
-        /*
-        Ptr<StereoBM> sbm = StereoBM::create(16,21);
-        sbm->setDisp12MaxDiff(a);			//Maximum allowed difference (in integer pixel units) in the left-right disparity check
-        sbm->setSpeckleRange(b);			//Maximum disparity variation within each connected component
-        sbm->setSpeckleWindowSize(c);		//Maximum size of smooth disparity regions to consider their noise speckles and invalidate
-        sbm->setUniquenessRatio(d);			//Margin in percentage by which the best (minimum) computed cost function value should “win” the second best value to consider the found match correct. Normally, a value within the 5-15 range is good enough
-        sbm->setTextureThreshold(e);
-        sbm->setMinDisparity(f);			//Minimum possible disparity value
-        sbm->setPreFilterCap(g);			//[1..63] Truncation value for the prefiltered image pixels
-        sbm->setPreFilterSize(h);			//[5..255]
-        sbm->compute(LeftImgGrey,RightImgGrey,disp);
-        normalize(disp, disp8, 0, 255, CV_MINMAX, CV_8U);
-*/
+    	//undistort(LeftImgOrg, undistorted[0], cameraMatrix[0], distanceCoefficients[0]);
+    	//undistort(RightImgOrg, undistorted[1], cameraMatrix[1], distanceCoefficients[1]);
 
         Ptr<StereoSGBM> sgbm = StereoSGBM::create(minDisparity, numDisparities, SADWindowSize,
 												               P1, P2, disp12MaxDiff, preFilterCap,uniquenessRatio,
 												               speckleWindowSize, speckleRange, fullDP);
-		sgbm->compute(LeftImgGrey,RightImgGrey, disp);
+		sgbm->compute(undistorted[0],undistorted[1], disp);
         normalize(disp, disp8, 0, 255, CV_MINMAX, CV_8U);
 
 
-        imshow("left", LeftImgOrg);
-        imshow("right", RightImgOrg);
+        imshow("left", undistorted[0]);
+        imshow("right", undistorted[1]);
         imshow("disp", disp8);
 
         //charKey = waitKey(1);			// delay (in ms) and get key press, if any
@@ -189,7 +185,7 @@ void DisparityEye::LoadBar(int min, int max, int &val, int steps){
 	else if (val < min) val = min;
 	int progress = (val-min)/interval;
 
-	for (unsigned i = 0; i<progress; i++){
+	for (int i = 0; i<progress; i++){
 		std::cout << "|";
 	}	
 

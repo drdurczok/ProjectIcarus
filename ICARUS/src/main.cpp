@@ -7,21 +7,21 @@ using namespace std;
 
 int main( int argc, const char** argv)
 {
-    bool dualCameras = false;
+    bool dualCameras = true;
     bool saveData = true;
 
     CalibrationEye calib;
     //calib.calibration(1,saveData,dualCameras,0);
-    //calib.calibrationFromFiles(2);
-    calib.stereoCalibration(19);
+    calib.calibrationFromFiles(2);
+    calib.stereoCalibration(17);
 
     //Eyes sight;
     //sight.undistortImg();
     //sight.recordVideo();
     //sight.depthMap();
     
-    //DisparityEye sight;
-    //sight.depthMap();
+    DisparityEye sight;
+    sight.depthMap();
 
     return 0;
 }
