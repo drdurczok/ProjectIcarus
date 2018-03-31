@@ -2,22 +2,26 @@
 
 CalibrationEye::CalibrationEye()
 {
-
+    cam[1].num = 1;
+    cam[1].title = "LCam";
+    cam[2].num = 2;
+    cam[2].title = "RCam";
 }
 
 unsigned CalibrationEye::dispCamera(unsigned camNum){
-    camera cam;
-    VideoCapture vid(camNum);
-    namedWindow("Cam", CV_WINDOW_AUTOSIZE);
+    cam[camNum].num = camNum;
+    string title = cam[camNum].title;
+    VideoCapture vid(cam[camNum].num);
+    namedWindow(title, CV_WINDOW_AUTOSIZE);
     if(!vid.isOpened()) return 0;
 
     while(true){
-        if(!vid.read(cam.frame)) break;
-        imshow("Cam",cam.frame);
+        if(!vid.read(cam[camNum].frame)) break;
+        imshow(title,cam[camNum].frame);
         char character = waitKey(1000/20);
         if (character == 27) break;
     }
-    cvDestroyWindow("Cam");
+    cvDestroyWindow(title.c_str());
     return 0;
 }
 
@@ -46,6 +50,11 @@ void CalibrationEye::getChessboardCorners(vector<Mat> images, vector<vector<Poin
     }
 }
 
+void CalibrationEye::swapCameras(){
+    cam[1].num = 2;
+    cam[2].num = 1;
+}
+
 void CalibrationEye::cameraCalibration(vector<Mat> calibrationImages, Size boardSize, float squaredEdgeLength, Mat& cameraMatrix, Mat& distanceCoefficients){
     vector<vector<Point2f>> checkerboardImageSpacePoints;
 
@@ -62,93 +71,69 @@ void CalibrationEye::cameraCalibration(vector<Mat> calibrationImages, Size board
     calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVectors, tVectors);
 }
 
-unsigned CalibrationEye::calibration(unsigned cam_num = 0, bool saveData = true, bool dual = false, unsigned picIter = 1){
-    camera cam, cam2;
+unsigned CalibrationEye::calibration(unsigned cam_start = 1, unsigned cam_end = 2, bool saveData = true, unsigned picIter = 1){
+    VideoCapture *vid[cam_end+1-cam_start];
 
-    VideoCapture vid(cam_num);
-    VideoCapture vid2(cam_num+1);
-    if(!vid.isOpened()) return 0;
-
-    namedWindow("Cam", CV_WINDOW_AUTOSIZE);
-    if (dual == 1) namedWindow("Cam2", CV_WINDOW_AUTOSIZE);
+    for(unsigned i=cam_start; i<cam_end+1; i++){
+        vid[i] = new VideoCapture(cam[i].num);
+        if(!vid[i]->isOpened()) {
+            std::cout << "Failed to open camera " << i << std::endl;
+            return 0;
+        }
+        namedWindow(cam[i].title, CV_WINDOW_AUTOSIZE);
+        cam[i].i = picIter;
+    }
 
     int framesPerSecond = 20;
 
-    cam.i = picIter;
-    cam2.i = picIter;
-
     while(true){
-        if(!vid.read(cam.frame)) break;
-
         vector<Vec2f> foundPoints;
         bool found = false;
 
-        found = findChessboardCorners(cam.frame, chessboardDimensions, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
-        cam.frame.copyTo(cam.drawToFrame);
-        drawChessboardCorners(cam.drawToFrame, chessboardDimensions, foundPoints, found);
+        for(unsigned i=cam_start; i<cam_end+1; i++){
+            vid[i]->read(cam[i].frame);
+            found = findChessboardCorners(cam[i].frame, chessboardDimensions, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
+            cam[i].frame.copyTo(cam[i].drawToFrame);
+            drawChessboardCorners(cam[i].drawToFrame, chessboardDimensions, foundPoints, found);
 
-        if(found) imshow("Cam", cam.drawToFrame);
-        else imshow("Cam", cam.frame);
-
-        if (dual == 1) {
-            if(!vid2.read(cam2.frame)) break;
-
-            found = findChessboardCorners(cam2.frame, chessboardDimensions, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
-            cam2.frame.copyTo(cam2.drawToFrame);
-            drawChessboardCorners(cam2.drawToFrame, chessboardDimensions, foundPoints, found);
-
-            if(found) imshow("Cam2", cam2.drawToFrame);
-            else imshow("Cam2", cam2.frame);
+            if(found) imshow(cam[i].title, cam[i].drawToFrame);
+            else imshow(cam[i].title, cam[i].frame);
         }
+        
 
         char character = waitKey(1000/framesPerSecond);
 
         switch(character){
             case ' ':
                 //saving image
-                if(found){
-                    Mat temp;
-                    cam.frame.copyTo(temp);
-                    cam.savedImages.push_back(temp);
-                    if(saveData == 1) {
-                        cam.name.str("");
-                        cam.nameOverlay.str("");
-                        cam.name << "../../CalibrationPictures/Cam0" << cam_num << "/CAM0" << cam_num << "_calib" << cam.i << ".jpg";
-                        cam.nameOverlay << "../../CalibrationPictures/CalibrationPicturesOverlay/CAM0" << cam_num << "_calib" << cam.i << "_overlay.jpg";
-                        cam.i++;
-                        imwrite(cam.name.str(),temp);
-                        imwrite(cam.nameOverlay.str(),cam.drawToFrame);
-                    }
-
-                    if (dual == 1) {
-                        Mat temp2;
-                        cam2.frame.copyTo(temp2);
-                        cam2.savedImages.push_back(temp2);
+                for(unsigned i=cam_start; i<cam_end+1; i++){
+                    if(found){
+                        Mat temp;
+                        cam[i].frame.copyTo(temp);
+                        cam[i].savedImages.push_back(temp);
                         if(saveData == 1) {
-                            cam2.name.str("");
-                            cam2.nameOverlay.str("");
-                            cam2.name << "../../CalibrationPictures/Cam02/CAM02_calib" << cam2.i << ".jpg";
-                            cam2.nameOverlay << "../../CalibrationPictures/CalibrationPicturesOverlay/CAM02_calib" << cam2.i << "_overlay.jpg";
-                            cam2.i++;
-                            imwrite(cam2.name.str(),temp2);
-                            imwrite(cam2.nameOverlay.str(),cam2.drawToFrame);
+                            cam[i].name.str("");
+                            cam[i].nameOverlay.str("");
+                            cam[i].name << "../../CalibrationPictures/Cam0" << cam[i].num << "/CAM0" << cam[i].num << "_calib" << cam[i].i << ".jpg";
+                            cam[i].nameOverlay << "../../CalibrationPictures/CalibrationPicturesOverlay/CAM0" << cam[i].num << "_calib" << cam[i].i << "_overlay.jpg";
+                            cam[i].i++;
+                            imwrite(cam[i].name.str(),temp);
+                            imwrite(cam[i].nameOverlay.str(),cam[i].drawToFrame);
                         }
                     }
                 }
                 break;
             case 13:    //enter
                 //start calibration
-                if(cam.savedImages.size() > 15){
-                    cam.name.str("");
-                    cam.name << "../CameraCalibration0" << cam_num;
-                    cameraCalibration(cam.savedImages, chessboardDimensions, calibrationSquareDimension, cam.cameraMatrix, cam.distanceCoefficients);
-                    saveCameraCalibration(cam.name.str(), cam.cameraMatrix, cam.distanceCoefficients);
+                for(unsigned i=cam_start; i<cam_end+1; i++){
+                    if(cam[i].savedImages.size() > 15){
+                        cam[i].name.str("");
+                        cam[i].name << "../CameraCalibration0" << cam[i].num;
+                        cameraCalibration(cam[i].savedImages, chessboardDimensions, calibrationSquareDimension, cam[i].cameraMatrix, cam[i].distanceCoefficients);
+                        saveCameraCalibration(cam[i].name.str(), cam[i].cameraMatrix, cam[i].distanceCoefficients);
 
-                     if (dual == 1) {
-                        cameraCalibration(cam2.savedImages, chessboardDimensions, calibrationSquareDimension, cam2.cameraMatrix, cam2.distanceCoefficients);
-                        saveCameraCalibration("../CameraCalibration02", cam2.cameraMatrix, cam2.distanceCoefficients);
-                     }
                 }
+            }
                 break;
             case 27:       //escape
                 //exit program
@@ -160,24 +145,22 @@ unsigned CalibrationEye::calibration(unsigned cam_num = 0, bool saveData = true,
 }
 
 unsigned CalibrationEye::calibrationFromFiles(unsigned u){
-    camera cam;
-
     for(int i=0; i<500; i++){
-        cam.name.str("");
-        cam.name << "../../CalibrationPictures/Cam0" << u << "/CAM0" << u << "_calib" << i << ".jpg";
-        ifstream file(cam.name.str());
+        cam[0].name.str("");
+        cam[0].name << "../../CalibrationPictures/Cam0" << u << "/CAM0" << u << "_calib" << i << ".jpg";
+        ifstream file(cam[0].name.str());
         if(file.good()){
-            Mat temp = imread(cam.name.str());
-            cam.savedImages.push_back(temp);
+            Mat temp = imread(cam[0].name.str());
+            cam[0].savedImages.push_back(temp);
             file.close();
         }
     }
 
-    cam.name.str("");
-    cam.name << "CameraCalibration0" << u;
+    cam[0].name.str("");
+    cam[0].name << "CameraCalibration0" << u;
 
-    cameraCalibration(cam.savedImages, chessboardDimensions, calibrationSquareDimension, cam.cameraMatrix, cam.distanceCoefficients);
-    saveCameraCalibration(cam.name.str(), cam.cameraMatrix, cam.distanceCoefficients);
+    cameraCalibration(cam[0].savedImages, chessboardDimensions, calibrationSquareDimension, cam[0].cameraMatrix, cam[0].distanceCoefficients);
+    saveCameraCalibration(cam[0].name.str(), cam[0].cameraMatrix, cam[0].distanceCoefficients);
 
     return 0;
 }
@@ -314,10 +297,3 @@ unsigned CalibrationEye::stereoCalibration(int num_imgs) {
 
     return 0;
 }
-
-
-
-
-
-
-

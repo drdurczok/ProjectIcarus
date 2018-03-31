@@ -29,6 +29,7 @@ class EyeBase
         bool saveCameraCalibration(string, Mat&, Mat&);
 
         struct camera{
+                unsigned num;
                 Mat frame;
                 Mat drawToFrame;
                 Mat cameraMatrix = Mat::eye(3,3, CV_64F);
@@ -36,6 +37,7 @@ class EyeBase
                 vector<Mat> savedImages;
                 ostringstream name;
                 ostringstream nameOverlay;
+                string title;
                 int i=1;
         };
 

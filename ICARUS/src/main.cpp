@@ -60,15 +60,15 @@ void calibration(){
   opt.join();
   printf("\033[2J\033[1;H\033[?25l"); 
   unsigned i = f.get();
-  std::cout << "This is the result: " << i << std::endl;
+  switch(i){
+    case 0: break;
+    case 1: calib.swapCameras();
+  }
 
-
-  cin.ignore();
   
-  //bool dualCameras = false;
-  //bool saveData = true;
+  bool saveData = true;
 
-  //calib.calibration(1,saveData,dualCameras,0);
+  calib.calibration(1,2,saveData,0);
   //calib.calibration(2,saveData,dualCameras,0);
   //calib.calibrationFromFiles(2);
   //calib.stereoCalibration(17);

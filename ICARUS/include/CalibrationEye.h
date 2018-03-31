@@ -8,9 +8,10 @@ class CalibrationEye: public EyeBase
     public:
         CalibrationEye();
         unsigned dispCamera(unsigned);
-        unsigned calibration(unsigned,bool,bool,unsigned);
+        unsigned calibration(unsigned,unsigned,bool,unsigned);
         unsigned calibrationFromFiles(unsigned);
         unsigned stereoCalibration(int);
+        void swapCameras();
 
 
     private:
@@ -22,6 +23,8 @@ class CalibrationEye: public EyeBase
         const unsigned board_height = 6;
         const unsigned board_width = 9;
         const Size chessboardDimensions = Size(board_height, board_width);
+
+        camera cam[3];
 };
 
 #endif // CALIBRATIONEYE_H
