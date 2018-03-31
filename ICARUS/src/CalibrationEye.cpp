@@ -5,6 +5,22 @@ CalibrationEye::CalibrationEye()
 
 }
 
+unsigned CalibrationEye::dispCamera(unsigned camNum){
+    camera cam;
+    VideoCapture vid(camNum);
+    namedWindow("Cam", CV_WINDOW_AUTOSIZE);
+    if(!vid.isOpened()) return 0;
+
+    while(true){
+        if(!vid.read(cam.frame)) break;
+        imshow("Cam",cam.frame);
+        char character = waitKey(1000/20);
+        if (character == 27) break;
+    }
+    cvDestroyWindow("Cam");
+    return 0;
+}
+
 void CalibrationEye::createKnownBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f>& corners){
     for(int i=0; i<boardSize.height; i++){
         for(int j=0; j<boardSize.width; j++){

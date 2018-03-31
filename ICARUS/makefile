@@ -2,7 +2,7 @@ CC = g++
 TARGET = icarus
 CFLAGS = -Wall
 LINKER = g++ -o 
-OPENCV = `pkg-config opencv --cflags` `pkg-config opencv --libs`
+OPENCV = `pkg-config opencv --cflags` `pkg-config opencv --libs` -lpthread
 
 
 SRCDIR   = src

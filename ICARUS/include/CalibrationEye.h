@@ -7,6 +7,7 @@ class CalibrationEye: public EyeBase
 {
     public:
         CalibrationEye();
+        unsigned dispCamera(unsigned);
         unsigned calibration(unsigned,bool,bool,unsigned);
         unsigned calibrationFromFiles(unsigned);
         unsigned stereoCalibration(int);
