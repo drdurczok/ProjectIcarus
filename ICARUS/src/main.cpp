@@ -3,8 +3,8 @@
 #include <thread>
 #include <future>
 #include <unistd.h>
-#include "../include/CalibrationEye.h"
 #include "../include/DisparityEye.h"
+#include "../include/Eyes.h"
 
 using namespace std;
 
@@ -19,8 +19,10 @@ static struct termios oldt; //getchar without pressing enter
 
 int main( int argc, const char** argv)
 {
+
   unsigned choice;
   disable_waiting_for_enter();
+
 
   string option[4];
   option[0] = "Enter Calibration Mode";
@@ -44,11 +46,12 @@ int main( int argc, const char** argv)
     //sight.recordVideo();
     //sight.depthMap();
   printf("\033[2J\033[1;H\033[?25l");
+  
   return 0;
 }
 
 void calibration(){
-  CalibrationEye calib;
+  Eyes calib;
 
   ostringstream header;
   header.str("");
@@ -100,20 +103,20 @@ void calibration(){
     switch(choice){
       case 0: {
         std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
-        calib.calibrationFromFiles(i);
+        calib.calibrationFromFiles(i,0,300);
       }; break;
       case 1: {
         calib.calibration(i,i,saveData,totalImg);    
         printf("\033[2J\033[1;H\033[?25l");     
         std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
-        calib.calibrationFromFiles(i);
+        calib.calibrationFromFiles(i,0,300);
       }; break;
       case 2: {
         calib.rmFolder(i);
         calib.calibration(i,i,saveData,0);
         printf("\033[2J\033[1;H\033[?25l"); 
         std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
-        calib.calibrationFromFiles(i);
+        calib.calibrationFromFiles(i,0,300);
       }; break;
       case 3: break;
     }

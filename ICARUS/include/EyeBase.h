@@ -24,27 +24,37 @@ class EyeBase
 {
     public:
         EyeBase();
+        unsigned calibrationFromFiles(unsigned, unsigned, unsigned);
+        unsigned checkFolder(unsigned,unsigned);
+        bool rmFolder(unsigned);
 
     protected:
-        bool loadCameraCalibration(string, Mat&, Mat&);
-        bool saveCameraCalibration(string, Mat&, Mat&);
+        void cameraCalibration(vector<Mat>, Mat&, Mat&);
+        void createKnownBoardPosition(vector<Point3f>&);
+        void getChessboardCorners(vector<Mat>, vector<vector<Point2f>>&, bool);
+
         void createRMap(Mat&, Mat&);
 
-        Mat rmap[2][2];
+
+        float squareEdgeLength; //meters
+        unsigned board_height;
+        unsigned board_width;
+        Size boardSize;
 
         struct camera{
                 unsigned num;
                 unsigned vid;
+                string title;
                 Mat frame;
                 Mat drawToFrame;
                 Mat cameraMatrix = Mat::eye(3,3, CV_64F);
-                Mat distanceCoefficients;
+                Mat distCoefficients;
                 vector<Mat> savedImages;
                 ostringstream name;
                 ostringstream nameOverlay;
-                string title;
                 int i=1;
         };
+        camera cam[3];
 
     private:
 

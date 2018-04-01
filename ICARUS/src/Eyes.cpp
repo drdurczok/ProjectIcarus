@@ -2,184 +2,314 @@
 
 Eyes::Eyes()
 {
+    vid[0] = new VideoCapture(1);
+    if(!vid[0]->isOpened())
+        std::cout << "ERROR: Failed to open camera 1" << std::endl;
 
+    vid[1] = new VideoCapture(2);
+    if(!vid[1]->isOpened())
+        std::cout << "ERROR: Failed to open camera 2" << std::endl;
 }
 
 Eyes::~Eyes()
 {
-    //dtor
+    vid[0]->release();
+    vid[1]->release();
 }
 
-void Eyes::depthMap(){
-    cv::VideoCapture Rcam(1);
-    cv::VideoCapture Lcam(2);
+void Eyes::swapCameras(){
+    vid[0]->release();
+    vid[1]->release();
 
-    cv::Mat LeftImgOrg;
-    cv::Mat RightImgOrg;
-    cv::Mat LeftImgGrey;
-    cv::Mat RightImgGrey;
+    vid[0] = new VideoCapture(2);
+    if(!vid[0]->isOpened())
+        std::cout << "ERROR: Failed to open camera 2" << std::endl;
 
-    cv::Mat disp, disp8;
+    vid[1] = new VideoCapture(1);
+    if(!vid[1]->isOpened())
+        std::cout << "ERROR: Failed to open camera 1" << std::endl;
+}
 
-    char charCheckForEscKey = 0;
+unsigned Eyes::dispCamera(unsigned camNum){
+    cam[camNum].num = camNum;
+    string title = cam[camNum].title;
 
-	while (charCheckForEscKey != 27 && Rcam.isOpened() && Lcam.isOpened()) {		// until the Esc key is pressed or webcam connection is lost
-		if (!Rcam.read(RightImgOrg) || !Lcam.read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
-			std::cout << "error: frame not read from webcam\n";
-			break;
-		}
+    namedWindow(title, CV_WINDOW_AUTOSIZE);
+    if(!vid[camNum]->isOpened()) return 0;
 
-        cv::cvtColor(LeftImgOrg, LeftImgGrey, CV_BGR2GRAY);
-        cv::cvtColor(RightImgOrg, RightImgGrey, CV_BGR2GRAY);
-
-        cv::Ptr<cv::StereoBM> sbm = cv::StereoBM::create(16,21);
-        sbm->setDisp12MaxDiff(1);
-        sbm->setSpeckleRange(8);
-        sbm->setSpeckleWindowSize(9);
-        sbm->setUniquenessRatio(0);
-        sbm->setTextureThreshold(507);
-        sbm->setMinDisparity(-39);
-        sbm->setPreFilterCap(61);
-        sbm->setPreFilterSize(5);
-        sbm->compute(LeftImgGrey,RightImgGrey,disp);
-        normalize(disp, disp8, 0, 255, CV_MINMAX, CV_8U);
-
-        imshow("left", LeftImgOrg);
-        imshow("right", RightImgOrg);
-        imshow("disp", disp8);
-
-        charCheckForEscKey = cv::waitKey(1);			// delay (in ms) and get key press, if any
+    while(true){
+        if(!vid[camNum]->read(cam[camNum].frame)) break;
+        imshow(title,cam[camNum].frame);
+        char character = waitKey(1000/20);
+        if (character == 27) break;
     }
+
+    cvDestroyWindow(title.c_str());
+    return 0;
 }
 
-void Eyes::depthMapIMG(){
-    cv::Mat img1, img2, g1, g2;
-    cv::Mat disp, disp8;
+unsigned Eyes::dispRectImage(){
+    namedWindow("left", CV_WINDOW_AUTOSIZE);
+    namedWindow("right", CV_WINDOW_AUTOSIZE);
 
-    img1 = cv::imread("leftImage.jpg");
-    img2 = cv::imread("rightImage.jpg");
+    Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+    Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+    Mat undistorted[2];
 
-    cvtColor(img1, g1, CV_BGR2GRAY);
-    cvtColor(img2, g2, CV_BGR2GRAY);
+    createRMap(LeftImgOrg,RightImgOrg);
 
-    cv::Ptr<cv::StereoBM> sbm = cv::StereoBM::create(16,21);
-    sbm->setDisp12MaxDiff(1);
-    sbm->setSpeckleRange(8);
-    sbm->setSpeckleWindowSize(9);
-    sbm->setUniquenessRatio(0);
-    sbm->setTextureThreshold(507);
-    sbm->setMinDisparity(-39);
-    sbm->setPreFilterCap(61);
-    sbm->setPreFilterSize(5);
-    sbm->compute(g1,g2,disp);
-    normalize(disp, disp8, 0, 255, CV_MINMAX, CV_8U);
+    char charKey = 0;
 
-    cv::imshow("left", img1);
-    cv::imshow("right", img2);
-    cv::imshow("disp", disp8);
+    Mat rmap[2][2];
 
-    char charCheckForEscKey = 0;
-	while (charCheckForEscKey != 27) { charCheckForEscKey = cv::waitKey(1);}
-}
+    FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
+    if( fs1.isOpened() ) {
+        fs1 << "RMap00" << rmap[0][0];
+        fs1 << "RMap01" << rmap[0][1];
+        fs1 << "RMap10" << rmap[1][0];
+        fs1 << "RMap11" << rmap[1][1];
+        fs1.release();
+    }
+    else
+        cout << "Error: Couldn't open CalibrationParam.xml to READ_INTRINSIC_PARAMETERS\n";
 
-unsigned Eyes::recordVideo(){
-    cv::VideoCapture cam(1);
-    if (cam.isOpened() == false) {				// check if VideoCapture object was associated to webcam successfully
-		std::cout << "error: capWebcam not accessed successfully\n\n";
-
-		return 0;
-	}
-
-    cv::Mat imgOriginal;
-    cv::Mat imgGrey;
-    cv::Mat imgThresh;
-
-    cv::namedWindow("imgOriginal",CV_WINDOW_AUTOSIZE);
-    cv::namedWindow("imgThresh",CV_WINDOW_AUTOSIZE);
-
-    int count = 0;
-    char charCheckForEscKey = 0;
-
-	while (charCheckForEscKey != 27 && cam.isOpened()) {		// until the Esc key is pressed or webcam connection is lost
-        bool blnFrameReadSuccessfully = cam.read(imgOriginal);		// get next frame
-		if (!blnFrameReadSuccessfully || imgOriginal.empty()) {
-			std::cout << "error: frame not read from webcam\n";
-			break;
-		}
-        cv::cvtColor(imgOriginal,imgGrey,CV_RGB2GRAY);
-
-        cv::GaussianBlur(imgGrey,imgGrey,cv::Size(15,15),0.0,0);    // noise reduction
-        cv::threshold(imgGrey,imgThresh,0,255,cv::THRESH_BINARY_INV+cv::THRESH_OTSU);
-
-        std::vector<std::vector<cv::Point> >contours;
-        std::vector<cv::Vec4i>hierarchy;
-        cv::findContours(imgThresh,contours,hierarchy,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_SIMPLE,cv::Point());
-        if(contours.size()>0){
-            size_t indexOfBiggestContour = -1;
-            size_t sizeOfBiggestContour = 0;
-
-            for (size_t i = 0; i < contours.size(); i++){
-                if(contours[i].size() > sizeOfBiggestContour){
-                    sizeOfBiggestContour = contours[i].size();
-                    indexOfBiggestContour = i; }
-            }
-
-            std::vector<std::vector<int> >hull(contours.size());
-            std::vector<std::vector<cv::Point> >hullPoint(contours.size());
-            std::vector<std::vector<cv::Vec4i> >defects(contours.size());
-            std::vector<std::vector<cv::Point> >defectPoint(contours.size());
-            std::vector<std::vector<cv::Point> >contours_poly(contours.size());
-
-            for(size_t i=0;i<contours.size();i++){
-                if(cv::contourArea(contours[i])>5000 && cv::contourArea(contours[i])<70000){
-                    cv::convexHull(contours[i],hull[i],true);
-                    cv::convexityDefects(contours[i],hull[i],defects[i]);
-                    if(indexOfBiggestContour==i){
-                        for(size_t k=0;k<hull[i].size();k++){
-                            int ind=hull[i][k];
-                            hullPoint[i].push_back(contours[i][ind]);
-                        }
-                        count =0;
-
-                        for(size_t k=0;k<defects[i].size();k++){
-                            if(defects[i][k][3]>13*256){
-                                /*   int p_start=defects[i][k][0];   */
-                                int p_end=defects[i][k][1];
-                                int p_far=defects[i][k][2];
-                                defectPoint[i].push_back(contours[i][p_far]);
-                                cv::circle(imgThresh,contours[i][p_end],3,cv::Scalar(0,255,0),2);
-                                count++; }
-                        }
-                    std::cout << count << std::endl;
-                    drawContours(imgThresh, contours, i,cv::Scalar(255,255,0),2, 8, std::vector<cv::Vec4i>(), 0, cv::Point() );
-                    drawContours(imgThresh, hullPoint, i, cv::Scalar(255,255,0),1, 8, std::vector<cv::Vec4i>(),0, cv::Point());
-                    drawContours(imgOriginal, hullPoint, i, cv::Scalar(0,0,255),2, 8, std::vector<cv::Vec4i>(),0, cv::Point() );
-                    }
-                }
-            }
-
+    while (charKey != 27 && vid[1]->isOpened() && vid[0]->isOpened()) {       // until the Esc key is pressed or webcam connection is lost
+        if (!vid[1]->read(RightImgOrg) || !vid[0]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
+            std::cout << "error: frame not read from webcam\n";
+            break;
         }
 
-        cv::imshow("imgOriginal", imgOriginal);			// show windows
-        cv::imshow("imgThresh", imgThresh);
+        charKey = waitKey(1);           // delay (in ms) and get key press, if any 
 
-        charCheckForEscKey = cv::waitKey(1);			// delay (in ms) and get key press, if any
+        vid[0]->read(RightImgOrg);
+        vid[1]->read(LeftImgOrg);       
+
+        remap(LeftImgOrg, undistorted[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
+        remap(RightImgOrg , undistorted[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
+
+        imshow("left", undistorted[0]);
+        imshow("right", undistorted[1]);
+
+        //charKey = waitKey(1);         // delay (in ms) and get key press, if any
+    }
+    cvDestroyWindow("left");
+    cvDestroyWindow("right");
+    return 0;
+}
+
+unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveData = true, unsigned picIter = 1){
+    unsigned iter;
+    if(dual==true) iter = 2;
+    else iter = 1;
+
+    for(unsigned i=0; i<iter; i++){
+        namedWindow(cam[i].title, CV_WINDOW_AUTOSIZE);
+        cam[i].i = picIter;
     }
 
+    int framesPerSecond = 20;
+
+    unsigned picNum = picIter;
+    if(picNum > 399) picNum = picNum - 400;
+    printf("\033[2J\033[1;H\033[?25l");
+    std::cout  << "To take a picture use the space bar.\n" << "Press esc to finish taking pictures.\n\n"
+               << "Number of calibration pictures: " << picNum << std::endl;
+
+    while(true){
+        vector<Vec2f> foundPoints;
+        bool found = false;
+
+        for(unsigned i=0; i<iter; i++){
+            vid[i]->read(cam[i].frame);
+            found = findChessboardCorners(cam[i].frame, boardSize, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
+            cam[i].frame.copyTo(cam[i].drawToFrame);
+            drawChessboardCorners(cam[i].drawToFrame, boardSize, foundPoints, found);
+
+            if(found) imshow(cam[i].title, cam[i].drawToFrame);
+            else imshow(cam[i].title, cam[i].frame);
+        }
+        
+
+        char character = waitKey(1000/framesPerSecond);
+
+        switch(character){
+            case ' ': {
+                //saving image
+                for(unsigned i=0; i<iter; i++){
+                    if(found){
+                        Mat temp;
+                        cam[i].frame.copyTo(temp);
+                        cam[i].savedImages.push_back(temp);
+                        if(saveData == 1) {
+                            cam[i].name.str("");
+                            cam[i].nameOverlay.str("");
+                            cam[i].name << "../../CalibrationPictures/Cam0" << cam[i].num << "/CAM0" << cam[i].num << "_calib" << cam[i].i << ".jpg";
+                            cam[i].nameOverlay << "../../CalibrationPictures/CalibrationPicturesOverlay/CAM0" << cam[i].num << "_calib" << cam[i].i << "_overlay.jpg";
+                            cam[i].i++;
+                            imwrite(cam[i].name.str(),temp);
+                            imwrite(cam[i].nameOverlay.str(),cam[i].drawToFrame);
+                            if(i == cam_start){
+                                printf("\033[2J\033[1;H\033[?25l");
+                                picNum++;
+                                std::cout  << "To take a picture use the space bar.\n" << "Press esc to finish taking pictures.\n\n"
+                                           << "Number of calibration pictures: " << picNum << std::endl;
+                            }
+                        }
+                    }
+                }
+            } break;
+            case 27: {   //escape
+                //exit program
+                for(unsigned i=0; i<iter; i++){
+                    cvDestroyWindow(cam[i].title.c_str());
+                    vid[i]->release();
+                }
+                return 0;
+            } break;
+        }
+    }
+    return 0;
+}
+
+unsigned Eyes::stereoCalibration(unsigned num_imgs) {
+    vector< vector< Point3f > > object_points;
+    vector< Point2f > corners1, corners2;
+    vector< vector< Point2f > > imgPoints[2], imgPoints_n[2];
+    
+    Mat img1, img2, gray1, gray2;
+
+    ostringstream name[2];
+
+    for (unsigned i = 400; i <= num_imgs+399; i++) {
+        name[0].str("");
+        name[0] << "../../CalibrationPictures/Cam01/CAM01_calib" << i << ".jpg";
+        name[1].str("");
+        name[1] << "../../CalibrationPictures/Cam02/CAM02_calib" << i << ".jpg";
+        img1 = imread(name[0].str(), CV_LOAD_IMAGE_COLOR);
+        img2 = imread(name[1].str(), CV_LOAD_IMAGE_COLOR);
+        cvtColor(img1, gray1, CV_BGR2GRAY);
+        cvtColor(img2, gray2, CV_BGR2GRAY);
+
+        bool found1 = false, found2 = false;
+
+        found1 = cv::findChessboardCorners(img1, boardSize, corners1, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        found2 = cv::findChessboardCorners(img2, boardSize, corners2, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+
+        if (found1) {
+            cv::cornerSubPix(gray1, corners1, cv::Size(5, 5), cv::Size(-1, -1),
+            cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+            cv::drawChessboardCorners(gray1, boardSize, corners1, found1);
+        }
+        if (found2) {
+            cv::cornerSubPix(gray2, corners2, cv::Size(5, 5), cv::Size(-1, -1),
+            cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+            cv::drawChessboardCorners(gray2, boardSize, corners2, found2);
+        }
+
+        vector< Point3f > obj;
+        for (unsigned i = 0; i < board_height; i++)
+            for (unsigned j = 0; j < board_width; j++)
+                obj.push_back(Point3f((float)j * squareEdgeLength, (float)i * squareEdgeLength, 0));
+
+        if (found1 && found2) {
+              cout << i << ". Found corners!" << endl;
+              imgPoints[0].push_back(corners1);
+              imgPoints[1].push_back(corners2);
+              object_points.push_back(obj);
+        }
+    }
+
+    for (unsigned i = 0; i < imgPoints[0].size(); i++) {
+    vector< Point2f > v1, v2;
+        for (unsigned j = 0; j < imgPoints[0][i].size(); j++) {
+            v1.push_back(Point2f((double)imgPoints[0][i][j].x, (double)imgPoints[0][i][j].y));
+            v2.push_back(Point2f((double)imgPoints[1][i][j].x, (double)imgPoints[1][i][j].y));
+        }
+        imgPoints_n[0].push_back(v1);
+        imgPoints_n[1].push_back(v2);
+    }
+
+    Mat distCoefficients[2];
+    Mat cameraMatrix[2];
+
+    FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
+    if( fs1.isOpened() ) {
+        fs1["K1"] >> cameraMatrix[0];
+        fs1["K2"] >> cameraMatrix[1];
+        fs1["D1"] >> distCoefficients[0];
+        fs1["D2"] >> distCoefficients[1];
+        fs1.release();
+    }
+    else
+        cout << "Error: Couldn't open CalibrationParam.xml to READ_INTRINSIC_PARAMETERS\n";
+
+    Mat R, T, E, F;
+
+    stereoCalibrate(object_points, imgPoints_n[0], imgPoints_n[1], cameraMatrix[0], distCoefficients[0], cameraMatrix[1], distCoefficients[1], img1.size(), R, T, E, F);
+
+    fs1.open("../CalibrationParam.xml", FileStorage::WRITE);
+    if( fs1.isOpened() ) {
+        fs1 << "R" << R;
+        fs1 << "T" << T;
+        fs1 << "E" << E;
+        fs1 << "F" << F;
+    }
+    else
+        cout << "Error: Couldn't open CalibrationParam.xml to WRITE_EXTRINSIC_PARAMETERS\n";
+  
+    std::cout << "Done Calibration" << std::endl;
+
+    std::cout << "Starting Rectification" << std::endl;
+
+    Mat R1, R2, P1, P2, Q;
+    stereoRectify(cameraMatrix[0], distCoefficients[0], cameraMatrix[1], distCoefficients[1], img1.size(), R, T, R1, R2, P1, P2, Q);
+    
+    if( fs1.isOpened() ) {
+        fs1 << "R1" << R1;
+        fs1 << "R2" << R2;
+        fs1 << "P1" << P1;
+        fs1 << "P2" << P2;
+        fs1 << "Q" << Q;
+        fs1.release();
+    }
+    else
+        cout << "Error: Couldn't open CalibrationParam.xml to WRITE_RECTIFICATION_PARAMETERS\n";
+
+    std::cout << "Done Rectification" << std::endl;
+
+    // CALIBRATION QUALITY CHECK
+    // because the output fundamental matrix implicitly
+    // includes all the output information,
+    // we can check the quality of calibration using the
+    // epipolar geometry constraint: m2^t*F*m1=0
+    std::cout << "Checking Quality of Calibration" << std::endl;
+
+    double err = 0;
+    int npoints = 0;
+    vector<Vec3f> lines[2];
+    unsigned nimages = 2;
+    for(unsigned i = 0; i < nimages; i++ )
+    {
+        int npt = (int)imgPoints_n[0][i].size();
+        Mat imgpt[2];
+        for(unsigned k = 0; k < 2; k++ )
+        {
+            imgpt[k] = Mat(imgPoints_n[k][i]);
+            undistortPoints(imgpt[k], imgpt[k], cameraMatrix[k], distCoefficients[k], Mat(), cameraMatrix[k]);
+            computeCorrespondEpilines(imgpt[k], k+1, F, lines[k]);
+        }
+        for(int j = 0; j < npt; j++ )
+        {
+            double errij = fabs(imgPoints_n[0][i][j].x*lines[1][j][0] +
+                                imgPoints_n[0][i][j].y*lines[1][j][1] + lines[1][j][2]) +
+                           fabs(imgPoints_n[1][i][j].x*lines[0][j][0] +
+                                imgPoints_n[1][i][j].y*lines[0][j][1] + lines[0][j][2]);
+            err += errij;
+        }
+        npoints += npt;
+    }
+    cout << "average epipolar err = " << err/npoints << endl;
 
     return 0;
 }
 
-void Eyes::undistortImg(){
-    Mat distanceCoefficients;
-    Mat cameraMatrix;
-
-    loadCameraCalibration("CameraCalibration", cameraMatrix, distanceCoefficients);
-    cout << cameraMatrix << endl;
-    cout << distanceCoefficients << endl;
-
-    Mat img = imread("image.jpg");
-    Mat undistorted;
-    undistort(img, undistorted, cameraMatrix, distanceCoefficients);
-    imwrite("calibresult.jpg",undistorted);
-}
