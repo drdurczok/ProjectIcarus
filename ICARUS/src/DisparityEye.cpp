@@ -18,34 +18,16 @@ void DisparityEye::depthMap(){
     Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
     Mat LeftImgGrey;
     Mat RightImgGrey;
-
+    Mat undistorted[2];
     Mat disp, disp8;
 
     char charKey = 0;
+    int state = 0;
 
-    Mat distanceCoefficients[2];
-    Mat cameraMatrix[2], R[2], P[2];
-    Mat rmap[2][2];
-
-    FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
-    fs1["K1"] >> cameraMatrix[0];
-    fs1["K2"] >> cameraMatrix[1];
-    fs1["D1"] >> distanceCoefficients[0];
-    fs1["D2"] >> distanceCoefficients[1];
-    fs1["R1"] >> R[0];
-    fs1["R2"] >> R[1];
-    fs1["P1"] >> P[0];
-    fs1["P2"] >> P[1];
-    fs1.release();
-
-	initUndistortRectifyMap(cameraMatrix[0], distanceCoefficients[0], R[0], P[0], LeftImgOrg.size(), CV_16SC2, rmap[0][0], rmap[0][1]);
-	initUndistortRectifyMap(cameraMatrix[1], distanceCoefficients[1], R[1], P[1], RightImgOrg.size(), CV_16SC2, rmap[1][0], rmap[1][1]);
-    
+    createRMap(LeftImgOrg,RightImgOrg);
+    	
     //loadCameraCalibration("../CameraCalibration01", cameraMatrix[0], distanceCoefficients[0]);
     //loadCameraCalibration("../CameraCalibration02", cameraMatrix[1], distanceCoefficients[1]);
-
-	Mat undistorted[2];
-
 
 	int minDisparity = 0;			//Minimum possible disparity value. Normally, it is zero but sometimes rectification algorithms can shift images, so this parameter needs to be adjusted accordingly.
 	int numDisparities = 16;		//Maximum disparity minus minimum disparity. The value is always greater than zero. In the current implementation, this parameter must be divisible by 16.
@@ -66,7 +48,10 @@ void DisparityEye::depthMap(){
 			break;
 		}
 
-		charKey = waitKey(1);			// delay (in ms) and get key press, if any        
+		charKey = waitKey(1);			// delay (in ms) and get key press, if any     
+		GUI(minDisparity, numDisparities, SADWindowSize,
+               P1, P2, disp12MaxDiff, preFilterCap,uniquenessRatio,
+               speckleWindowSize, speckleRange, fullDP, charKey, state);   
 
         remap(LeftImgOrg, undistorted[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
         remap(RightImgOrg , undistorted[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
@@ -87,6 +72,11 @@ void DisparityEye::depthMap(){
 
         //charKey = waitKey(1);			// delay (in ms) and get key press, if any
     }
+    cvDestroyWindow("left");
+    cvDestroyWindow("right");
+    cvDestroyWindow("disp");
+    Rcam.release();
+    Lcam.release();
 }
 
 void DisparityEye::GUI(int &a, int &b, int &c, int &d, int &e, int &f, int &g, int &h, int &i, int &j, bool &k, char charKey, int &state){

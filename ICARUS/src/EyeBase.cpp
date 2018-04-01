@@ -79,3 +79,23 @@ bool EyeBase::saveCameraCalibration(string name, Mat& cameraMatrix, Mat& distanc
 
     return false;
 }
+
+void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
+    Mat distanceCoefficients[2];
+    Mat cameraMatrix[2], R[2], P[2];
+
+    FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
+    fs1["K1"] >> cameraMatrix[0];
+    fs1["K2"] >> cameraMatrix[1];
+    fs1["D1"] >> distanceCoefficients[0];
+    fs1["D2"] >> distanceCoefficients[1];
+    fs1["R1"] >> R[0];
+    fs1["R2"] >> R[1];
+    fs1["P1"] >> P[0];
+    fs1["P2"] >> P[1];
+    fs1.release();
+
+    initUndistortRectifyMap(cameraMatrix[0], distanceCoefficients[0], R[0], P[0], LeftImgOrg.size(), CV_16SC2, rmap[0][0], rmap[0][1]);
+    initUndistortRectifyMap(cameraMatrix[1], distanceCoefficients[1], R[1], P[1], RightImgOrg.size(), CV_16SC2, rmap[1][0], rmap[1][1]);
+
+}

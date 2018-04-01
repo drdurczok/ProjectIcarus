@@ -11,6 +11,7 @@ CalibrationEye::CalibrationEye()
 unsigned CalibrationEye::dispCamera(unsigned camNum){
     cam[camNum].num = camNum;
     string title = cam[camNum].title;
+
     VideoCapture vid(cam[camNum].num);
     namedWindow(title, CV_WINDOW_AUTOSIZE);
     if(!vid.isOpened()) return 0;
@@ -21,61 +22,54 @@ unsigned CalibrationEye::dispCamera(unsigned camNum){
         char character = waitKey(1000/20);
         if (character == 27) break;
     }
+
     cvDestroyWindow(title.c_str());
+    vid.release();
     return 0;
 }
 
-void CalibrationEye::createKnownBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f>& corners){
-    for(int i=0; i<boardSize.height; i++){
-        for(int j=0; j<boardSize.width; j++){
-            corners.push_back(Point3f(j*squareEdgeLength, i*squareEdgeLength, 0.0f));
+unsigned CalibrationEye::dispRectImage(){
+    VideoCapture Lcam(1);
+    VideoCapture Rcam(2);
+
+    Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+    Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+    Mat undistorted[2];
+
+    createRMap(LeftImgOrg,RightImgOrg);
+
+    char charKey = 0;
+    while (charKey != 27 && Rcam.isOpened() && Lcam.isOpened()) {       // until the Esc key is pressed or webcam connection is lost
+        if (!Rcam.read(RightImgOrg) || !Lcam.read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
+            std::cout << "error: frame not read from webcam\n";
+            break;
         }
+
+        charKey = waitKey(1);           // delay (in ms) and get key press, if any 
+
+        Lcam.read(RightImgOrg);
+        Rcam.read(LeftImgOrg);       
+
+        remap(LeftImgOrg, undistorted[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
+        remap(RightImgOrg , undistorted[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
+
+        imshow("left", undistorted[0]);
+        imshow("right", undistorted[1]);
+
+        //charKey = waitKey(1);         // delay (in ms) and get key press, if any
     }
-}
-
-void CalibrationEye::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showResults = false){
-    for(vector<Mat>::iterator iter = images.begin(); iter != images.end(); iter++){
-        vector<Point2f> pointBuf;
-        bool found = findChessboardCorners(*iter, Size(9,6), pointBuf, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE);
-
-        if(found){
-            allFoundCorners.push_back(pointBuf);
-        }
-
-        if(showResults){
-            drawChessboardCorners(*iter, Size(9,6), pointBuf, found);
-            imshow("Looking for Corners", *iter);
-            waitKey(0);
-        }
-    }
-}
-
-void CalibrationEye::swapCameras(){
-    cam[1].num = 2;
-    cam[2].num = 1;
-}
-
-void CalibrationEye::cameraCalibration(vector<Mat> calibrationImages, Size boardSize, float squaredEdgeLength, Mat& cameraMatrix, Mat& distanceCoefficients){
-    vector<vector<Point2f>> checkerboardImageSpacePoints;
-
-    getChessboardCorners(calibrationImages, checkerboardImageSpacePoints, false);
-
-    vector<vector<Point3f>> worldSpaceCornerPoints(1);
-
-    createKnownBoardPosition(boardSize, squaredEdgeLength, worldSpaceCornerPoints[0]);
-    worldSpaceCornerPoints.resize(checkerboardImageSpacePoints.size(),worldSpaceCornerPoints[0]);
-
-    vector<Mat> rVectors, tVectors;
-    distanceCoefficients = Mat::zeros(8,1, CV_64F);
-
-    calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVectors, tVectors);
+    cvDestroyWindow("left");
+    cvDestroyWindow("right");
+    Rcam.release();
+    Lcam.release();
+    return 0;
 }
 
 unsigned CalibrationEye::calibration(unsigned cam_start = 1, unsigned cam_end = 2, bool saveData = true, unsigned picIter = 1){
     VideoCapture *vid[cam_end+1-cam_start];
 
     for(unsigned i=cam_start; i<cam_end+1; i++){
-        vid[i] = new VideoCapture(cam[i].num);
+        vid[i] = new VideoCapture(i);
         if(!vid[i]->isOpened()) {
             std::cout << "Failed to open camera " << i << std::endl;
             return 0;
@@ -85,6 +79,12 @@ unsigned CalibrationEye::calibration(unsigned cam_start = 1, unsigned cam_end = 
     }
 
     int framesPerSecond = 20;
+
+    unsigned picNum = picIter;
+    if(picNum > 399) picNum = picNum - 400;
+    printf("\033[2J\033[1;H\033[?25l");
+    std::cout  << "To take a picture use the space bar.\n" << "Press esc to finish taking pictures.\n\n"
+               << "Number of calibration pictures: " << picNum << std::endl;
 
     while(true){
         vector<Vec2f> foundPoints;
@@ -119,6 +119,13 @@ unsigned CalibrationEye::calibration(unsigned cam_start = 1, unsigned cam_end = 
                             cam[i].i++;
                             imwrite(cam[i].name.str(),temp);
                             imwrite(cam[i].nameOverlay.str(),cam[i].drawToFrame);
+                            std::cout << i << "  " << cam_start << std::endl;
+                            if(i == cam_start){
+                                printf("\033[2J\033[1;H\033[?25l");
+                                picNum++;
+                                std::cout  << "To take a picture use the space bar.\n" << "Press esc to finish taking pictures.\n\n"
+                                           << "Number of calibration pictures: " << picNum << std::endl;
+                            }
                         }
                     }
                 }
@@ -137,6 +144,10 @@ unsigned CalibrationEye::calibration(unsigned cam_start = 1, unsigned cam_end = 
                 break;
             case 27:       //escape
                 //exit program
+                for(unsigned i=cam_start; i<cam_end+1; i++){
+                    cvDestroyWindow(cam[i].title.c_str());
+                    vid[i]->release();
+                }
                 return 0;
                 break;
         }
@@ -174,7 +185,7 @@ unsigned CalibrationEye::stereoCalibration(int num_imgs) {
 
     ostringstream name[2];
 
-    for (int i = 1; i <= num_imgs; i++) {
+    for (int i = 400; i <= num_imgs+400; i++) {
         name[0].str("");
         name[0] << "../../CalibrationPictures/Cam01/CAM01_calib" << i << ".jpg";
         name[1].str("");
@@ -296,4 +307,77 @@ unsigned CalibrationEye::stereoCalibration(int num_imgs) {
     cout << "average epipolar err = " << err/npoints << endl;
 
     return 0;
+}
+
+void CalibrationEye::swapCameras(){
+    cam[1].num = 2;
+    cam[1].title = "RCam";
+    cam[2].num = 1;
+    cam[2].title = "LCam";
+}
+
+unsigned CalibrationEye::checkFolder(unsigned u, unsigned start = 0){
+    unsigned totalImg = 0;
+
+    for(int i=start; i<500; i++){
+        cam[0].name.str("");
+        cam[0].name << "../../CalibrationPictures/Cam0" << cam[u].num << "/CAM0" << cam[u].num << "_calib" << i << ".jpg";
+        ifstream file(cam[0].name.str());
+        if(file.good()){
+            totalImg++;
+            file.close();
+        }
+    }
+
+    return totalImg;
+}
+
+bool CalibrationEye::rmFolder(unsigned u){
+    ostringstream name;
+    name.str();
+    name << "exec rm -r ../../CalibrationPictures/Cam0" << u << "/*";
+    system(name.str().c_str());
+    return true;
+}
+
+//***********************PRIVATE**************************
+void CalibrationEye::cameraCalibration(vector<Mat> calibrationImages, Size boardSize, float squaredEdgeLength, Mat& cameraMatrix, Mat& distanceCoefficients){
+    vector<vector<Point2f>> checkerboardImageSpacePoints;
+
+    getChessboardCorners(calibrationImages, checkerboardImageSpacePoints, false);
+
+    vector<vector<Point3f>> worldSpaceCornerPoints(1);
+
+    createKnownBoardPosition(boardSize, squaredEdgeLength, worldSpaceCornerPoints[0]);
+    worldSpaceCornerPoints.resize(checkerboardImageSpacePoints.size(),worldSpaceCornerPoints[0]);
+
+    vector<Mat> rVectors, tVectors;
+    distanceCoefficients = Mat::zeros(8,1, CV_64F);
+
+    calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVectors, tVectors);
+}
+
+void CalibrationEye::createKnownBoardPosition(Size boardSize, float squareEdgeLength, vector<Point3f>& corners){
+    for(int i=0; i<boardSize.height; i++){
+        for(int j=0; j<boardSize.width; j++){
+            corners.push_back(Point3f(j*squareEdgeLength, i*squareEdgeLength, 0.0f));
+        }
+    }
+}
+
+void CalibrationEye::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundCorners, bool showResults = false){
+    for(vector<Mat>::iterator iter = images.begin(); iter != images.end(); iter++){
+        vector<Point2f> pointBuf;
+        bool found = findChessboardCorners(*iter, Size(9,6), pointBuf, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE);
+
+        if(found){
+            allFoundCorners.push_back(pointBuf);
+        }
+
+        if(showResults){
+            drawChessboardCorners(*iter, Size(9,6), pointBuf, found);
+            imshow("Looking for Corners", *iter);
+            waitKey(0);
+        }
+    }
 }

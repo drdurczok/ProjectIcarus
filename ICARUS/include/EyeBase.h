@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <string>
+#include <cstdio>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
@@ -27,6 +28,9 @@ class EyeBase
     protected:
         bool loadCameraCalibration(string, Mat&, Mat&);
         bool saveCameraCalibration(string, Mat&, Mat&);
+        void createRMap(Mat&, Mat&);
+
+        Mat rmap[2][2];
 
         struct camera{
                 unsigned num;
