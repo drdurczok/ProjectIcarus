@@ -25,7 +25,7 @@ class EyeBase
     public:
         EyeBase();
         unsigned calibrationFromFiles(unsigned, unsigned, unsigned);
-        unsigned checkFolder(unsigned,unsigned);
+        unsigned checkFolder(unsigned,unsigned,unsigned);
         bool rmFolder(unsigned);
 
     protected:

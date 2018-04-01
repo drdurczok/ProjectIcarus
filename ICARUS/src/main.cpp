@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void calibration();
+void calibration(unsigned);
 void disparity();
 void menuThread(std::promise<unsigned> &&, string, string*, unsigned);
 unsigned Menu(string, string*, unsigned);
@@ -24,20 +24,22 @@ int main( int argc, const char** argv)
   disable_waiting_for_enter();
 
 
-  string option[4];
+  string option[5];
   option[0] = "Enter Calibration Mode";
-  option[1] = "Create Disparity Map";
-  option[2] = "Start Finger Capture";
-  option[3] = "Exit";
+  option[1] = "Display Rectified Image";
+  option[2] = "Create Disparity Map";
+  option[3] = "Start Finger Capture";
+  option[4] = "Exit";
 
   bool loop = true;
   while(loop == true){
     choice = Menu("", option, sizeof option/sizeof option[0]);
 
     switch(choice){
-      case 0: calibration(); break;
-      case 1: disparity(); break;
-      case 3: loop = false; break;
+      case 0: calibration(0); break;
+      case 1: calibration(1); break;
+      case 2: disparity(); break;
+      case 4: loop = false; break;
       default: loop = false;
     }
   }
@@ -50,115 +52,118 @@ int main( int argc, const char** argv)
   return 0;
 }
 
-void calibration(){
+void calibration(unsigned img){
   Eyes calib;
 
-  ostringstream header;
-  header.str("");
-  header << "Welcome to the Camera Calibration process." 
-        << "\n\nConfirm that this is the left camera.\n\n";
-  string option[2];
-  option[0] = "Correct camera selected";
-  option[1] = "Swap cameras";
-
-  std::promise<unsigned> p;
-  auto f = p.get_future();
-
-  thread opt(menuThread, std::move(p), header.str(), option, sizeof option/sizeof option[0]);
-
-  calib.dispCamera(1);
-
-  opt.join();
-  printf("\033[2J\033[1;H\033[?25l"); 
-
-  unsigned choice = f.get();
-  switch(choice){
-    case 0: break;
-    case 1: calib.swapCameras();
+  if (img==1) {
+      printf("\033[2J\033[1;H\033[?25l"); 
+      std::cout << "These are the rectified images\n\n"
+                << "Press esc to continue" << std::endl;
+      calib.dispRectImage();
   }
+  else{
+    ostringstream header;
+    header.str("");
+    header << "Welcome to the Camera Calibration process." 
+          << "\n\nConfirm that this is the left camera.\n\n";
+    string option[2];
+    option[0] = "Correct camera selected";
+    option[1] = "Swap cameras";
 
-  //Intrinsic Parameters
-  for(unsigned i=1; i<3; i++){
+    std::promise<unsigned> p;
+    auto f = p.get_future();
+
+    thread opt(menuThread, std::move(p), header.str(), option, sizeof option/sizeof option[0]);
+
+    calib.dispCamera(1);
+
+    opt.join();
+    printf("\033[2J\033[1;H\033[?25l"); 
+
+    unsigned choice = f.get();
+    switch(choice){
+      case 0: break;
+      case 1: calib.swapCameras();
+    }
+
+    //Intrinsic Parameters
+    for(unsigned i=1; i<3; i++){
+      printf("\033[2J\033[1;H\033[?25l"); 
+      header.str("");
+      
+      unsigned totalImg = calib.checkFolder(i,0,399);
+      if(totalImg!=0){
+        header << "We will begin with the intrinsic parameter calibration of individual cameras\n\n" 
+               << "You already have " << totalImg << " calibration photos taken for camera " << i << "\n\n";
+        string option2[4];
+        option2[0] = "Use pictures";
+        option2[1] = "Add more pictres";
+        option2[2] = "Delete pictures and create new ones";
+        option2[3] = "Skip this step";
+
+        choice = Menu(header.str(), option2,  sizeof option2/sizeof option2[0]);
+      }
+      else{
+        std::cout << "We will begin with the intrinsic parameter calibration of individual cameras" << std::endl;
+      }
+
+      bool saveData = true;
+
+      switch(choice){
+        case 0: {
+          printf("\033[2J\033[1;H\033[?25l"); 
+          std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
+          calib.calibrationFromFiles(i,0,300);
+        }; break;
+        case 1: {
+          calib.calibration(i,false,saveData,totalImg);    
+          printf("\033[2J\033[1;H\033[?25l");     
+          std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
+          calib.calibrationFromFiles(i,0,300);
+        }; break;
+        case 2: {
+          calib.rmFolder(i);
+          calib.calibration(i,false,saveData,0);
+          printf("\033[2J\033[1;H\033[?25l"); 
+          std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
+          calib.calibrationFromFiles(i,0,300);
+        }; break;
+        case 3: break;
+      }
+    }
+    
+    //Extrinsic Parameters
     printf("\033[2J\033[1;H\033[?25l"); 
     header.str("");
     
-    unsigned totalImg = calib.checkFolder(i,0);
-    if(totalImg!=0){
-      header << "We will begin with the intrinsic parameter calibration of individual cameras\n\n" 
-             << "You already have " << totalImg << " calibration photos taken for camera " << i << "\n\n";
-      string option2[4];
-      option2[0] = "Use pictures";
-      option2[1] = "Add more pictres";
-      option2[2] = "Delete pictures and create new ones";
-      option2[3] = "Skip this step";
+    unsigned totalImg = calib.checkFolder(1,400,500);
+    header << "Now we will calculate the external camera parameters\n\n" 
+           << "You already have " << totalImg << " calibration photos taken for each camera\n\n";
+    string option2[4];
+    option2[0] = "Use pictures";
+    option2[1] = "Add more pictures";
+    option2[2] = "Skip this step";
 
-      choice = Menu(header.str(), option2,  sizeof option2/sizeof option2[0]);
-    }
-    else{
-      std::cout << "We will begin with the intrinsic parameter calibration of individual cameras" << std::endl;
-    }
+    choice = Menu(header.str(), option2,  sizeof option2/sizeof option2[0]);
+
 
     bool saveData = true;
 
     switch(choice){
       case 0: {
-        std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
-        calib.calibrationFromFiles(i,0,300);
+        std::cout << "Please wait while the extrinsic camera parameters are generated" << std::endl;
+        calib.stereoCalibration(totalImg);
       }; break;
       case 1: {
-        calib.calibration(i,i,saveData,totalImg);    
-        printf("\033[2J\033[1;H\033[?25l");     
-        std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
-        calib.calibrationFromFiles(i,0,300);
+        calib.calibration(1,true,saveData,400); 
+        printf("\033[2J\033[1;H\033[?25l");        
+        std::cout << "Please wait while the extrinsic camera parameters are generated" << std::endl;
+        totalImg = calib.checkFolder(1,400,500);
+        calib.stereoCalibration(totalImg);
       }; break;
-      case 2: {
-        calib.rmFolder(i);
-        calib.calibration(i,i,saveData,0);
-        printf("\033[2J\033[1;H\033[?25l"); 
-        std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
-        calib.calibrationFromFiles(i,0,300);
-      }; break;
-      case 3: break;
+      case 2: break;
     }
   }
-  
-  //Extrinsic Parameters
-  printf("\033[2J\033[1;H\033[?25l"); 
-  header.str("");
-  
-  unsigned totalImg = calib.checkFolder(1,400);
-  header << "Now we will calculate the external camera parameters\n\n" 
-         << "You already have " << totalImg << " calibration photos taken for each camera\n\n";
-  string option2[4];
-  option2[0] = "Use pictures";
-  option2[1] = "Add more pictres";
-  option2[2] = "Skip this step";
-
-  choice = Menu(header.str(), option2,  sizeof option2/sizeof option2[0]);
-
-
-  bool saveData = true;
-
-  switch(choice){
-    case 0: {
-      std::cout << "Please wait while the extrinsic camera parameters are generated" << std::endl;
-      calib.stereoCalibration(totalImg);
-    }; break;
-    case 1: {
-      calib.calibration(1,2,saveData,400); 
-      printf("\033[2J\033[1;H\033[?25l");        
-      std::cout << "Please wait while the extrinsic camera parameters are generated" << std::endl;
-      totalImg = calib.checkFolder(1,400);
-      calib.stereoCalibration(totalImg);
-    }; break;
-    case 2: break;
-  }
-
-  printf("\033[2J\033[1;H\033[?25l"); 
-  std::cout << "The calibration process is over\n"
-            << "These are the rectified images\n\n"
-            << "Press esc to continue" << std::endl;
-  calib.dispRectImage();
 }
 
 void disparity(){

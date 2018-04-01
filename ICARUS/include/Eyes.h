@@ -15,7 +15,7 @@ class Eyes: public EyeBase
         unsigned stereoCalibration(unsigned);
 
     private:
-    	VideoCapture *vid[2];
+    	VideoCapture *vid[3];
 };
 
 #endif // EYES_H

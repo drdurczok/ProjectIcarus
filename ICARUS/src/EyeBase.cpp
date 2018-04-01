@@ -7,6 +7,10 @@ EyeBase::EyeBase()
     board_width = 9;
     boardSize = Size(board_height,board_width);
 
+    cam[1].num = 1;
+    cam[1].title = "LCam";
+    cam[2].num = 2;
+    cam[2].title = "RCam";
 }
 
 unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end){
@@ -31,14 +35,14 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
     camtitle[1] << "D" << u;
 
     cameraCalibration(cam[0].savedImages, cam[0].cameraMatrix, cam[0].distCoefficients);
-    FileStorage fs1("../CalibrationParam.xml", FileStorage::WRITE);
+    FileStorage fs1("../CalibrationParam.xml", FileStorage::APPEND);
     if( fs1.isOpened() ) {
         fs1 << camtitle[0].str() << cam[0].cameraMatrix;
         fs1 << camtitle[1].str() << cam[0].distCoefficients;
         fs1.release();
     }
     else
-        cout << "Error: Couldn't open CalibrationParam.xml to READ\n";
+        cout << "Error: Couldn't open CalibrationParam.xml to APPEND_INTRINSIC_PARAMETERS\n";
 
     return 0;
 }
@@ -85,10 +89,10 @@ void EyeBase::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& 
     }
 }
 
-unsigned EyeBase::checkFolder(unsigned u, unsigned start = 0){
+unsigned EyeBase::checkFolder(unsigned u, unsigned start = 0, unsigned end = 399){
     unsigned totalImg = 0;
 
-    for(int i=start; i<500; i++){
+    for(unsigned i=start; i<end; i++){
         cam[0].name.str("");
         cam[0].name << "../../CalibrationPictures/Cam0" << cam[u].num << "/CAM0" << cam[u].num << "_calib" << i << ".jpg";
         ifstream file(cam[0].name.str());
@@ -133,13 +137,13 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
     initUndistortRectifyMap(cameraMatrix[0], distCoefficients[0], R[0], P[0], LeftImgOrg.size(), CV_16SC2, rmap[0][0], rmap[0][1]);
     initUndistortRectifyMap(cameraMatrix[1], distCoefficients[1], R[1], P[1], RightImgOrg.size(), CV_16SC2, rmap[1][0], rmap[1][1]);
 
-    fs1.open("../CalibrationParam.xml", FileStorage::WRITE);
-    if( fs1.isOpened() ) {
-        fs1 << "RMap00" << rmap[0][0];
-        fs1 << "RMap01" << rmap[0][1];
-        fs1 << "RMap10" << rmap[1][0];
-        fs1 << "RMap11" << rmap[1][1];
-        fs1.release();
+    FileStorage fs2("../RMapParam.xml", FileStorage::WRITE);
+    if( fs2.isOpened() ) {
+        fs2 << "RMap00" << rmap[0][0];
+        fs2 << "RMap01" << rmap[0][1];
+        fs2 << "RMap10" << rmap[1][0];
+        fs2 << "RMap11" << rmap[1][1];
+        fs2.release();
     }
     else
         cout << "Error: Couldn't open CalibrationParam.xml to WRITE_MAPPING_PARAMETERS\n";

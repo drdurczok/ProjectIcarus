@@ -2,31 +2,31 @@
 
 Eyes::Eyes()
 {
-    vid[0] = new VideoCapture(1);
-    if(!vid[0]->isOpened())
+    vid[1] = new VideoCapture(1);
+    if(!vid[1]->isOpened())
         std::cout << "ERROR: Failed to open camera 1" << std::endl;
 
-    vid[1] = new VideoCapture(2);
-    if(!vid[1]->isOpened())
+    vid[2] = new VideoCapture(2);
+    if(!vid[2]->isOpened())
         std::cout << "ERROR: Failed to open camera 2" << std::endl;
 }
 
 Eyes::~Eyes()
 {
-    vid[0]->release();
     vid[1]->release();
+    vid[2]->release();
 }
 
 void Eyes::swapCameras(){
-    vid[0]->release();
     vid[1]->release();
+    vid[2]->release();
 
-    vid[0] = new VideoCapture(2);
-    if(!vid[0]->isOpened())
+    vid[1] = new VideoCapture(2);
+    if(!vid[1]->isOpened())
         std::cout << "ERROR: Failed to open camera 2" << std::endl;
 
-    vid[1] = new VideoCapture(1);
-    if(!vid[1]->isOpened())
+    vid[2] = new VideoCapture(1);
+    if(!vid[2]->isOpened())
         std::cout << "ERROR: Failed to open camera 1" << std::endl;
 }
 
@@ -62,35 +62,33 @@ unsigned Eyes::dispRectImage(){
 
     Mat rmap[2][2];
 
-    FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
+    FileStorage fs1("../RMapParam.xml", FileStorage::READ);
     if( fs1.isOpened() ) {
-        fs1 << "RMap00" << rmap[0][0];
-        fs1 << "RMap01" << rmap[0][1];
-        fs1 << "RMap10" << rmap[1][0];
-        fs1 << "RMap11" << rmap[1][1];
+        fs1["RMap00"] >> rmap[0][0];
+        fs1["RMap01"] >> rmap[0][1];
+        fs1["RMap10"] >> rmap[1][0];
+        fs1["RMap11"] >> rmap[1][1];
         fs1.release();
     }
     else
-        cout << "Error: Couldn't open CalibrationParam.xml to READ_INTRINSIC_PARAMETERS\n";
+        cout << "Error: Couldn't open CalibrationParam.xml to READ_RMAP_PARAMETERS\n";
 
-    while (charKey != 27 && vid[1]->isOpened() && vid[0]->isOpened()) {       // until the Esc key is pressed or webcam connection is lost
-        if (!vid[1]->read(RightImgOrg) || !vid[0]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
+    while (charKey != 27 && vid[2]->isOpened() && vid[1]->isOpened()) {       // until the Esc key is pressed or webcam connection is lost
+        if (!vid[2]->read(RightImgOrg) || !vid[1]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
             std::cout << "error: frame not read from webcam\n";
             break;
         }
 
         charKey = waitKey(1);           // delay (in ms) and get key press, if any 
 
-        vid[0]->read(RightImgOrg);
-        vid[1]->read(LeftImgOrg);       
+        vid[1]->read(RightImgOrg);
+        vid[2]->read(LeftImgOrg);       
 
         remap(LeftImgOrg, undistorted[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
         remap(RightImgOrg , undistorted[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
 
         imshow("left", undistorted[0]);
         imshow("right", undistorted[1]);
-
-        //charKey = waitKey(1);         // delay (in ms) and get key press, if any
     }
     cvDestroyWindow("left");
     cvDestroyWindow("right");
@@ -99,10 +97,10 @@ unsigned Eyes::dispRectImage(){
 
 unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveData = true, unsigned picIter = 1){
     unsigned iter;
-    if(dual==true) iter = 2;
-    else iter = 1;
+    if(dual==true) iter = cam_start+2;
+    else iter = cam_start+1;
 
-    for(unsigned i=0; i<iter; i++){
+    for(unsigned i=cam_start; i<iter; i++){
         namedWindow(cam[i].title, CV_WINDOW_AUTOSIZE);
         cam[i].i = picIter;
     }
@@ -119,7 +117,7 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
         vector<Vec2f> foundPoints;
         bool found = false;
 
-        for(unsigned i=0; i<iter; i++){
+        for(unsigned i=cam_start; i<iter; i++){
             vid[i]->read(cam[i].frame);
             found = findChessboardCorners(cam[i].frame, boardSize, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
             cam[i].frame.copyTo(cam[i].drawToFrame);
@@ -129,13 +127,12 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
             else imshow(cam[i].title, cam[i].frame);
         }
         
-
         char character = waitKey(1000/framesPerSecond);
 
         switch(character){
             case ' ': {
                 //saving image
-                for(unsigned i=0; i<iter; i++){
+                for(unsigned i=cam_start; i<iter; i++){
                     if(found){
                         Mat temp;
                         cam[i].frame.copyTo(temp);
@@ -160,9 +157,8 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
             } break;
             case 27: {   //escape
                 //exit program
-                for(unsigned i=0; i<iter; i++){
+                for(unsigned i=cam_start; i<iter; i++){
                     cvDestroyWindow(cam[i].title.c_str());
-                    vid[i]->release();
                 }
                 return 0;
             } break;
@@ -247,7 +243,7 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
 
     stereoCalibrate(object_points, imgPoints_n[0], imgPoints_n[1], cameraMatrix[0], distCoefficients[0], cameraMatrix[1], distCoefficients[1], img1.size(), R, T, E, F);
 
-    fs1.open("../CalibrationParam.xml", FileStorage::WRITE);
+    fs1.open("../CalibrationParam.xml", FileStorage::APPEND);
     if( fs1.isOpened() ) {
         fs1 << "R" << R;
         fs1 << "T" << T;
@@ -255,7 +251,7 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
         fs1 << "F" << F;
     }
     else
-        cout << "Error: Couldn't open CalibrationParam.xml to WRITE_EXTRINSIC_PARAMETERS\n";
+        cout << "Error: Couldn't open CalibrationParam.xml to APPEND_EXTRINSIC_PARAMETERS\n";
   
     std::cout << "Done Calibration" << std::endl;
 
@@ -273,7 +269,7 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
         fs1.release();
     }
     else
-        cout << "Error: Couldn't open CalibrationParam.xml to WRITE_RECTIFICATION_PARAMETERS\n";
+        cout << "Error: Couldn't open CalibrationParam.xml to APPEND_RECTIFICATION_PARAMETERS\n";
 
     std::cout << "Done Rectification" << std::endl;
 
