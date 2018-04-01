@@ -103,13 +103,15 @@ void calibration(){
         calib.calibrationFromFiles(i);
       }; break;
       case 1: {
-        calib.calibration(i,i,saveData,totalImg);        
+        calib.calibration(i,i,saveData,totalImg);    
+        printf("\033[2J\033[1;H\033[?25l");     
         std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
         calib.calibrationFromFiles(i);
       }; break;
       case 2: {
         calib.rmFolder(i);
         calib.calibration(i,i,saveData,0);
+        printf("\033[2J\033[1;H\033[?25l"); 
         std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
         calib.calibrationFromFiles(i);
       }; break;
@@ -136,12 +138,13 @@ void calibration(){
 
   switch(choice){
     case 0: {
-      std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
+      std::cout << "Please wait while the extrinsic camera parameters are generated" << std::endl;
       calib.stereoCalibration(totalImg);
     }; break;
     case 1: {
-      calib.calibration(1,2,saveData,400);        
-      std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
+      calib.calibration(1,2,saveData,400); 
+      printf("\033[2J\033[1;H\033[?25l");        
+      std::cout << "Please wait while the extrinsic camera parameters are generated" << std::endl;
       totalImg = calib.checkFolder(1,400);
       calib.stereoCalibration(totalImg);
     }; break;

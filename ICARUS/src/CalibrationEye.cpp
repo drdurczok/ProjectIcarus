@@ -3,8 +3,10 @@
 CalibrationEye::CalibrationEye()
 {
     cam[1].num = 1;
+    cam[1].vid = 1;
     cam[1].title = "LCam";
     cam[2].num = 2;
+    cam[2].vid = 2;
     cam[2].title = "RCam";
 }
 
@@ -12,7 +14,7 @@ unsigned CalibrationEye::dispCamera(unsigned camNum){
     cam[camNum].num = camNum;
     string title = cam[camNum].title;
 
-    VideoCapture vid(cam[camNum].num);
+    VideoCapture vid(cam[camNum].vid);
     namedWindow(title, CV_WINDOW_AUTOSIZE);
     if(!vid.isOpened()) return 0;
 
@@ -29,8 +31,10 @@ unsigned CalibrationEye::dispCamera(unsigned camNum){
 }
 
 unsigned CalibrationEye::dispRectImage(){
-    VideoCapture Lcam(1);
-    VideoCapture Rcam(2);
+    VideoCapture Lcam(cam[1].vid);
+    VideoCapture Rcam(cam[2].vid);
+    namedWindow("left", CV_WINDOW_AUTOSIZE);
+    namedWindow("right", CV_WINDOW_AUTOSIZE);
 
     Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
     Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
@@ -69,7 +73,7 @@ unsigned CalibrationEye::calibration(unsigned cam_start = 1, unsigned cam_end = 
     VideoCapture *vid[cam_end+1-cam_start];
 
     for(unsigned i=cam_start; i<cam_end+1; i++){
-        vid[i] = new VideoCapture(i);
+        vid[i] = new VideoCapture(cam[i].vid);
         if(!vid[i]->isOpened()) {
             std::cout << "Failed to open camera " << i << std::endl;
             return 0;
@@ -119,7 +123,6 @@ unsigned CalibrationEye::calibration(unsigned cam_start = 1, unsigned cam_end = 
                             cam[i].i++;
                             imwrite(cam[i].name.str(),temp);
                             imwrite(cam[i].nameOverlay.str(),cam[i].drawToFrame);
-                            std::cout << i << "  " << cam_start << std::endl;
                             if(i == cam_start){
                                 printf("\033[2J\033[1;H\033[?25l");
                                 picNum++;
@@ -185,7 +188,7 @@ unsigned CalibrationEye::stereoCalibration(int num_imgs) {
 
     ostringstream name[2];
 
-    for (int i = 400; i <= num_imgs+400; i++) {
+    for (int i = 400; i <= num_imgs+399; i++) {
         name[0].str("");
         name[0] << "../../CalibrationPictures/Cam01/CAM01_calib" << i << ".jpg";
         name[1].str("");
@@ -223,6 +226,7 @@ unsigned CalibrationEye::stereoCalibration(int num_imgs) {
               object_points.push_back(obj);
         }
     }
+
     for (unsigned i = 0; i < imgPoints[0].size(); i++) {
     vector< Point2f > v1, v2;
         for (unsigned j = 0; j < imgPoints[0][i].size(); j++) {
@@ -310,10 +314,8 @@ unsigned CalibrationEye::stereoCalibration(int num_imgs) {
 }
 
 void CalibrationEye::swapCameras(){
-    cam[1].num = 2;
-    cam[1].title = "RCam";
-    cam[2].num = 1;
-    cam[2].title = "LCam";
+    cam[1].vid = 2;
+    cam[2].vid = 1;
 }
 
 unsigned CalibrationEye::checkFolder(unsigned u, unsigned start = 0){

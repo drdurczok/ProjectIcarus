@@ -34,6 +34,7 @@ class EyeBase
 
         struct camera{
                 unsigned num;
+                unsigned vid;
                 Mat frame;
                 Mat drawToFrame;
                 Mat cameraMatrix = Mat::eye(3,3, CV_64F);
