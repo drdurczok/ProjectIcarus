@@ -16,10 +16,11 @@ void restore_terminal_settings(void);
 void disable_waiting_for_enter(void);
 static struct termios oldt; //getchar without pressing enter
 
+unsigned camVid[] = {1,2};
+
 
 int main( int argc, const char** argv)
 {
-
   unsigned choice;
   disable_waiting_for_enter();
 
@@ -53,7 +54,7 @@ int main( int argc, const char** argv)
 }
 
 void calibration(unsigned img){
-  Eyes calib;
+  Eyes calib(camVid[0],camVid[1]);
 
   if (img==1) {
       printf("\033[2J\033[1;H\033[?25l"); 
@@ -130,6 +131,7 @@ void calibration(unsigned img){
         }; break;
         case 3: break;
       }
+      calib.getCameraState(camVid);
     }
     
     //Extrinsic Parameters
@@ -139,7 +141,7 @@ void calibration(unsigned img){
     unsigned totalImg = calib.checkFolder(1,400,500);
     header << "Now we will calculate the external camera parameters\n\n" 
            << "You already have " << totalImg << " calibration photos taken for each camera\n\n";
-    string option2[4];
+    string option2[3];
     option2[0] = "Use pictures";
     option2[1] = "Add more pictures";
     option2[2] = "Skip this step";

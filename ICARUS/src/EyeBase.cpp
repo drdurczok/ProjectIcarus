@@ -14,6 +14,7 @@ EyeBase::EyeBase()
 }
 
 unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end){
+    cout << "starting scan";
     for(unsigned i=start; i<end; i++){
         cam[0].name.str("");
         cam[0].name << "../../CalibrationPictures/Cam0" << u << "/CAM0" << u << "_calib" << i << ".jpg";
@@ -24,7 +25,7 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
             file.close();
         }
     }
-
+cout << "finished scan";
     cam[0].name.str("");
     cam[0].name << "CameraCalibration0" << u;
 
@@ -33,8 +34,9 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
     camtitle[0] << "K" << u;
     camtitle[1].str("");
     camtitle[1] << "D" << u;
-
+cout << "enter calib";
     cameraCalibration(cam[0].savedImages, cam[0].cameraMatrix, cam[0].distCoefficients);
+    cout << "finished calib";
     FileStorage fs1("../CalibrationParam.xml", FileStorage::APPEND);
     if( fs1.isOpened() ) {
         fs1 << camtitle[0].str() << cam[0].cameraMatrix;

@@ -2,13 +2,19 @@
 
 Eyes::Eyes()
 {
-    vid[1] = new VideoCapture(1);
-    if(!vid[1]->isOpened())
-        std::cout << "ERROR: Failed to open camera 1" << std::endl;
+    camVid[0] = 1;
+    camVid[1] = 2;
 
-    vid[2] = new VideoCapture(2);
-    if(!vid[2]->isOpened())
-        std::cout << "ERROR: Failed to open camera 2" << std::endl;
+    initializeCamera();
+
+}
+
+Eyes::Eyes(unsigned Lcam, unsigned Rcam)
+{
+    camVid[0] = Lcam;
+    camVid[1] = Rcam;
+
+    initializeCamera();
 }
 
 Eyes::~Eyes()
@@ -17,21 +23,56 @@ Eyes::~Eyes()
     vid[2]->release();
 }
 
+void Eyes::initializeCamera(){
+    vid[1] = new VideoCapture(camVid[0]);
+    if(!vid[1]->isOpened())
+        std::cout << "ERROR: Failed to open camera" << std::endl;
+
+    vid[2] = new VideoCapture(camVid[1]);
+    if(!vid[2]->isOpened())
+        std::cout << "ERROR: Failed to open camera" << std::endl;
+}
+
+void Eyes::initializeCamera(char u){
+    unsigned vidNum, capNum;
+    bool cond = false; 
+    if(u == 'L') {
+        vidNum = 1;
+        capNum = camVid[0];
+        cond = true;
+    }
+    else if(u == 'R') {
+        vidNum = 2;
+        capNum = camVid[1];
+        cond = true;
+    }
+    else
+        std::cout << "ERROR: Incorrect flag";
+
+    if(cond==true){
+        vid[vidNum] = new VideoCapture(capNum);
+        if(!vid[vidNum]->isOpened())
+            std::cout << "ERROR: Failed to open camera" << std::endl;
+    }
+}
+
 void Eyes::swapCameras(){
     vid[1]->release();
     vid[2]->release();
 
-    vid[1] = new VideoCapture(2);
-    if(!vid[1]->isOpened())
-        std::cout << "ERROR: Failed to open camera 2" << std::endl;
+    unsigned temp = camVid[0];
+    camVid[0] = camVid[1];
+    camVid[1] = temp;
 
-    vid[2] = new VideoCapture(1);
-    if(!vid[2]->isOpened())
-        std::cout << "ERROR: Failed to open camera 1" << std::endl;
+    initializeCamera();
+}
+
+void Eyes::getCameraState(unsigned* ptCamVid){
+    ptCamVid[0] = camVid[0];
+    ptCamVid[1] = camVid[1];
 }
 
 unsigned Eyes::dispCamera(unsigned camNum){
-    cam[camNum].num = camNum;
     string title = cam[camNum].title;
 
     namedWindow(title, CV_WINDOW_AUTOSIZE);
@@ -81,8 +122,8 @@ unsigned Eyes::dispRectImage(){
 
         charKey = waitKey(1);           // delay (in ms) and get key press, if any 
 
-        vid[1]->read(RightImgOrg);
-        vid[2]->read(LeftImgOrg);       
+        vid[2]->read(RightImgOrg);
+        vid[1]->read(LeftImgOrg);       
 
         remap(LeftImgOrg, undistorted[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
         remap(RightImgOrg , undistorted[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
@@ -241,7 +282,7 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
 
     Mat R, T, E, F;
 
-    stereoCalibrate(object_points, imgPoints_n[0], imgPoints_n[1], cameraMatrix[0], distCoefficients[0], cameraMatrix[1], distCoefficients[1], img1.size(), R, T, E, F);
+    stereoCalibrate(object_points, imgPoints_n[0], imgPoints_n[1], cameraMatrix[0], distCoefficients[0], cameraMatrix[1], distCoefficients[1], img1.size(), R, T, E, F, CV_CALIB_FIX_INTRINSIC);
 
     fs1.open("../CalibrationParam.xml", FileStorage::APPEND);
     if( fs1.isOpened() ) {
@@ -308,4 +349,6 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
 
     return 0;
 }
+
+
 
