@@ -18,6 +18,7 @@ class EyesGUI: public GUI
         void intrinsicParam(Eyes*);
         void extrinsicParam(Eyes*);
         void calibration(Eyes*);
+        void undistImage(Eyes*);
         void rectImage(Eyes*);
 
     private:

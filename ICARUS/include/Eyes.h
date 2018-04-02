@@ -14,6 +14,7 @@ class Eyes: public EyeBase
         void swapCameras();
         unsigned getCameraState(unsigned);
         unsigned dispCamera(unsigned);
+        unsigned dispUndistImage();
         unsigned dispRectImage();
         unsigned calibration(unsigned, bool, bool, unsigned);
         unsigned stereoCalibration(unsigned);

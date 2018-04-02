@@ -87,6 +87,54 @@ unsigned Eyes::dispCamera(unsigned camNum){
     return 0;
 }
 
+unsigned Eyes::dispUndistImage(){
+    namedWindow("left", CV_WINDOW_AUTOSIZE);
+    moveWindow("left", 20, 20);
+    namedWindow("right", CV_WINDOW_AUTOSIZE);
+    moveWindow("right", 710, 20);
+
+    Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+    Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+    Mat undistorted[2];
+
+    Mat distCoefficients[2];
+    Mat cameraMatrix[2];
+
+    FileStorage fs1("../InternalParam.xml", FileStorage::READ);
+    if( fs1.isOpened() ) {
+        fs1["K1"] >> cameraMatrix[0];
+        fs1["K2"] >> cameraMatrix[1];
+        fs1["D1"] >> distCoefficients[0];
+        fs1["D2"] >> distCoefficients[1];
+        fs1.release();
+    }
+    else
+        cout << "Error: Couldn't open CalibrationParam.xml to READ_INTRINSIC_PARAMETERS\n";
+
+    char charKey = 0;
+    while (charKey != 27 && vid[2]->isOpened() && vid[1]->isOpened()) {       // until the Esc key is pressed or webcam connection is lost
+        if (!vid[2]->read(RightImgOrg) || !vid[1]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
+            std::cout << "error: frame not read from webcam\n";
+            return 0;
+        }
+
+        charKey = waitKey(1);           // delay (in ms) and get key press, if any 
+
+        vid[2]->read(RightImgOrg);
+        vid[1]->read(LeftImgOrg);       
+
+        undistort(LeftImgOrg, undistorted[0], cameraMatrix[0], distCoefficients[0]);
+        undistort(RightImgOrg, undistorted[1], cameraMatrix[1], distCoefficients[1]);
+
+        imshow("left", undistorted[0]);
+        imshow("right", undistorted[1]);
+    }
+
+    cvDestroyWindow("left");
+    cvDestroyWindow("right");
+    return 0;
+}
+
 unsigned Eyes::dispRectImage(){
     namedWindow("left", CV_WINDOW_AUTOSIZE);
     moveWindow("left", 20, 20);
@@ -117,7 +165,7 @@ unsigned Eyes::dispRectImage(){
     while (charKey != 27 && vid[2]->isOpened() && vid[1]->isOpened()) {       // until the Esc key is pressed or webcam connection is lost
         if (!vid[2]->read(RightImgOrg) || !vid[1]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
             std::cout << "error: frame not read from webcam\n";
-            break;
+            return 0;
         }
 
         charKey = waitKey(1);           // delay (in ms) and get key press, if any 

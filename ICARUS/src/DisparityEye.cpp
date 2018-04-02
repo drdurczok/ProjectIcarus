@@ -41,11 +41,9 @@ void DisparityEye::depthMap(){
         fs1["RMap11"] >> rmap[1][1];
         fs1.release();
     }
-    else
+    else {
         cout << "Error: Couldn't open CalibrationParam.xml to READ_RMAP_PARAMETERS\n";
-    	
-    //loadCameraCalibration("../CameraCalibration01", cameraMatrix[0], distanceCoefficients[0]);
-    //loadCameraCalibration("../CameraCalibration02", cameraMatrix[1], distanceCoefficients[1]);
+    }
 
 	int minDisparity = 0;			//Minimum possible disparity value. Normally, it is zero but sometimes rectification algorithms can shift images, so this parameter needs to be adjusted accordingly.
 	int numDisparities = 16;		//Maximum disparity minus minimum disparity. The value is always greater than zero. In the current implementation, this parameter must be divisible by 16.

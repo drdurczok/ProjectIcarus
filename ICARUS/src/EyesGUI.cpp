@@ -32,7 +32,7 @@ void EyesGUI::calibrationGUI(){
 		  case 1: intrinsicParam(calib); break;
 		  case 2: extrinsicParam(calib); break;
 		  case 3: calibration(calib); break;
-		  case 4: break;
+		  case 4: undistImage(calib); break;
 		  case 5: rectImage(calib); break;
 		  case 6: loop = false; break;
 		  default: loop = false;
@@ -90,6 +90,7 @@ void EyesGUI::intrinsicParam(Eyes* calib){
       }
       else{
         std::cout << "We will begin with the intrinsic parameter calibration of individual cameras" << std::endl;
+        choice = 1;
       }
 
       bool saveData = true;
@@ -159,6 +160,13 @@ void EyesGUI::calibration(Eyes* calib){
 	swapCameras(calib);
 	intrinsicParam(calib);
 	extrinsicParam(calib);
+}
+
+void EyesGUI::undistImage(Eyes* calib){
+	printf("\033[2J\033[1;H\033[?25l"); 
+	std::cout << "These are the undistorted images\n\n"
+	        << "Press esc to continue" << std::endl;
+	calib->dispUndistImage();
 }
 
 void EyesGUI::rectImage(Eyes* calib){
