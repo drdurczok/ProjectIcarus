@@ -6,7 +6,6 @@ Eyes::Eyes()
     camVid[1] = 2;
 
     initializeCamera();
-
 }
 
 Eyes::Eyes(unsigned Lcam, unsigned Rcam)
@@ -67,9 +66,8 @@ void Eyes::swapCameras(){
     initializeCamera();
 }
 
-void Eyes::getCameraState(unsigned* ptCamVid){
-    ptCamVid[0] = camVid[0];
-    ptCamVid[1] = camVid[1];
+unsigned Eyes::getCameraState(unsigned u){
+    return camVid[u];
 }
 
 unsigned Eyes::dispCamera(unsigned camNum){
@@ -91,7 +89,9 @@ unsigned Eyes::dispCamera(unsigned camNum){
 
 unsigned Eyes::dispRectImage(){
     namedWindow("left", CV_WINDOW_AUTOSIZE);
+    moveWindow("left", 20, 20);
     namedWindow("right", CV_WINDOW_AUTOSIZE);
+    moveWindow("right", 710, 20);
 
     Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
     Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
@@ -131,6 +131,7 @@ unsigned Eyes::dispRectImage(){
         imshow("left", undistorted[0]);
         imshow("right", undistorted[1]);
     }
+
     cvDestroyWindow("left");
     cvDestroyWindow("right");
     return 0;
@@ -143,6 +144,7 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
 
     for(unsigned i=cam_start; i<iter; i++){
         namedWindow(cam[i].title, CV_WINDOW_AUTOSIZE);
+        moveWindow(cam[i].title, cam[i].posx, 20);
         cam[i].i = picIter;
     }
 

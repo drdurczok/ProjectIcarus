@@ -45,6 +45,7 @@ class EyeBase
                 unsigned num;
                 unsigned vid;
                 string title;
+                unsigned posx;
                 Mat frame;
                 Mat drawToFrame;
                 Mat cameraMatrix = Mat::eye(3,3, CV_64F);

@@ -15,6 +15,7 @@ class DisparityEye: public EyeBase
     protected:
 
     private:
+
 };
 
 #endif // DISPARITYEYE_H

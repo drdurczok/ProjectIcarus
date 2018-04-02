@@ -2,16 +2,16 @@
 
 DisparityEye::DisparityEye()
 {
-    //ctor
+    
 }
 
 DisparityEye::~DisparityEye()
 {
-    //dtor
+    
 }
 
 void DisparityEye::depthMap(){
-    VideoCapture Rcam(1);
+	VideoCapture Rcam(1);
     VideoCapture Lcam(2);
 
     Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
@@ -24,7 +24,25 @@ void DisparityEye::depthMap(){
     char charKey = 0;
     int state = 0;
 
-    createRMap(LeftImgOrg,RightImgOrg);
+    namedWindow("left", CV_WINDOW_AUTOSIZE);
+    moveWindow("left", 20, 20);
+    namedWindow("right", CV_WINDOW_AUTOSIZE);
+    moveWindow("right", 1380, 20);
+    namedWindow("disp", CV_WINDOW_AUTOSIZE);
+    moveWindow("disp", 700, 20);
+
+    Mat rmap[2][2];
+
+    FileStorage fs1("../RMapParam.xml", FileStorage::READ);
+    if( fs1.isOpened() ) {
+        fs1["RMap00"] >> rmap[0][0];
+        fs1["RMap01"] >> rmap[0][1];
+        fs1["RMap10"] >> rmap[1][0];
+        fs1["RMap11"] >> rmap[1][1];
+        fs1.release();
+    }
+    else
+        cout << "Error: Couldn't open CalibrationParam.xml to READ_RMAP_PARAMETERS\n";
     	
     //loadCameraCalibration("../CameraCalibration01", cameraMatrix[0], distanceCoefficients[0]);
     //loadCameraCalibration("../CameraCalibration02", cameraMatrix[1], distanceCoefficients[1]);
@@ -41,12 +59,13 @@ void DisparityEye::depthMap(){
     int speckleRange = 0;			//Maximum disparity variation within each connected component. If you do speckle filtering, set the parameter to a positive value, it will be implicitly multiplied by 16. Normally, 1 or 2 is good enough.
     bool fullDP = false;			//False - single pass, 5 directions, Trues - 8 directions
 	
-
 	while (charKey != 27 && Rcam.isOpened() && Lcam.isOpened()) {		// until the Esc key is pressed or webcam connection is lost
 		if (!Rcam.read(RightImgOrg) || !Lcam.read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
 			std::cout << "error: frame not read from webcam\n";
 			break;
 		}
+		Rcam.read(RightImgOrg);
+        Lcam.read(LeftImgOrg);
 
 		charKey = waitKey(1);			// delay (in ms) and get key press, if any     
 		GUI(minDisparity, numDisparities, SADWindowSize,

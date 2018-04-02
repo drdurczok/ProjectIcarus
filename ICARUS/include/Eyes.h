@@ -12,7 +12,7 @@ class Eyes: public EyeBase
         void initializeCamera();
         void initializeCamera(char);
         void swapCameras();
-        void getCameraState(unsigned*);
+        unsigned getCameraState(unsigned);
         unsigned dispCamera(unsigned);
         unsigned dispRectImage();
         unsigned calibration(unsigned, bool, bool, unsigned);

@@ -9,8 +9,10 @@ EyeBase::EyeBase()
 
     cam[1].num = 1;
     cam[1].title = "LCam";
+    cam[1].posx = 20;
     cam[2].num = 2;
     cam[2].title = "RCam";
+    cam[2].posx = 700;
 }
 
 unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end){
