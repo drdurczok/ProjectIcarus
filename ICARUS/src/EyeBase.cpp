@@ -16,7 +16,7 @@ EyeBase::EyeBase()
 }
 
 unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end){
-    cout << "starting scan";
+    cam[0].savedImages.clear();
     for(unsigned i=start; i<end; i++){
         cam[0].name.str("");
         cam[0].name << "../../CalibrationPictures/Cam0" << u << "/CAM0" << u << "_calib" << i << ".jpg";
@@ -27,7 +27,7 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
             file.close();
         }
     }
-cout << "finished scan";
+
     cam[0].name.str("");
     cam[0].name << "CameraCalibration0" << u;
 
@@ -36,9 +36,9 @@ cout << "finished scan";
     camtitle[0] << "K" << u;
     camtitle[1].str("");
     camtitle[1] << "D" << u;
-cout << "enter calib";
+
     cameraCalibration(cam[0].savedImages, cam[0].cameraMatrix, cam[0].distCoefficients);
-    cout << "finished calib";
+
     FileStorage fs1("../InternalParam.xml", FileStorage::APPEND);
     if( fs1.isOpened() ) {
         fs1 << camtitle[0].str() << cam[0].cameraMatrix;
@@ -135,7 +135,7 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
         cout << "Error: Couldn't open CalibrationParam.xml to READ_EXTRINSIC_PARAMETERS\n";
 
     FileStorage fs2("../InternalParam.xml", FileStorage::READ);
-    if( fs1.isOpened() ) {
+    if( fs2.isOpened() ) {
         fs2["K1"] >> cameraMatrix[0];
         fs2["K2"] >> cameraMatrix[1];
         fs2["D1"] >> distCoefficients[0];
@@ -143,7 +143,7 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
         fs2.release();
     }
     else
-        cout << "Error: Couldn't open CalibrationParam.xml to READ_INTERNAL_PARAMETERS\n";
+        cout << "Error: Couldn't open InternalParam.xml to READ_INTERNAL_PARAMETERS\n";
 
     initUndistortRectifyMap(cameraMatrix[0], distCoefficients[0], R[0], P[0], LeftImgOrg.size(), CV_16SC2, rmap[0][0], rmap[0][1]);
     initUndistortRectifyMap(cameraMatrix[1], distCoefficients[1], R[1], P[1], RightImgOrg.size(), CV_16SC2, rmap[1][0], rmap[1][1]);
@@ -157,5 +157,5 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
         fs3.release();
     }
     else
-        cout << "Error: Couldn't open CalibrationParam.xml to WRITE_MAPPING_PARAMETERS\n";
+        cout << "Error: Couldn't open RMapParam.xml to WRITE_MAPPING_PARAMETERS\n";
 }

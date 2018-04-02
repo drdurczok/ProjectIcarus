@@ -112,7 +112,7 @@ unsigned Eyes::dispRectImage(){
         fs1.release();
     }
     else
-        cout << "Error: Couldn't open CalibrationParam.xml to READ_RMAP_PARAMETERS\n";
+        cout << "Error: Couldn't open RMapParam.xml to READ_RMAP_PARAMETERS\n";
 
     while (charKey != 27 && vid[2]->isOpened() && vid[1]->isOpened()) {       // until the Esc key is pressed or webcam connection is lost
         if (!vid[2]->read(RightImgOrg) || !vid[1]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {

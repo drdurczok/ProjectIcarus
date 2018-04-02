@@ -6,7 +6,7 @@ EyesGUI::EyesGUI(){
 }
 
 void EyesGUI::calibrationGUI(){
-	Eyes* calib = new Eyes();
+	Eyes* calib = new Eyes(camVid[0],camVid[1]);
 	
 	ostringstream header;
 	header.str("");
@@ -37,6 +37,8 @@ void EyesGUI::calibrationGUI(){
 		  case 6: loop = false; break;
 		  default: loop = false;
 		}
+		camVid[0] = calib->getCameraState(1);
+		camVid[1] = calib->getCameraState(2);
 	}
 
 	delete calib;
@@ -113,8 +115,6 @@ void EyesGUI::intrinsicParam(Eyes* calib){
         }; break;
         case 3: break;
       }
-      camVid[0] = calib->getCameraState(0);
-      camVid[1] = calib->getCameraState(1);
     }
     
 }
