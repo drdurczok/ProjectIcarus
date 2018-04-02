@@ -39,7 +39,7 @@ cout << "finished scan";
 cout << "enter calib";
     cameraCalibration(cam[0].savedImages, cam[0].cameraMatrix, cam[0].distCoefficients);
     cout << "finished calib";
-    FileStorage fs1("../CalibrationParam.xml", FileStorage::APPEND);
+    FileStorage fs1("../InternalParam.xml", FileStorage::APPEND);
     if( fs1.isOpened() ) {
         fs1 << camtitle[0].str() << cam[0].cameraMatrix;
         fs1 << camtitle[1].str() << cam[0].distCoefficients;
@@ -125,10 +125,6 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
 
     FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
     if( fs1.isOpened() ) {
-        fs1["K1"] >> cameraMatrix[0];
-        fs1["K2"] >> cameraMatrix[1];
-        fs1["D1"] >> distCoefficients[0];
-        fs1["D2"] >> distCoefficients[1];
         fs1["R1"] >> R[0];
         fs1["R2"] >> R[1];
         fs1["P1"] >> P[0];
@@ -138,16 +134,27 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
     else
         cout << "Error: Couldn't open CalibrationParam.xml to READ_EXTRINSIC_PARAMETERS\n";
 
+    FileStorage fs2("../InternalParam.xml", FileStorage::READ);
+    if( fs1.isOpened() ) {
+        fs2["K1"] >> cameraMatrix[0];
+        fs2["K2"] >> cameraMatrix[1];
+        fs2["D1"] >> distCoefficients[0];
+        fs2["D2"] >> distCoefficients[1];
+        fs2.release();
+    }
+    else
+        cout << "Error: Couldn't open CalibrationParam.xml to READ_INTERNAL_PARAMETERS\n";
+
     initUndistortRectifyMap(cameraMatrix[0], distCoefficients[0], R[0], P[0], LeftImgOrg.size(), CV_16SC2, rmap[0][0], rmap[0][1]);
     initUndistortRectifyMap(cameraMatrix[1], distCoefficients[1], R[1], P[1], RightImgOrg.size(), CV_16SC2, rmap[1][0], rmap[1][1]);
 
-    FileStorage fs2("../RMapParam.xml", FileStorage::WRITE);
-    if( fs2.isOpened() ) {
-        fs2 << "RMap00" << rmap[0][0];
-        fs2 << "RMap01" << rmap[0][1];
-        fs2 << "RMap10" << rmap[1][0];
-        fs2 << "RMap11" << rmap[1][1];
-        fs2.release();
+    FileStorage fs3("../RMapParam.xml", FileStorage::WRITE);
+    if( fs3.isOpened() ) {
+        fs3 << "RMap00" << rmap[0][0];
+        fs3 << "RMap01" << rmap[0][1];
+        fs3 << "RMap10" << rmap[1][0];
+        fs3 << "RMap11" << rmap[1][1];
+        fs3.release();
     }
     else
         cout << "Error: Couldn't open CalibrationParam.xml to WRITE_MAPPING_PARAMETERS\n";

@@ -271,7 +271,7 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
     Mat distCoefficients[2];
     Mat cameraMatrix[2];
 
-    FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
+    FileStorage fs1("../InternalParam.xml", FileStorage::READ);
     if( fs1.isOpened() ) {
         fs1["K1"] >> cameraMatrix[0];
         fs1["K2"] >> cameraMatrix[1];
