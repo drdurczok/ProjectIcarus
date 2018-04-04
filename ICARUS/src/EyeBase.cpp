@@ -15,6 +15,13 @@ EyeBase::EyeBase()
     cam[2].posx = 700;
 }
 
+/*
+ * This method produces the intrinsic camera parameters from a set of previously saved images.
+ * The parameters are stored in an XML file for future reference along with a RMS(root mean square)
+ * value that depicts the pixel deviation. A value anywhere from 0.1 to 1.0 is considered a good
+ * calibration.
+ */
+
 unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end){
     cam[0].savedImages.clear();
     for(unsigned i=start; i<end; i++){
@@ -55,6 +62,9 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
 }
 
 //***********************PRIVATE**************************
+/*
+ * Core intrinsic calibration method.
+ */
 double EyeBase::cameraCalibration(vector<Mat> calibrationImages, Mat& cameraMatrix, Mat& distCoefficients){
     vector<vector<Point2f>> checkerboardImageSpacePoints;
 
@@ -98,6 +108,9 @@ void EyeBase::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& 
     }
 }
 
+/*
+ * Core folder manipulation
+ */
 unsigned EyeBase::checkFolder(unsigned u, unsigned start = 0, unsigned end = 399){
     unsigned totalImg = 0;
 
@@ -122,7 +135,10 @@ bool EyeBase::rmFolder(unsigned u){
     return true;
 }
 
-
+/*
+ * Based on intrinsic and extrinsic calibration parameters, remapping matrices are produced to
+ * create the rectified image. The RMap values are stored in an XML file for future reference.
+ */
 void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
     Mat distCoefficients[2];
     Mat cameraMatrix[2], R[2], P[2];

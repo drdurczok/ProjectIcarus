@@ -1,5 +1,10 @@
 #include "../include/Eyes.h"
 
+/*
+ * Initialization of the class involves setting the correct camera indexes.
+ * If during setup the cameras are swapped, it is possible to switch the
+ * indexes in software and share the correct setup with getCameraState().
+ */
 Eyes::Eyes()
 {
     camVid[0] = 1;
@@ -70,6 +75,11 @@ unsigned Eyes::getCameraState(unsigned u){
     return camVid[u];
 }
 
+/*
+ * The following methods allow for a preview of the various camera states.
+ * We may display the camera as is, undistorted based on intrinsic parameters,
+ * or a rectified version that involves all the included calibration features.
+ */
 unsigned Eyes::dispCamera(unsigned camNum){
     string title = cam[camNum].title;
 
@@ -185,6 +195,9 @@ unsigned Eyes::dispRectImage(){
     return 0;
 }
 
+/*
+ * A general live method for locating a checkerboard pattern, taking and storing the images.
+ */
 unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveData = true, unsigned picIter = 1){
     unsigned iter;
     if(dual==true) iter = cam_start+2;
@@ -258,6 +271,11 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
     return 0;
 }
 
+/*
+ * Here we produce the extrinsic and rectification camera parameters for a stereo set.
+ * This is accomplished with the stereoCalibrate() and stereoRectify() methods. 
+ * Special attention is needed with their flags and parameter values.
+ */
 unsigned Eyes::stereoCalibration(unsigned num_imgs) {
     vector< vector< Point3f > > object_points;
     vector< Point2f > corners1, corners2;
