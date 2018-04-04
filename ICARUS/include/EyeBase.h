@@ -29,7 +29,7 @@ class EyeBase
         bool rmFolder(unsigned);
 
     protected:
-        void cameraCalibration(vector<Mat>, Mat&, Mat&);
+        double cameraCalibration(vector<Mat>, Mat&, Mat&);    //calibrateCamera, returns RMS(root mean square) - good calibration between 0.1 and 1.0 pixels
         void createKnownBoardPosition(vector<Point3f>&);
         void getChessboardCorners(vector<Mat>, vector<vector<Point2f>>&, bool);
 

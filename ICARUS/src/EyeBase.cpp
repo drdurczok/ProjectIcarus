@@ -31,16 +31,19 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
     cam[0].name.str("");
     cam[0].name << "CameraCalibration0" << u;
 
-    ostringstream camtitle[2];
+    ostringstream camtitle[3];
     camtitle[0].str("");
     camtitle[0] << "K" << u;
     camtitle[1].str("");
     camtitle[1] << "D" << u;
+    camtitle[2].str("");
+    camtitle[2] << "RMS" << u;
 
-    cameraCalibration(cam[0].savedImages, cam[0].cameraMatrix, cam[0].distCoefficients);
+    double rms = cameraCalibration(cam[0].savedImages, cam[0].cameraMatrix, cam[0].distCoefficients);
 
     FileStorage fs1("../InternalParam.xml", FileStorage::APPEND);
     if( fs1.isOpened() ) {
+        fs1 << camtitle[2].str() << rms;
         fs1 << camtitle[0].str() << cam[0].cameraMatrix;
         fs1 << camtitle[1].str() << cam[0].distCoefficients;
         fs1.release();
@@ -52,7 +55,7 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
 }
 
 //***********************PRIVATE**************************
-void EyeBase::cameraCalibration(vector<Mat> calibrationImages, Mat& cameraMatrix, Mat& distCoefficients){
+double EyeBase::cameraCalibration(vector<Mat> calibrationImages, Mat& cameraMatrix, Mat& distCoefficients){
     vector<vector<Point2f>> checkerboardImageSpacePoints;
 
     getChessboardCorners(calibrationImages, checkerboardImageSpacePoints, false);
@@ -65,7 +68,9 @@ void EyeBase::cameraCalibration(vector<Mat> calibrationImages, Mat& cameraMatrix
     vector<Mat> rVectors, tVectors;
     distCoefficients = Mat::zeros(8,1, CV_64F);
 
-    calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distCoefficients, rVectors, tVectors);
+    double rms = calibrateCamera(worldSpaceCornerPoints, checkerboardImageSpacePoints, boardSize, cameraMatrix, distCoefficients, rVectors, tVectors);
+
+    return rms;
 }
 
 void EyeBase::createKnownBoardPosition(vector<Point3f>& corners){
@@ -134,13 +139,13 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
     else
         cout << "Error: Couldn't open CalibrationParam.xml to READ_EXTRINSIC_PARAMETERS\n";
 
-    FileStorage fs2("../InternalParam.xml", FileStorage::READ);
-    if( fs2.isOpened() ) {
-        fs2["K1"] >> cameraMatrix[0];
-        fs2["K2"] >> cameraMatrix[1];
-        fs2["D1"] >> distCoefficients[0];
-        fs2["D2"] >> distCoefficients[1];
-        fs2.release();
+    fs1.open("../InternalParam.xml", FileStorage::READ);
+    if( fs1.isOpened() ) {
+        fs1["K1"] >> cameraMatrix[0];
+        fs1["K2"] >> cameraMatrix[1];
+        fs1["D1"] >> distCoefficients[0];
+        fs1["D2"] >> distCoefficients[1];
+        fs1.release();
     }
     else
         cout << "Error: Couldn't open InternalParam.xml to READ_INTERNAL_PARAMETERS\n";
@@ -148,13 +153,13 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
     initUndistortRectifyMap(cameraMatrix[0], distCoefficients[0], R[0], P[0], LeftImgOrg.size(), CV_16SC2, rmap[0][0], rmap[0][1]);
     initUndistortRectifyMap(cameraMatrix[1], distCoefficients[1], R[1], P[1], RightImgOrg.size(), CV_16SC2, rmap[1][0], rmap[1][1]);
 
-    FileStorage fs3("../RMapParam.xml", FileStorage::WRITE);
-    if( fs3.isOpened() ) {
-        fs3 << "RMap00" << rmap[0][0];
-        fs3 << "RMap01" << rmap[0][1];
-        fs3 << "RMap10" << rmap[1][0];
-        fs3 << "RMap11" << rmap[1][1];
-        fs3.release();
+    fs1.open("../RMapParam.xml", FileStorage::WRITE);
+    if( fs1.isOpened() ) {
+        fs1 << "RMap00" << rmap[0][0];
+        fs1 << "RMap01" << rmap[0][1];
+        fs1 << "RMap10" << rmap[1][0];
+        fs1 << "RMap11" << rmap[1][1];
+        fs1.release();
     }
     else
         cout << "Error: Couldn't open RMapParam.xml to WRITE_MAPPING_PARAMETERS\n";

@@ -332,10 +332,14 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
 
     Mat R, T, E, F;
 
-    stereoCalibrate(object_points, imgPoints_n[0], imgPoints_n[1], cameraMatrix[0], distCoefficients[0], cameraMatrix[1], distCoefficients[1], img1.size(), R, T, E, F, CV_CALIB_FIX_INTRINSIC);
+    double rms = stereoCalibrate(object_points, imgPoints_n[0], imgPoints_n[1], 
+                    cameraMatrix[0], distCoefficients[0], 
+                    cameraMatrix[1], distCoefficients[1], 
+                    img1.size(), R, T, E, F, CV_CALIB_FIX_INTRINSIC);
 
-    fs1.open("../CalibrationParam.xml", FileStorage::APPEND);
+    fs1.open("../CalibrationParam.xml", FileStorage::WRITE);
     if( fs1.isOpened() ) {
+        fs1 << "ST_RMS" << rms;
         fs1 << "R" << R;
         fs1 << "T" << T;
         fs1 << "E" << E;
@@ -349,7 +353,10 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
     std::cout << "Starting Rectification" << std::endl;
 
     Mat R1, R2, P1, P2, Q;
-    stereoRectify(cameraMatrix[0], distCoefficients[0], cameraMatrix[1], distCoefficients[1], img1.size(), R, T, R1, R2, P1, P2, Q);
+    stereoRectify(cameraMatrix[0], distCoefficients[0], 
+                  cameraMatrix[1], distCoefficients[1], 
+                  img1.size(), R, T, R1, R2, P1, P2, Q,
+                  CALIB_ZERO_DISPARITY, 0);
     
     if( fs1.isOpened() ) {
         fs1 << "R1" << R1;

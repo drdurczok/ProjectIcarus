@@ -95,14 +95,20 @@ void EyesGUI::intrinsicParam(Eyes* calib){
 
       bool saveData = true;
 
+      if(i==1 && choice!=3){
+        ostringstream name;
+    	name.str();
+    	name << "exec rm -r ../InternalParam.xml";
+    	system(name.str().c_str());
+      }
+      
       switch(choice){
         case 0: {
           printf("\033[2J\033[1;H\033[?25l"); 
           std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
           calib->calibrationFromFiles(i,0,300);
         }; break;
-        case 1: {
-          calib->calibration(i,false,saveData,totalImg);    
+        case 1: {  
           printf("\033[2J\033[1;H\033[?25l");     
           std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
           calib->calibrationFromFiles(i,0,300);

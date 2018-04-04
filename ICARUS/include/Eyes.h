@@ -17,7 +17,7 @@ class Eyes: public EyeBase
         unsigned dispUndistImage();
         unsigned dispRectImage();
         unsigned calibration(unsigned, bool, bool, unsigned);
-        unsigned stereoCalibration(unsigned);
+        unsigned stereoCalibration(unsigned);	//stereoCalibrate, stereoRectify
 
 
     private:
