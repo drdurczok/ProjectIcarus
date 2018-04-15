@@ -3,6 +3,7 @@
 #include "../include/DisparityEye.h"
 #include "../include/EyesGUI.h"
 #include "../include/GUI.h"
+#include "../include/Tracking.h"
 
 using namespace std;
 
@@ -15,6 +16,7 @@ int main( int argc, const char** argv)
 {
   GUI gui;
   EyesGUI eyes;
+  Tracking track;
   
   unsigned choice;
   disable_waiting_for_enter();
@@ -33,6 +35,7 @@ int main( int argc, const char** argv)
     switch(choice){
       case 0: eyes.calibrationGUI(); break;
       case 1: disparity(); break;
+      case 2: track.ScanFingerTips(); break;
       case 3: loop = false; break;
       default: loop = false;
     }
@@ -48,7 +51,7 @@ int main( int argc, const char** argv)
 
 void disparity(){
   DisparityEye sight;
-  sight.depthMap();
+  sight.showDepthMap();
 }
 
 void restore_terminal_settings(void){

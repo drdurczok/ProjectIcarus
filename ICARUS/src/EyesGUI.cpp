@@ -74,10 +74,10 @@ void EyesGUI::intrinsicParam(Eyes* calib){
 
     for(unsigned i=1; i<3; i++){
       printf("\033[2J\033[1;H\033[?25l"); 
-      header.str("");
       
       unsigned totalImg = calib->checkFolder(i,0,399);
       if(totalImg!=0){
+      	header.str("");
         header << "We will begin with the intrinsic parameter calibration of individual cameras\n\n" 
                << "You already have " << totalImg << " calibration photos taken for camera " << i << "\n\n";
         string option2[4];
@@ -90,16 +90,18 @@ void EyesGUI::intrinsicParam(Eyes* calib){
       }
       else{
         std::cout << "We will begin with the intrinsic parameter calibration of individual cameras" << std::endl;
-        choice = 1;
+        choice = 2;
       }
 
       bool saveData = true;
 
       if(i==1 && choice!=3){
         ostringstream name;
-    	name.str();
+    	name.str(); 
     	name << "exec rm -r ../InternalParam.xml";
-    	system(name.str().c_str());
+    	struct stat buffer;   
+  	  	if(stat ("../InternalParam.xml", &buffer)>=0)
+    		system(name.str().c_str());
       }
       
       switch(choice){

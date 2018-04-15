@@ -285,6 +285,23 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
 
     ostringstream name[2];
 
+    Mat undistorted[2];
+
+    Mat distCoefficients[2];
+    Mat cameraMatrix[2];
+
+    FileStorage fs1("../InternalParam.xml", FileStorage::READ);
+    if( fs1.isOpened() ) {
+        fs1["K1"] >> cameraMatrix[0];
+        fs1["K2"] >> cameraMatrix[1];
+        fs1["D1"] >> distCoefficients[0];
+        fs1["D2"] >> distCoefficients[1];
+        fs1.release();
+    }
+    else
+        cout << "Error: Couldn't open CalibrationParam.xml to READ_INTRINSIC_PARAMETERS\n";
+    
+
     for (unsigned i = 400; i <= num_imgs+399; i++) {
         name[0].str("");
         name[0] << "../../CalibrationPictures/Cam01/CAM01_calib" << i << ".jpg";
@@ -292,13 +309,17 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
         name[1] << "../../CalibrationPictures/Cam02/CAM02_calib" << i << ".jpg";
         img1 = imread(name[0].str(), CV_LOAD_IMAGE_COLOR);
         img2 = imread(name[1].str(), CV_LOAD_IMAGE_COLOR);
-        cvtColor(img1, gray1, CV_BGR2GRAY);
-        cvtColor(img2, gray2, CV_BGR2GRAY);
+
+        undistort(img1, undistorted[0], cameraMatrix[0], distCoefficients[0]);
+        undistort(img2, undistorted[1], cameraMatrix[1], distCoefficients[1]);
+
+        cvtColor(undistorted[0], gray1, CV_BGR2GRAY);
+        cvtColor(undistorted[1], gray2, CV_BGR2GRAY);
 
         bool found1 = false, found2 = false;
 
-        found1 = cv::findChessboardCorners(img1, boardSize, corners1, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-        found2 = cv::findChessboardCorners(img2, boardSize, corners2, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        found1 = cv::findChessboardCorners(undistorted[0], boardSize, corners1, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        found2 = cv::findChessboardCorners(undistorted[1], boardSize, corners2, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
         if (found1) {
             cv::cornerSubPix(gray1, corners1, cv::Size(5, 5), cv::Size(-1, -1),
@@ -334,26 +355,12 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
         imgPoints_n[1].push_back(v2);
     }
 
-    Mat distCoefficients[2];
-    Mat cameraMatrix[2];
-
-    FileStorage fs1("../InternalParam.xml", FileStorage::READ);
-    if( fs1.isOpened() ) {
-        fs1["K1"] >> cameraMatrix[0];
-        fs1["K2"] >> cameraMatrix[1];
-        fs1["D1"] >> distCoefficients[0];
-        fs1["D2"] >> distCoefficients[1];
-        fs1.release();
-    }
-    else
-        cout << "Error: Couldn't open CalibrationParam.xml to READ_INTRINSIC_PARAMETERS\n";
-
     Mat R, T, E, F;
 
     double rms = stereoCalibrate(object_points, imgPoints_n[0], imgPoints_n[1], 
                     cameraMatrix[0], distCoefficients[0], 
                     cameraMatrix[1], distCoefficients[1], 
-                    img1.size(), R, T, E, F, CV_CALIB_FIX_INTRINSIC);
+                    undistorted[0].size(), R, T, E, F, CV_CALIB_FIX_INTRINSIC);
 
     fs1.open("../CalibrationParam.xml", FileStorage::WRITE);
     if( fs1.isOpened() ) {
@@ -373,7 +380,7 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
     Mat R1, R2, P1, P2, Q;
     stereoRectify(cameraMatrix[0], distCoefficients[0], 
                   cameraMatrix[1], distCoefficients[1], 
-                  img1.size(), R, T, R1, R2, P1, P2, Q,
+                  undistorted[0].size(), R, T, R1, R2, P1, P2, Q,
                   CALIB_ZERO_DISPARITY, 0);
     
     if( fs1.isOpened() ) {
