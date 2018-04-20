@@ -15,8 +15,8 @@ DisparityEye::~DisparityEye()
 }
 
 void DisparityEye::showDepthMap(){
-    Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
-    Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+    Mat LeftImgOrg(cam[camVid[0]].size.width, cam[camVid[0]].size.height, CV_8UC3, Scalar(0,0,255));
+    Mat RightImgOrg(cam[camVid[1]].size.width, cam[camVid[1]].size.height, CV_8UC3, Scalar(0,0,255));
     Mat LeftImgGrey;
     Mat RightImgGrey;
     Mat undistorted[2];
@@ -70,14 +70,32 @@ void DisparityEye::showDepthMap(){
 	cv::createTrackbar("speckleWindowSize", windowName, &speckleWindowSize, 100);
 	cv::createTrackbar("speckleRange", windowName, &speckleRange, 100);
 
+
+//____________________________
+	Mat distCoefficients[2];
+    Mat cameraMatrix[2];
+
+    fs1.open("../InternalParam.xml", FileStorage::READ);
+    if( fs1.isOpened() ) {
+        fs1["K1"] >> cameraMatrix[0];
+        fs1["K2"] >> cameraMatrix[1];
+        fs1["D1"] >> distCoefficients[0];
+        fs1["D2"] >> distCoefficients[1];
+        fs1.release();
+    }
+    else{
+        cout << "Error: Couldn't open InternalParam.xml to READ_INTERNAL_PARAMETERS\n";
+    }
+//_____________________________
+
 	while (charKey != 27 && vid[camVid[1]]->isOpened() && vid[camVid[0]]->isOpened()) {		// until the Esc key is pressed or webcam connection is lost
 		if (!vid[camVid[1]]->read(RightImgOrg) || !vid[camVid[0]]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
 			std::cout << "error: frame not read from webcam\n";
 			break;
 		}
 
-        RightImgOrg = getFrame(camVid[1]);
         LeftImgOrg = getFrame(camVid[0]);
+        RightImgOrg = getFrame(camVid[1]);
 
 
         /*
@@ -89,8 +107,11 @@ void DisparityEye::showDepthMap(){
         remap(LeftImgOrg, undistorted[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
         remap(RightImgOrg , undistorted[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
 
-    	//undistort(LeftImgOrg, undistorted[0], cameraMatrix[0], distanceCoefficients[0]);
-    	//undistort(RightImgOrg, undistorted[1], cameraMatrix[1], distanceCoefficients[1]);
+    	//undistort(LeftImgOrg, undistorted[0], cameraMatrix[0], distCoefficients[0]);
+    	//undistort(RightImgOrg, undistorted[1], cameraMatrix[1], distCoefficients[1]);
+
+    	//undistorted[0] = LeftImgOrg;
+    	//undistorted[1] = RightImgOrg;
 
         Ptr<StereoSGBM> sgbm = StereoSGBM::create(minDisparity, numDisparities*16, SADWindowSize,
 												               P1, P2, disp12MaxDiff, preFilterCap,uniquenessRatio,

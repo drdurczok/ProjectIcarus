@@ -40,7 +40,7 @@ class EyeBase
         void createKnownBoardPosition(vector<Point3f>&);
         void getChessboardCorners(vector<Mat>, vector<vector<Point2f>>&, bool);
 
-        void createRMap(Mat&, Mat&);
+        void createRMap();
 
 
         float squareEdgeLength; //meters
@@ -57,6 +57,7 @@ class EyeBase
                 Mat rotate;
                 Rect bbox;
                 Rect ROI;
+                Size size;
                 Mat frame;
                 Mat drawToFrame;
                 Mat cameraMatrix = Mat::eye(3,3, CV_64F);

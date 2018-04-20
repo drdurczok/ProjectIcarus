@@ -89,7 +89,7 @@ unsigned Eyes::dualCameraFeed(){
 
         RightImgOrg = getFrame(camVid[1]);
         LeftImgOrg = getFrame(camVid[0]);
-        
+
         imshow("left", LeftImgOrg);
         imshow("right", RightImgOrg);
     }
@@ -154,11 +154,11 @@ unsigned Eyes::dispRectImage(){
     namedWindow("right", CV_WINDOW_AUTOSIZE);
     moveWindow("right", 710, 20);
 
-    Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
-    Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
-    Mat undistorted[2];
+    Mat LeftImgOrg(cam[camVid[0]].size.width, cam[camVid[0]].size.height, CV_8UC3, Scalar(0,0,255));
+    Mat RightImgOrg(cam[camVid[1]].size.width, cam[camVid[1]].size.height, CV_8UC3, Scalar(0,0,255));
+    Mat rectified[2];
 
-    createRMap(LeftImgOrg,RightImgOrg);
+    createRMap();
 
     char charKey = 0;
 
@@ -186,11 +186,11 @@ unsigned Eyes::dispRectImage(){
         RightImgOrg = getFrame(camVid[1]);
         LeftImgOrg = getFrame(camVid[0]);       
 
-        remap(LeftImgOrg, undistorted[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
-        remap(RightImgOrg , undistorted[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
+        remap(LeftImgOrg, rectified[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
+        remap(RightImgOrg , rectified[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
 
-        imshow("left", undistorted[0]);
-        imshow("right", undistorted[1]);
+        imshow("left", rectified[0]);
+        imshow("right", rectified[1]);
     }
 
     cvDestroyWindow("left");
@@ -313,8 +313,13 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
         img1 = imread(name[0].str(), CV_LOAD_IMAGE_COLOR);
         img2 = imread(name[1].str(), CV_LOAD_IMAGE_COLOR);
 
+        /*
         undistort(img1, undistorted[0], cameraMatrix[0], distCoefficients[0]);
         undistort(img2, undistorted[1], cameraMatrix[1], distCoefficients[1]);
+        */
+        // Not sure if the images need to be undistorted before checking for chessboard corners
+        undistorted[0] = img1;
+        undistorted[1] = img2;
 
         cvtColor(undistorted[0], gray1, CV_BGR2GRAY);
         cvtColor(undistorted[1], gray2, CV_BGR2GRAY);
@@ -392,7 +397,6 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
         fs1 << "P1" << P1;
         fs1 << "P2" << P2;
         fs1 << "Q" << Q;
-        fs1.release();
     }
     else
         cout << "Error: Couldn't open CalibrationParam.xml to APPEND_RECTIFICATION_PARAMETERS\n";
@@ -431,6 +435,12 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
         npoints += npt;
     }
     cout << "average epipolar err = " << err/npoints << endl;
+    if( fs1.isOpened() ) {
+        fs1 << "Epipolar_err" << err/npoints;
+        fs1.release();
+    }
+    else
+        cout << "Error: Couldn't open CalibrationParam.xml to APPEND_EPIPOLAR_ERROR\n";
 
     return 0;
 }

@@ -7,20 +7,22 @@ EyeBase::EyeBase()
     board_width = 9;
     boardSize = Size(board_height,board_width);
 
+    unsigned offsetx = 15;
+    unsigned offsety = 8;
+
     cam[1].num = 1;
     cam[1].title = "LCam";
     cam[1].posx = 20;
     cam[1].angle = 90.;
-    //Maximum size is Rect(0, 0, 481, 641)
-    unsigned offsetx = 30;
-    unsigned offsety = 20;
-    cam[1].ROI = Rect(1, 10+offsety, 480-offsetx, 600);
+    cam[1].ROI = Rect(1, 1+offsety, 480-offsetx, 480-offsetx);
+    cam[1].size = cam[1].ROI.size();
 
     cam[2].num = 2;
     cam[2].title = "RCam";
     cam[2].posx = 700;
     cam[2].angle = -90.;
-    cam[2].ROI = Rect(offsetx, 10, 479-offsetx, 600); 
+    cam[2].ROI = Rect(1+offsetx, 1, 480-offsetx, 480-offsetx); 
+    cam[2].size = cam[2].ROI.size();
 }
 
 EyeBase::~EyeBase()
@@ -197,7 +199,7 @@ bool EyeBase::rmFolder(unsigned u){
  * Based on intrinsic and extrinsic calibration parameters, remapping matrices are produced to
  * create the rectified image. The RMap values are stored in an XML file for future reference.
  */
-void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
+void EyeBase::createRMap(){
     Mat distCoefficients[2];
     Mat cameraMatrix[2], R[2], P[2];
     Mat rmap[2][2];
@@ -224,8 +226,8 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
     else
         cout << "Error: Couldn't open InternalParam.xml to READ_INTERNAL_PARAMETERS\n";
 
-    initUndistortRectifyMap(cameraMatrix[0], distCoefficients[0], R[0], P[0], LeftImgOrg.size(), CV_16SC2, rmap[0][0], rmap[0][1]);
-    initUndistortRectifyMap(cameraMatrix[1], distCoefficients[1], R[1], P[1], RightImgOrg.size(), CV_16SC2, rmap[1][0], rmap[1][1]);
+    initUndistortRectifyMap(cameraMatrix[0], distCoefficients[0], R[0], P[0], cam[1].size, CV_16SC2, rmap[0][0], rmap[0][1]);
+    initUndistortRectifyMap(cameraMatrix[1], distCoefficients[1], R[1], P[1], cam[2].size, CV_16SC2, rmap[1][0], rmap[1][1]);
 
     fs1.open("../RMapParam.xml", FileStorage::WRITE);
     if( fs1.isOpened() ) {
