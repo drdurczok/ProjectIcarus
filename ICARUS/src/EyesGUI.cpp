@@ -6,7 +6,10 @@ EyesGUI::EyesGUI(){
 }
 
 void EyesGUI::calibrationGUI(){
+printf("1");
+
 	Eyes* calib = new Eyes(camVid[0],camVid[1]);
+printf("1");
 	
 	ostringstream header;
 	header.str("");
@@ -56,7 +59,7 @@ void EyesGUI::swapCameras(Eyes* calib){
     option[0] = "Correct camera selected";
     option[1] = "Swap cameras";
 
-    calib->dispCamera(1);
+    calib->dispCamera(0);
 
     choice = Menu(header.str(), option, sizeof option/sizeof option[0]);
 

@@ -10,7 +10,8 @@ Eyes::Eyes()
     camVid[0] = 1;
     camVid[1] = 2;
 
-    initializeCamera();
+    unsigned i[2] = {1, 2};
+    initializeCamera(i,2);
 }
 
 Eyes::Eyes(unsigned Lcam, unsigned Rcam)
@@ -18,7 +19,8 @@ Eyes::Eyes(unsigned Lcam, unsigned Rcam)
     camVid[0] = Lcam;
     camVid[1] = Rcam;
 
-    initializeCamera();
+    unsigned i[2] = {1, 2};
+    initializeCamera(i,2);
 }
 
 Eyes::~Eyes()
@@ -27,38 +29,6 @@ Eyes::~Eyes()
     vid[2]->release();
 }
 
-void Eyes::initializeCamera(){
-    vid[1] = new VideoCapture(camVid[0]);
-    if(!vid[1]->isOpened())
-        std::cout << "ERROR: Failed to open camera" << std::endl;
-
-    vid[2] = new VideoCapture(camVid[1]);
-    if(!vid[2]->isOpened())
-        std::cout << "ERROR: Failed to open camera" << std::endl;
-}
-
-void Eyes::initializeCamera(char u){
-    unsigned vidNum, capNum;
-    bool cond = false; 
-    if(u == 'L') {
-        vidNum = 1;
-        capNum = camVid[0];
-        cond = true;
-    }
-    else if(u == 'R') {
-        vidNum = 2;
-        capNum = camVid[1];
-        cond = true;
-    }
-    else
-        std::cout << "ERROR: Incorrect flag";
-
-    if(cond==true){
-        vid[vidNum] = new VideoCapture(capNum);
-        if(!vid[vidNum]->isOpened())
-            std::cout << "ERROR: Failed to open camera" << std::endl;
-    }
-}
 
 void Eyes::swapCameras(){
     vid[1]->release();
@@ -68,8 +38,10 @@ void Eyes::swapCameras(){
     camVid[0] = camVid[1];
     camVid[1] = temp;
 
-    initializeCamera();
+    unsigned i[2] = {1, 2};
+    initializeCamera(i,2);
 }
+
 
 unsigned Eyes::getCameraState(unsigned u){
     return camVid[u];
@@ -80,15 +52,17 @@ unsigned Eyes::getCameraState(unsigned u){
  * We may display the camera as is, undistorted based on intrinsic parameters,
  * or a rectified version that involves all the included calibration features.
  */
-unsigned Eyes::dispCamera(unsigned camNum){
-    string title = cam[camNum].title;
+unsigned Eyes::dispCamera(int camNum){
+    Mat src, dst;
+    string title = cam[camVid[camNum]].title;
 
     namedWindow(title, CV_WINDOW_AUTOSIZE);
-    if(!vid[camNum]->isOpened()) return 0;
+    if(!vid[camVid[camNum]]->isOpened()) return 0;
 
     while(true){
-        if(!vid[camNum]->read(cam[camNum].frame)) break;
-        imshow(title,cam[camNum].frame);
+        dst = getFrame(camVid[camNum]);
+
+        imshow(title,dst);
         char character = waitKey(1000/20);
         if (character == 27) break;
     }
@@ -128,10 +102,10 @@ unsigned Eyes::dispUndistImage(){
             return 0;
         }
 
-        charKey = waitKey(1);           // delay (in ms) and get key press, if any 
-
-        vid[2]->read(RightImgOrg);
-        vid[1]->read(LeftImgOrg);       
+        charKey = waitKey(1);           // delay (in ms) and get key press, if any       
+        printf("%d",camVid[2]);
+        RightImgOrg = getFrame(camVid[1]);
+        LeftImgOrg = getFrame(camVid[0]);
 
         undistort(LeftImgOrg, undistorted[0], cameraMatrix[0], distCoefficients[0]);
         undistort(RightImgOrg, undistorted[1], cameraMatrix[1], distCoefficients[1]);
@@ -180,8 +154,8 @@ unsigned Eyes::dispRectImage(){
 
         charKey = waitKey(1);           // delay (in ms) and get key press, if any 
 
-        vid[2]->read(RightImgOrg);
-        vid[1]->read(LeftImgOrg);       
+        RightImgOrg = getFrame(camVid[1]);
+        LeftImgOrg = getFrame(camVid[0]);       
 
         remap(LeftImgOrg, undistorted[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
         remap(RightImgOrg , undistorted[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
@@ -222,7 +196,7 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
         bool found = false;
 
         for(unsigned i=cam_start; i<iter; i++){
-            vid[i]->read(cam[i].frame);
+            cam[i].frame = getFrame(i);
             found = findChessboardCorners(cam[i].frame, boardSize, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
             cam[i].frame.copyTo(cam[i].drawToFrame);
             drawChessboardCorners(cam[i].drawToFrame, boardSize, foundPoints, found);

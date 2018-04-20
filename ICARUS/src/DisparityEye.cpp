@@ -2,7 +2,8 @@
 
 DisparityEye::DisparityEye()
 {
-    
+    unsigned i[2] = {1, 2};
+    initializeCamera(i,2);
 }
 
 DisparityEye::~DisparityEye()
@@ -11,9 +12,6 @@ DisparityEye::~DisparityEye()
 }
 
 void DisparityEye::showDepthMap(){
-	VideoCapture Rcam(1);
-    VideoCapture Lcam(2);
-
     Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
     Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
     Mat LeftImgGrey;
@@ -69,13 +67,17 @@ void DisparityEye::showDepthMap(){
 	cv::createTrackbar("speckleWindowSize", windowName, &speckleWindowSize, 100);
 	cv::createTrackbar("speckleRange", windowName, &speckleRange, 100);
 
-	while (charKey != 27 && Rcam.isOpened() && Lcam.isOpened()) {		// until the Esc key is pressed or webcam connection is lost
-		if (!Rcam.read(RightImgOrg) || !Lcam.read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
+cout << "dasf";
+	while (charKey != 27 && vid[camVid[1]]->isOpened() && vid[camVid[0]]->isOpened()) {		// until the Esc key is pressed or webcam connection is lost
+		if (!vid[camVid[1]]->read(RightImgOrg) || !vid[camVid[0]]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
 			std::cout << "error: frame not read from webcam\n";
 			break;
 		}
-		Rcam.read(RightImgOrg);
-        Lcam.read(LeftImgOrg);
+
+        RightImgOrg = getFrame(camVid[1]);
+        LeftImgOrg = getFrame(camVid[0]);
+
+
         /*
 		charKey = waitKey(1);			// delay (in ms) and get key press, if any     
 		GUI(minDisparity, numDisparities, SADWindowSize,
@@ -104,6 +106,4 @@ void DisparityEye::showDepthMap(){
     cvDestroyWindow("left");
     cvDestroyWindow("right");
     cvDestroyWindow("disp");
-    Rcam.release();
-    Lcam.release();
 }

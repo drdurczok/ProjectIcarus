@@ -9,11 +9,9 @@ class Eyes: public EyeBase
         Eyes();
         Eyes(unsigned, unsigned);
         virtual ~Eyes();
-        void initializeCamera();
-        void initializeCamera(char);
         void swapCameras();
         unsigned getCameraState(unsigned);
-        unsigned dispCamera(unsigned);
+        unsigned dispCamera(int);
         unsigned dispUndistImage();
         unsigned dispRectImage();
         unsigned calibration(unsigned, bool, bool, unsigned);
@@ -21,8 +19,7 @@ class Eyes: public EyeBase
 
 
     private:
-    	VideoCapture *vid[3];
-    	unsigned camVid[2];
+    	
 };
 
 #endif // EYES_H

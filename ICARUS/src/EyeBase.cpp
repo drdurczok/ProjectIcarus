@@ -10,9 +10,11 @@ EyeBase::EyeBase()
     cam[1].num = 1;
     cam[1].title = "LCam";
     cam[1].posx = 20;
+    cam[1].angle = 90.;
     cam[2].num = 2;
     cam[2].title = "RCam";
     cam[2].posx = 700;
+    cam[2].angle = -90.;
 }
 
 /*
@@ -62,6 +64,37 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
 }
 
 //***********************PRIVATE**************************
+void EyeBase::initializeCamera(unsigned i[], unsigned size){
+    for (unsigned j = 0; j<size; j++){
+        vid[i[j]] = new VideoCapture(camVid[j]);
+        if(!vid[i[j]]->isOpened())
+            std::cout << "ERROR: Failed to open camera" << std::endl;
+        formatData(i[j]);
+    }
+}
+
+Mat EyeBase::getFrame(unsigned camNum){
+    Mat warped;
+    vid[camNum]->read(cam[camNum].frame);
+    warpAffine(cam[camNum].frame, warped, cam[camNum].rotate, cam[camNum].bbox.size());  
+
+    return warped;
+}
+
+void EyeBase::formatData(unsigned camNum){
+    Mat src;
+    // Prepare data for image rotation
+    vid[camNum]->read(src);
+
+    Point2f center(src.cols/2.0, src.rows/2.0);
+    cam[camNum].rotate = cv::getRotationMatrix2D(center, cam[camNum].angle, 1.0);
+    // determine bounding rectangle
+    cam[camNum].bbox = cv::RotatedRect(center,src.size(), cam[camNum].angle).boundingRect();
+    // adjust transformation matrix
+    cam[camNum].rotate.at<double>(0,2) += cam[camNum].bbox.width/2.0 - center.x;
+    cam[camNum].rotate.at<double>(1,2) += cam[camNum].bbox.height/2.0 - center.y;
+}
+
 /*
  * Core intrinsic calibration method.
  */
@@ -180,3 +213,6 @@ void EyeBase::createRMap(Mat& LeftImgOrg, Mat& RightImgOrg){
     else
         cout << "Error: Couldn't open RMapParam.xml to WRITE_MAPPING_PARAMETERS\n";
 }
+
+
+
