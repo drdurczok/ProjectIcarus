@@ -9,9 +9,10 @@ class Eyes: public EyeBase
         Eyes();
         Eyes(unsigned, unsigned);
         virtual ~Eyes();
-        void swapCameras();
         unsigned getCameraState(unsigned);
+        void swapCameras();
         unsigned dispCamera(int);
+        unsigned dualCameraFeed();
         unsigned dispUndistImage();
         unsigned dispRectImage();
         unsigned calibration(unsigned, bool, bool, unsigned);

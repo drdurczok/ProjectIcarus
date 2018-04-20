@@ -40,10 +40,7 @@ int main( int argc, const char** argv)
       default: loop = false;
     }
   }
-    //Eyes sight;
-    //sight.undistortImg();
-    //sight.recordVideo();
-    //sight.depthMap();
+
   printf("\033[2J\033[1;H\033[?25l");
   
   return 0;

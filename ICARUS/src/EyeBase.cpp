@@ -11,10 +11,22 @@ EyeBase::EyeBase()
     cam[1].title = "LCam";
     cam[1].posx = 20;
     cam[1].angle = 90.;
+    //Maximum size is Rect(0, 0, 481, 641)
+    unsigned offsetx = 30;
+    unsigned offsety = 20;
+    cam[1].ROI = Rect(1, 10+offsety, 480-offsetx, 600);
+
     cam[2].num = 2;
     cam[2].title = "RCam";
     cam[2].posx = 700;
     cam[2].angle = -90.;
+    cam[2].ROI = Rect(offsetx, 10, 479-offsetx, 600); 
+}
+
+EyeBase::~EyeBase()
+{
+    vid[1]->release();
+    vid[2]->release();
 }
 
 /*
@@ -63,6 +75,18 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
     return 0;
 }
 
+void EyeBase::swapCameras(){
+    vid[1]->release();
+    vid[2]->release();
+
+    unsigned temp = camVid[0];
+    camVid[0] = camVid[1];
+    camVid[1] = temp;
+
+    unsigned i[2] = {1, 2};
+    initializeCamera(i,2);
+}
+
 //***********************PRIVATE**************************
 void EyeBase::initializeCamera(unsigned i[], unsigned size){
     for (unsigned j = 0; j<size; j++){
@@ -74,11 +98,12 @@ void EyeBase::initializeCamera(unsigned i[], unsigned size){
 }
 
 Mat EyeBase::getFrame(unsigned camNum){
-    Mat warped;
+    Mat warpedImage, croppedImage;
     vid[camNum]->read(cam[camNum].frame);
-    warpAffine(cam[camNum].frame, warped, cam[camNum].rotate, cam[camNum].bbox.size());  
+    warpAffine(cam[camNum].frame, warpedImage, cam[camNum].rotate, cam[camNum].bbox.size());  
+    croppedImage = warpedImage(cam[camNum].ROI);
 
-    return warped;
+    return croppedImage;
 }
 
 void EyeBase::formatData(unsigned camNum){

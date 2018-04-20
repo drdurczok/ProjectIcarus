@@ -17,14 +17,15 @@ printf("1");
 
 	unsigned choice;
 	
-	string option[7];
+	string option[8];
 	option[0] = "Check Camera Position";
 	option[1] = "Calibrate Intrinsic Parameters";
 	option[2] = "Calibrate Extrinsic and Rectification Parameters";
 	option[3] = "Calibrate All";
-	option[4] = "Undistort Cameras";
-	option[5] = "Rectify Cameras";
-	option[6] = "Exit";
+	option[4] = "Show Cameras";
+	option[5] = "Undistort Cameras";
+	option[6] = "Rectify Cameras";
+	option[7] = "Exit";
 
 	bool loop = true;
 	while(loop == true){
@@ -35,9 +36,10 @@ printf("1");
 		  case 1: intrinsicParam(calib); break;
 		  case 2: extrinsicParam(calib); break;
 		  case 3: calibration(calib); break;
-		  case 4: undistImage(calib); break;
-		  case 5: rectImage(calib); break;
-		  case 6: loop = false; break;
+		  case 4: showCameras(calib); break;
+		  case 5: undistImage(calib); break;
+		  case 6: rectImage(calib); break;
+		  case 7: loop = false; break;
 		  default: loop = false;
 		}
 		camVid[0] = calib->getCameraState(1);
@@ -171,6 +173,13 @@ void EyesGUI::calibration(Eyes* calib){
 	swapCameras(calib);
 	intrinsicParam(calib);
 	extrinsicParam(calib);
+}
+
+void EyesGUI::showCameras(Eyes* calib){
+	printf("\033[2J\033[1;H\033[?25l"); 
+	std::cout << "These are the camera feeds\n\n"
+	        << "Press esc to continue" << std::endl;
+	calib->dualCameraFeed();
 }
 
 void EyesGUI::undistImage(Eyes* calib){

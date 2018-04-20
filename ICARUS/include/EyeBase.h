@@ -25,9 +25,11 @@ class EyeBase
 {
     public:
         EyeBase();
+        virtual ~EyeBase();
         unsigned calibrationFromFiles(unsigned, unsigned, unsigned);
         unsigned checkFolder(unsigned,unsigned,unsigned);
         bool rmFolder(unsigned);
+        void swapCameras();
 
     protected:
         void initializeCamera(unsigned i[], unsigned);
@@ -54,6 +56,7 @@ class EyeBase
                 double angle;
                 Mat rotate;
                 Rect bbox;
+                Rect ROI;
                 Mat frame;
                 Mat drawToFrame;
                 Mat cameraMatrix = Mat::eye(3,3, CV_64F);

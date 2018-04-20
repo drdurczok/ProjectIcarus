@@ -2,13 +2,16 @@
 
 DisparityEye::DisparityEye()
 {
+	camVid[0] = 1;
+    camVid[1] = 2;
+
     unsigned i[2] = {1, 2};
     initializeCamera(i,2);
 }
 
 DisparityEye::~DisparityEye()
 {
-    
+
 }
 
 void DisparityEye::showDepthMap(){
@@ -67,7 +70,6 @@ void DisparityEye::showDepthMap(){
 	cv::createTrackbar("speckleWindowSize", windowName, &speckleWindowSize, 100);
 	cv::createTrackbar("speckleRange", windowName, &speckleRange, 100);
 
-cout << "dasf";
 	while (charKey != 27 && vid[camVid[1]]->isOpened() && vid[camVid[0]]->isOpened()) {		// until the Esc key is pressed or webcam connection is lost
 		if (!vid[camVid[1]]->read(RightImgOrg) || !vid[camVid[0]]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
 			std::cout << "error: frame not read from webcam\n";

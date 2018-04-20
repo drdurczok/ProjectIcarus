@@ -25,10 +25,13 @@ Eyes::Eyes(unsigned Lcam, unsigned Rcam)
 
 Eyes::~Eyes()
 {
-    vid[1]->release();
-    vid[2]->release();
+  
 }
 
+
+unsigned Eyes::getCameraState(unsigned u){
+    return camVid[u];
+}
 
 void Eyes::swapCameras(){
     vid[1]->release();
@@ -40,11 +43,6 @@ void Eyes::swapCameras(){
 
     unsigned i[2] = {1, 2};
     initializeCamera(i,2);
-}
-
-
-unsigned Eyes::getCameraState(unsigned u){
-    return camVid[u];
 }
 
 /*
@@ -68,6 +66,37 @@ unsigned Eyes::dispCamera(int camNum){
     }
 
     cvDestroyWindow(title.c_str());
+    return 0;
+}
+
+unsigned Eyes::dualCameraFeed(){
+    namedWindow("left", CV_WINDOW_AUTOSIZE);
+    moveWindow("left", 20, 20);
+    namedWindow("right", CV_WINDOW_AUTOSIZE);
+    moveWindow("right", 710, 20);
+
+    Mat LeftImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+    Mat RightImgOrg(480, 640, CV_8UC3, Scalar(0,0,255));
+
+    char charKey = 0;
+    while (charKey != 27 && vid[2]->isOpened() && vid[1]->isOpened()) {       // until the Esc key is pressed or webcam connection is lost
+        if (!vid[2]->read(RightImgOrg) || !vid[1]->read(LeftImgOrg) || RightImgOrg.empty() || LeftImgOrg.empty()) {
+            std::cout << "error: frame not read from webcam\n";
+            return 0;
+        }
+
+        charKey = waitKey(1);           // delay (in ms) and get key press, if any       
+
+        RightImgOrg = getFrame(camVid[1]);
+        LeftImgOrg = getFrame(camVid[0]);
+        
+        imshow("left", LeftImgOrg);
+        imshow("right", RightImgOrg);
+    }
+
+    cvDestroyWindow("left");
+    cvDestroyWindow("right");
+
     return 0;
 }
 
@@ -103,7 +132,7 @@ unsigned Eyes::dispUndistImage(){
         }
 
         charKey = waitKey(1);           // delay (in ms) and get key press, if any       
-        printf("%d",camVid[2]);
+
         RightImgOrg = getFrame(camVid[1]);
         LeftImgOrg = getFrame(camVid[0]);
 
