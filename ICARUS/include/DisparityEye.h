@@ -2,19 +2,23 @@
 #define DISPARITYEYE_H
 
 #include "EyeBase.h"
+#include "GUI.h"
 
-class DisparityEye: public EyeBase
+
+class DisparityEye: public EyeBase, public GUI
 {
     public:
         DisparityEye();
         virtual ~DisparityEye();
         void showDepthMap();
-        void GUI(int &a, int &b, int &c, int &d, int &e, int &f, int &g, int &h, int &i, int &j, bool &k, char arrow, int &state);
-        void LoadBar(int min, int max, int &val, int steps);
+        unsigned stereoCalibration(unsigned);
 
-    protected:
+        void cameraFeed(unsigned char);
+        void GUI();
 
     private:
+		const unsigned char UNDISTORT = 0b0000'0001;
+		const unsigned char RECTIFY   = 0b0000'0010;
 
 };
 

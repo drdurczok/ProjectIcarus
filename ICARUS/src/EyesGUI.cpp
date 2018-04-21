@@ -6,10 +6,7 @@ EyesGUI::EyesGUI(){
 }
 
 void EyesGUI::calibrationGUI(){
-printf("1");
-
 	Eyes* calib = new Eyes(camVid[0],camVid[1]);
-printf("1");
 	
 	ostringstream header;
 	header.str("");
@@ -19,8 +16,8 @@ printf("1");
 	
 	string option[8];
 	option[0] = "Check Camera Position";
-	option[1] = "Calibrate Intrinsic Parameters";
-	option[2] = "Calibrate Extrinsic and Rectification Parameters";
+	option[1] = "Calibrate Individual Intrinsic Parameters";
+	option[2] = "Calibrate Stereo Cameras";
 	option[3] = "Calibrate All";
 	option[4] = "Show Cameras";
 	option[5] = "Undistort Cameras";
@@ -61,7 +58,7 @@ void EyesGUI::swapCameras(Eyes* calib){
     option[0] = "Correct camera selected";
     option[1] = "Swap cameras";
 
-    calib->dispCamera(0);
+    calib->dispCamera(1);
 
     choice = Menu(header.str(), option, sizeof option/sizeof option[0]);
 
@@ -87,7 +84,7 @@ void EyesGUI::intrinsicParam(Eyes* calib){
                << "You already have " << totalImg << " calibration photos taken for camera " << i << "\n\n";
         string option2[4];
         option2[0] = "Use pictures";
-        option2[1] = "Add more pictres";
+        option2[1] = "Add more pictres *BUGGED";
         option2[2] = "Delete pictures and create new ones";
         option2[3] = "Skip this step";
 
@@ -116,7 +113,9 @@ void EyesGUI::intrinsicParam(Eyes* calib){
           calib->calibrationFromFiles(i,0,300);
         }; break;
         case 1: {  
-          printf("\033[2J\033[1;H\033[?25l");     
+          printf("\033[2J\033[1;H\033[?25l");
+          //**Implement check for missing indexes**
+          //calib->calibration(i,false,saveData,100);     
           std::cout << "Please wait while the intrinsic camera parameters are generated" << std::endl;
           calib->calibrationFromFiles(i,0,300);
         }; break;

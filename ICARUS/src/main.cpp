@@ -22,9 +22,9 @@ int main( int argc, const char** argv)
   disable_waiting_for_enter();
 
   string option[4];
-  option[0] = "Enter Calibration Mode";
-  option[1] = "Create Disparity Map";
-  option[2] = "Start Finger Capture";
+  option[0] = "Disparity Mapping";
+  option[1] = "Start Finger Capture";
+  option[2] = "Legacy";
   option[3] = "Exit";
 
   bool loop = true;
@@ -33,9 +33,9 @@ int main( int argc, const char** argv)
         printf("a");
 
     switch(choice){
-      case 0: eyes.calibrationGUI(); break;
-      case 1: disparity(); break;
-      case 2: track.ScanFingerTips(); break;
+      case 0: disparity(); break;
+      case 1: track.ScanFingerTips(); break;
+      case 2: eyes.calibrationGUI(); break;
       case 3: loop = false; break;
       default: loop = false;
     }
@@ -46,9 +46,10 @@ int main( int argc, const char** argv)
   return 0;
 }
 
+
 void disparity(){
   DisparityEye sight;
-  sight.showDepthMap();
+  sight.GUI();
 }
 
 void restore_terminal_settings(void){

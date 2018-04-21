@@ -7,17 +7,14 @@
  */
 Eyes::Eyes()
 {
-    camVid[0] = 1;
-    camVid[1] = 2;
-
     unsigned i[2] = {1, 2};
     initializeCamera(i,2);
 }
 
 Eyes::Eyes(unsigned Lcam, unsigned Rcam)
 {
-    camVid[0] = Lcam;
-    camVid[1] = Rcam;
+    cam[1].vid = Lcam;
+    cam[2].vid = Rcam;
 
     unsigned i[2] = {1, 2};
     initializeCamera(i,2);
@@ -30,16 +27,16 @@ Eyes::~Eyes()
 
 
 unsigned Eyes::getCameraState(unsigned u){
-    return camVid[u];
+    return cam[u].vid;
 }
 
 void Eyes::swapCameras(){
     vid[1]->release();
     vid[2]->release();
 
-    unsigned temp = camVid[0];
-    camVid[0] = camVid[1];
-    camVid[1] = temp;
+    unsigned temp = cam[1].vid;
+    cam[1].vid = cam[2].vid;
+    cam[2].vid = temp;
 
     unsigned i[2] = {1, 2};
     initializeCamera(i,2);
@@ -52,13 +49,13 @@ void Eyes::swapCameras(){
  */
 unsigned Eyes::dispCamera(int camNum){
     Mat src, dst;
-    string title = cam[camVid[camNum]].title;
+    string title = cam[cam[camNum].vid].title;
 
     namedWindow(title, CV_WINDOW_AUTOSIZE);
-    if(!vid[camVid[camNum]]->isOpened()) return 0;
+    if(!vid[cam[camNum].vid]->isOpened()) return 0;
 
     while(true){
-        dst = getFrame(camVid[camNum]);
+        dst = getFrame(cam[camNum].vid);
 
         imshow(title,dst);
         char character = waitKey(1000/20);
@@ -87,8 +84,8 @@ unsigned Eyes::dualCameraFeed(){
 
         charKey = waitKey(1);           // delay (in ms) and get key press, if any       
 
-        RightImgOrg = getFrame(camVid[1]);
-        LeftImgOrg = getFrame(camVid[0]);
+        RightImgOrg = getFrame(cam[2].vid);
+        LeftImgOrg = getFrame(cam[1].vid);
 
         imshow("left", LeftImgOrg);
         imshow("right", RightImgOrg);
@@ -133,8 +130,8 @@ unsigned Eyes::dispUndistImage(){
 
         charKey = waitKey(1);           // delay (in ms) and get key press, if any       
 
-        RightImgOrg = getFrame(camVid[1]);
-        LeftImgOrg = getFrame(camVid[0]);
+        RightImgOrg = getFrame(cam[2].vid);
+        LeftImgOrg = getFrame(cam[1].vid);
 
         undistort(LeftImgOrg, undistorted[0], cameraMatrix[0], distCoefficients[0]);
         undistort(RightImgOrg, undistorted[1], cameraMatrix[1], distCoefficients[1]);
@@ -154,8 +151,8 @@ unsigned Eyes::dispRectImage(){
     namedWindow("right", CV_WINDOW_AUTOSIZE);
     moveWindow("right", 710, 20);
 
-    Mat LeftImgOrg(cam[camVid[0]].size.width, cam[camVid[0]].size.height, CV_8UC3, Scalar(0,0,255));
-    Mat RightImgOrg(cam[camVid[1]].size.width, cam[camVid[1]].size.height, CV_8UC3, Scalar(0,0,255));
+    Mat LeftImgOrg(cam[cam[1].vid].size.width, cam[cam[1].vid].size.height, CV_8UC3, Scalar(0,0,255));
+    Mat RightImgOrg(cam[cam[2].vid].size.width, cam[cam[2].vid].size.height, CV_8UC3, Scalar(0,0,255));
     Mat rectified[2];
 
     createRMap();
@@ -183,8 +180,8 @@ unsigned Eyes::dispRectImage(){
 
         charKey = waitKey(1);           // delay (in ms) and get key press, if any 
 
-        RightImgOrg = getFrame(camVid[1]);
-        LeftImgOrg = getFrame(camVid[0]);       
+        RightImgOrg = getFrame(cam[2].vid);
+        LeftImgOrg = getFrame(cam[1].vid);       
 
         remap(LeftImgOrg, rectified[0], rmap[0][0], rmap[0][1], INTER_LINEAR);
         remap(RightImgOrg , rectified[1], rmap[1][0], rmap[1][1], INTER_LINEAR);
@@ -227,6 +224,7 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
         for(unsigned i=cam_start; i<iter; i++){
             cam[i].frame = getFrame(i);
             found = findChessboardCorners(cam[i].frame, boardSize, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
+            cornerSubPix(cam[i].frame, foundPoints, Size(5, 5), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1)); //Refine corner detection
             cam[i].frame.copyTo(cam[i].drawToFrame);
             drawChessboardCorners(cam[i].drawToFrame, boardSize, foundPoints, found);
 
@@ -235,6 +233,9 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
         }
         
         char character = waitKey(1000/framesPerSecond);
+
+        ostringstream name;
+        ostringstream nameOverlay;
 
         switch(character){
             case ' ': {
@@ -245,13 +246,13 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
                         cam[i].frame.copyTo(temp);
                         cam[i].savedImages.push_back(temp);
                         if(saveData == 1) {
-                            cam[i].name.str("");
-                            cam[i].nameOverlay.str("");
-                            cam[i].name << "../../CalibrationPictures/Cam0" << cam[i].num << "/CAM0" << cam[i].num << "_calib" << cam[i].i << ".jpg";
-                            cam[i].nameOverlay << "../../CalibrationPictures/CalibrationPicturesOverlay/CAM0" << cam[i].num << "_calib" << cam[i].i << "_overlay.jpg";
+                            name.str("");
+                            nameOverlay.str("");
+                            name << "../../CalibrationPictures/Cam0" << cam[i].num << "/CAM0" << cam[i].num << "_calib" << cam[i].i << ".jpg";
+                            nameOverlay << "../../CalibrationPictures/CalibrationPicturesOverlay/CAM0" << cam[i].num << "_calib" << cam[i].i << ".jpg";
                             cam[i].i++;
-                            imwrite(cam[i].name.str(),temp);
-                            imwrite(cam[i].nameOverlay.str(),cam[i].drawToFrame);
+                            imwrite(name.str(),temp);
+                            imwrite(nameOverlay.str(),cam[i].drawToFrame);
                             if(i == cam_start){
                                 printf("\033[2J\033[1;H\033[?25l");
                                 picNum++;
@@ -280,18 +281,14 @@ unsigned Eyes::calibration(unsigned cam_start = 1, bool dual = false, bool saveD
  * Special attention is needed with their flags and parameter values.
  */
 unsigned Eyes::stereoCalibration(unsigned num_imgs) {
-    vector< vector< Point3f > > object_points;
+    vector< vector< Point3f > > objectPoints;
+    vector< vector< Point2f > > imgPoints[2];
     vector< Point2f > corners1, corners2;
-    vector< vector< Point2f > > imgPoints[2], imgPoints_n[2];
     
-    Mat img1, img2, gray1, gray2;
+    Mat img1, img2;
+    Mat cameraMatrix[2], distCoefficients[2];
 
     ostringstream name[2];
-
-    Mat undistorted[2];
-
-    Mat distCoefficients[2];
-    Mat cameraMatrix[2];
 
     FileStorage fs1("../InternalParam.xml", FileStorage::READ);
     if( fs1.isOpened() ) {
@@ -303,8 +300,12 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
     }
     else
         cout << "Error: Couldn't open CalibrationParam.xml to READ_INTRINSIC_PARAMETERS\n";
-    
 
+    //Find Checkerboard Points
+    vector< Point3f > obj;
+    obj = Create3DChessboardCorners(boardSize, squareEdgeLength);
+
+    bool found1 = false, found2 = false;
     for (unsigned i = 400; i <= num_imgs+399; i++) {
         name[0].str("");
         name[0] << "../../CalibrationPictures/Cam01/CAM01_calib" << i << ".jpg";
@@ -313,63 +314,31 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
         img1 = imread(name[0].str(), CV_LOAD_IMAGE_COLOR);
         img2 = imread(name[1].str(), CV_LOAD_IMAGE_COLOR);
 
-        /*
-        undistort(img1, undistorted[0], cameraMatrix[0], distCoefficients[0]);
-        undistort(img2, undistorted[1], cameraMatrix[1], distCoefficients[1]);
-        */
-        // Not sure if the images need to be undistorted before checking for chessboard corners
-        undistorted[0] = img1;
-        undistorted[1] = img2;
+        found1 = false;
+        found2 = false;
 
-        cvtColor(undistorted[0], gray1, CV_BGR2GRAY);
-        cvtColor(undistorted[1], gray2, CV_BGR2GRAY);
-
-        bool found1 = false, found2 = false;
-
-        found1 = cv::findChessboardCorners(undistorted[0], boardSize, corners1, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-        found2 = cv::findChessboardCorners(undistorted[1], boardSize, corners2, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-
-        if (found1) {
-            cv::cornerSubPix(gray1, corners1, cv::Size(5, 5), cv::Size(-1, -1),
-            cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
-            cv::drawChessboardCorners(gray1, boardSize, corners1, found1);
-        }
-        if (found2) {
-            cv::cornerSubPix(gray2, corners2, cv::Size(5, 5), cv::Size(-1, -1),
-            cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
-            cv::drawChessboardCorners(gray2, boardSize, corners2, found2);
-        }
-
-        vector< Point3f > obj;
-        for (unsigned i = 0; i < board_height; i++)
-            for (unsigned j = 0; j < board_width; j++)
-                obj.push_back(Point3f((float)j * squareEdgeLength, (float)i * squareEdgeLength, 0));
-
+        found1 = findChessboardCorners(img1, boardSize, corners1, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        found2 = findChessboardCorners(img2, boardSize, corners2, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        
         if (found1 && found2) {
               cout << i << ". Found corners!" << endl;
               imgPoints[0].push_back(corners1);
               imgPoints[1].push_back(corners2);
-              object_points.push_back(obj);
+              objectPoints.push_back(obj);
         }
     }
 
-    for (unsigned i = 0; i < imgPoints[0].size(); i++) {
-    vector< Point2f > v1, v2;
-        for (unsigned j = 0; j < imgPoints[0][i].size(); j++) {
-            v1.push_back(Point2f((double)imgPoints[0][i][j].x, (double)imgPoints[0][i][j].y));
-            v2.push_back(Point2f((double)imgPoints[1][i][j].x, (double)imgPoints[1][i][j].y));
-        }
-        imgPoints_n[0].push_back(v1);
-        imgPoints_n[1].push_back(v2);
-    }
-
+    
     Mat R, T, E, F;
 
-    double rms = stereoCalibrate(object_points, imgPoints_n[0], imgPoints_n[1], 
+    TermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, 100, 1e-5);
+    double rms = stereoCalibrate(objectPoints, imgPoints[0], imgPoints[1], 
                     cameraMatrix[0], distCoefficients[0], 
                     cameraMatrix[1], distCoefficients[1], 
-                    undistorted[0].size(), R, T, E, F, CV_CALIB_FIX_INTRINSIC);
+                    img1.size(), R, T, E, F,
+                    CV_CALIB_FIX_INTRINSIC);
 
+  
     fs1.open("../CalibrationParam.xml", FileStorage::WRITE);
     if( fs1.isOpened() ) {
         fs1 << "ST_RMS" << rms;
@@ -380,7 +349,7 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
     }
     else
         cout << "Error: Couldn't open CalibrationParam.xml to APPEND_EXTRINSIC_PARAMETERS\n";
-  
+
     std::cout << "Done Calibration" << std::endl;
 
     std::cout << "Starting Rectification" << std::endl;
@@ -388,7 +357,7 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
     Mat R1, R2, P1, P2, Q;
     stereoRectify(cameraMatrix[0], distCoefficients[0], 
                   cameraMatrix[1], distCoefficients[1], 
-                  undistorted[0].size(), R, T, R1, R2, P1, P2, Q,
+                  img1.size(), R, T, R1, R2, P1, P2, Q,
                   CALIB_ZERO_DISPARITY, 0);
     
     if( fs1.isOpened() ) {
@@ -416,20 +385,20 @@ unsigned Eyes::stereoCalibration(unsigned num_imgs) {
     unsigned nimages = 2;
     for(unsigned i = 0; i < nimages; i++ )
     {
-        int npt = (int)imgPoints_n[0][i].size();
+        int npt = (int)imgPoints[0][i].size();
         Mat imgpt[2];
         for(unsigned k = 0; k < 2; k++ )
         {
-            imgpt[k] = Mat(imgPoints_n[k][i]);
+            imgpt[k] = Mat(imgPoints[k][i]);
             undistortPoints(imgpt[k], imgpt[k], cameraMatrix[k], distCoefficients[k], Mat(), cameraMatrix[k]);
             computeCorrespondEpilines(imgpt[k], k+1, F, lines[k]);
         }
         for(int j = 0; j < npt; j++ )
         {
-            double errij = fabs(imgPoints_n[0][i][j].x*lines[1][j][0] +
-                                imgPoints_n[0][i][j].y*lines[1][j][1] + lines[1][j][2]) +
-                           fabs(imgPoints_n[1][i][j].x*lines[0][j][0] +
-                                imgPoints_n[1][i][j].y*lines[0][j][1] + lines[0][j][2]);
+            double errij = fabs(imgPoints[0][i][j].x*lines[1][j][0] +
+                                imgPoints[0][i][j].y*lines[1][j][1] + lines[1][j][2]) +
+                           fabs(imgPoints[1][i][j].x*lines[0][j][0] +
+                                imgPoints[1][i][j].y*lines[0][j][1] + lines[0][j][2]);
             err += errij;
         }
         npoints += npt;
