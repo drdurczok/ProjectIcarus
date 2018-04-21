@@ -11,7 +11,9 @@ class DisparityEye: public EyeBase, public GUI
         DisparityEye();
         virtual ~DisparityEye();
         void showDepthMap();
-        unsigned stereoCalibration(unsigned);
+        void createDataSet();
+        void deleteDataSet();
+        unsigned stereoCalibration();
 
         void cameraFeed(unsigned char);
         void GUI();

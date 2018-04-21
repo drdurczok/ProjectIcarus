@@ -1,7 +1,6 @@
 
 #include <termios.h>
 #include "../include/DisparityEye.h"
-#include "../include/EyesGUI.h"
 #include "../include/GUI.h"
 #include "../include/Tracking.h"
 
@@ -15,17 +14,15 @@ static struct termios oldt; //getchar without pressing enter
 int main( int argc, const char** argv)
 {
   GUI gui;
-  EyesGUI eyes;
   Tracking track;
   
   unsigned choice;
   disable_waiting_for_enter();
 
-  string option[4];
+  string option[3];
   option[0] = "Disparity Mapping";
-  option[1] = "Start Finger Capture";
-  option[2] = "Legacy";
-  option[3] = "Exit";
+  option[1] = "Tracking";
+  option[2] = "Exit";
 
   bool loop = true;
   while(loop == true){
@@ -35,8 +32,7 @@ int main( int argc, const char** argv)
     switch(choice){
       case 0: disparity(); break;
       case 1: track.ScanFingerTips(); break;
-      case 2: eyes.calibrationGUI(); break;
-      case 3: loop = false; break;
+      case 2: loop = false; break;
       default: loop = false;
     }
   }

@@ -128,12 +128,111 @@ void DisparityEye::showDepthMap(){
     cvDestroyWindow("disp");
 }
 
+void DisparityEye::createDataSet(){
+	unsigned picNum = 0;
+	unsigned cam_start = 1;
+	unsigned iter = 3;
+
+    for(unsigned i=cam_start; i<iter; i++){
+        namedWindow(cam[i].title, CV_WINDOW_AUTOSIZE);
+        moveWindow(cam[i].title, cam[i].posx, 20);
+    }
+
+    unsigned framesPerSecond = 20;
+
+    printf("\033[2J\033[1;H\033[?25l");
+    std::cout  << "To take a picture use the space bar.\n" << "Press esc to finish taking pictures.\n\n"
+               << "Number of calibration pictures: " << picNum << std::endl;
+
+    bool found[2];
+    char character;
+    ostringstream name;    
+    ostringstream nameOverlay;
+    vector<Vec2f> foundPoints;
+
+    while(true){
+        found[0] = false;
+        found[1] = false;
+
+        for(unsigned i=cam_start; i<iter; i++){
+            cam[i].frame = getFrame(i);
+            found[i-cam_start] = findChessboardCorners(cam[i].frame, boardSize, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
+            //cornerSubPix(cam[i].frame, foundPoints, Size(5, 5), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1)); //Refine corner detection
+            cam[i].frame.copyTo(cam[i].drawToFrame);
+            drawChessboardCorners(cam[i].drawToFrame, boardSize, foundPoints, found);
+
+            if(found) imshow(cam[i].title, cam[i].drawToFrame);
+            else imshow(cam[i].title, cam[i].frame);
+        }
+        
+        character = waitKey(1000/framesPerSecond);
+
+        switch(character){
+            case ' ': {
+                //saving image
+                for(unsigned i=cam_start; i<iter; i++){
+                    if(found[0]&&found[1]){
+                        cam[i].savedImages.push_back(cam[i].frame);
+                        name.str("");
+                        nameOverlay.str("");
+                        name << "../../CalibrationPictures/Cam0" << cam[i].num << "/CAM0" << cam[i].num << "_calib" << cam[i].i << ".jpg";
+                        nameOverlay << "../../CalibrationPictures/CalibrationPicturesOverlay/CAM0" << cam[i].num << "_calib" << cam[i].i << ".jpg";
+                        imwrite(name.str(),cam[i].frame);
+                        imwrite(nameOverlay.str(),cam[i].drawToFrame);
+                        cam[i].i++;
+                        if(i == cam_start){
+                            printf("\033[2J\033[1;H\033[?25l");
+                            picNum++;
+                            std::cout  << "To take a picture use the space bar.\n" << "Press esc to finish taking pictures.\n\n"
+                                       << "Number of calibration pictures: " << picNum << std::endl;
+                        }
+                    }
+                }
+            } break;
+            case 27: {   //escape
+                //exit program
+                for(unsigned i=cam_start; i<iter; i++) cvDestroyWindow(cam[i].title.c_str());
+                return;
+            } break;     
+        }
+    }
+
+}
+
+void DisparityEye::deleteDataSet(){
+	ostringstream header;
+	header.str("");
+	header << "Are you sure you want to delete all the current pictures?\n\n";
+
+	unsigned choice;
+	
+	string option[2];
+	option[0] = "Yes";
+	option[1] = "No";
+
+	bool loop = true;
+	while(loop == true){
+		choice = Menu(header.str(), option,  sizeof option/sizeof option[0]);
+
+		switch(choice){
+		  case 0: {
+		  	rmFolder("Cam01/*");
+		  	rmFolder("Cam02/*");
+		  	rmFolder("CalibrationPicturesOverlay/*");
+		  	return;
+		  } break;		  
+		  case 7: loop = false;  break;
+		  default: loop = false;
+		}
+	}
+}
+
 /*
  * Here we produce the extrinsic and rectification camera parameters for a stereo set.
  * This is accomplished with the stereoCalibrate() and stereoRectify() methods. 
  * Special attention is needed with their flags and parameter values.
  */
-unsigned DisparityEye::stereoCalibration(unsigned num_imgs) {
+unsigned DisparityEye::stereoCalibration() {
     vector< vector< Point3f > > objectPoints;
     vector< vector< Point2f > > imgPoints[2];
     vector< Point2f > corners1, corners2;
@@ -143,12 +242,14 @@ unsigned DisparityEye::stereoCalibration(unsigned num_imgs) {
 
     ostringstream name[2];
 
+    unsigned num_imgs = checkFolder(1);
+
     //Find Checkerboard Points
     vector< Point3f > obj;
     obj = Create3DChessboardCorners(boardSize, squareEdgeLength);
 
-    bool found1 = false, found2 = false;
-    for (unsigned i = 400; i <= num_imgs+399; i++) {
+    bool found[2];
+    for (unsigned i = 1; i <= num_imgs; i++) {
         name[0].str("");
         name[0] << "../../CalibrationPictures/Cam01/CAM01_calib" << i << ".jpg";
         name[1].str("");
@@ -156,13 +257,13 @@ unsigned DisparityEye::stereoCalibration(unsigned num_imgs) {
         img1 = imread(name[0].str(), CV_LOAD_IMAGE_COLOR);
         img2 = imread(name[1].str(), CV_LOAD_IMAGE_COLOR);
 
-        found1 = false;
-        found2 = false;
+        found[0] = false;
+        found[1] = false;
 
-        found1 = findChessboardCorners(img1, boardSize, corners1, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-        found2 = findChessboardCorners(img2, boardSize, corners2, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-        
-        if (found1 && found2) {
+        found[0] = findChessboardCorners(img1, boardSize, corners1, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        found[1] = findChessboardCorners(img2, boardSize, corners2, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+
+        if (found[0] && found[1]) {
               cout << i << ". Found corners!" << endl;
               imgPoints[0].push_back(corners1);
               imgPoints[1].push_back(corners2);
@@ -179,19 +280,19 @@ unsigned DisparityEye::stereoCalibration(unsigned num_imgs) {
                     img1.size(), R, T, E, F,
                     CV_CALIB_FIX_ASPECT_RATIO + CV_CALIB_RATIONAL_MODEL + CV_CALIB_FIX_PRINCIPAL_POINT +
                     CV_CALIB_FIX_K3 + CV_CALIB_FIX_K4 + CV_CALIB_FIX_K5);
-    // + CV_CALIB_FIX_INTRINSIC
     
     FileStorage fs1("../CalibrationParam.xml", FileStorage::WRITE);
     if( fs1.isOpened() ) {
         fs1 << "ST_RMS" << rms;
-        fs1 << "R" << R;
-        fs1 << "T" << T;
-        fs1 << "E" << E;
-        fs1 << "F" << F;
         fs1 << "K1" << cameraMatrix[0];
         fs1 << "D1" << distCoefficients[0];
         fs1 << "K2" << cameraMatrix[1];
         fs1 << "D2" << distCoefficients[1];
+        fs1 << "R" << R;
+        fs1 << "T" << T;
+        fs1 << "E" << E;
+        fs1 << "F" << F;
+        
     }
     else
         cout << "Error: Couldn't open CalibrationParam.xml to APPEND_EXTRINSIC_PARAMETERS\n";
@@ -216,7 +317,26 @@ unsigned DisparityEye::stereoCalibration(unsigned num_imgs) {
     else
         cout << "Error: Couldn't open CalibrationParam.xml to APPEND_RECTIFICATION_PARAMETERS\n";
 
-    createRMap();
+
+	/*
+	 * Based on intrinsic and extrinsic calibration parameters, remapping matrices are produced to
+	 * create the rectified image. The RMap values are stored in an XML file for future reference.
+	 */
+    Mat rmap[2][2];
+
+    initUndistortRectifyMap(cameraMatrix[0], distCoefficients[0], R1, P1, cam[1].size, CV_16SC2, rmap[0][0], rmap[0][1]);
+    initUndistortRectifyMap(cameraMatrix[1], distCoefficients[1], R2, P2, cam[2].size, CV_16SC2, rmap[1][0], rmap[1][1]);
+
+    fs1.open("../RMapParam.xml", FileStorage::WRITE);
+    if( fs1.isOpened() ) {
+        fs1 << "RMap00" << rmap[0][0];
+        fs1 << "RMap01" << rmap[0][1];
+        fs1 << "RMap10" << rmap[1][0];
+        fs1 << "RMap11" << rmap[1][1];
+        fs1.release();
+    }
+    else
+        cout << "Error: Couldn't open RMapParam.xml to WRITE_MAPPING_PARAMETERS\n";
 
     std::cout << "Done Rectification" << std::endl;
 
@@ -279,7 +399,7 @@ void DisparityEye::cameraFeed(unsigned char flag = 0){
     Mat rmap[2][2];
 
     if(flag & UNDISTORT){
-		FileStorage fs1("../InternalParam.xml", FileStorage::READ);
+		FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
 	    if( fs1.isOpened() ) {
 	        fs1["K1"] >> cameraMatrix[0];
 	        fs1["K2"] >> cameraMatrix[1];
@@ -344,14 +464,15 @@ void DisparityEye::GUI(){
 
 	unsigned choice;
 	
-	string option[7];
+	string option[8];
 	option[0] = "Disparity Map";
-	option[1] = "Take Pictures";
-	option[2] = "Create Calibration Parameters";
-	option[3] = "Display Video Feeds";
-	option[4] = "Display Undistorted Feeds";
-	option[5] = "Display Rectified Feeds";
-	option[6] = "Exit";
+	option[1] = "Create Data Set";
+	option[2] = "Delete Data Set";
+	option[3] = "Create Calibration Parameters";
+	option[4] = "Display Video Feeds";
+	option[5] = "Display Undistorted Feeds";
+	option[6] = "Display Rectified Feeds";
+	option[7] = "Exit";
 
 	bool loop = true;
 	while(loop == true){
@@ -359,12 +480,13 @@ void DisparityEye::GUI(){
 
 		switch(choice){
 		  case 0: showDepthMap(); break;
-		  case 1:  break;
-		  case 2:  break;
-		  case 3:  cameraFeed(); break;
-		  case 4:  cameraFeed(UNDISTORT); break;
-		  case 5:  cameraFeed(RECTIFY);   break;
-		  case 6: loop = false;  break;
+		  case 1: createDataSet(); break;
+		  case 2: deleteDataSet(); break;
+		  case 3: stereoCalibration(); break;
+		  case 4: cameraFeed(); break;
+		  case 5: cameraFeed(UNDISTORT); break;
+		  case 6: cameraFeed(RECTIFY);   break;
+		  case 7: loop = false;  break;
 		  default: loop = false;
 		}
 	}

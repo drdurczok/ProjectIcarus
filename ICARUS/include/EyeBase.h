@@ -27,22 +27,20 @@ class EyeBase
         EyeBase();
         virtual ~EyeBase();
         unsigned calibrationFromFiles(unsigned, unsigned, unsigned);
-        unsigned checkFolder(unsigned,unsigned,unsigned);
-        bool rmFolder(unsigned);
-        void swapCameras();
+        unsigned checkFolder(unsigned, unsigned start = 0, unsigned end = 399);
+        bool rmFolder(string);
 
     protected:
         void initializeCamera(unsigned i[], unsigned);
         Mat getFrame(unsigned);
-        void formatData(unsigned);
+        void formatFeed(unsigned);
 
         double cameraCalibration(vector<Mat>, Mat&, Mat&);    //calibrateCamera, returns RMS(root mean square) - good calibration between 0.1 and 1.0 pixels
+        
         void createKnownBoardPosition(vector<Point3f>&);
         bool getChessboardCorners(vector<Mat>, vector<vector<Point2f>>&, bool);
-
         vector<Point3f> Create3DChessboardCorners(Size, float);
-        void createRMap();
-
+    
 
         float squareEdgeLength; //meters
         unsigned board_height;

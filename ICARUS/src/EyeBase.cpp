@@ -84,25 +84,13 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
     return 0;
 }
 
-void EyeBase::swapCameras(){
-    vid[1]->release();
-    vid[2]->release();
-
-    unsigned temp = cam[1].vid;
-    cam[1].vid = cam[2].vid;
-    cam[2].vid = temp;
-
-    unsigned i[2] = {1, 2};
-    initializeCamera(i,2);
-}
-
 //***********************PRIVATE**************************
 void EyeBase::initializeCamera(unsigned i[], unsigned size){
     for (unsigned j = 0; j<size; j++){
         vid[i[j]] = new VideoCapture(cam[j+1].vid);
         if(!vid[i[j]]->isOpened())
             std::cout << "ERROR: Failed to open camera" << std::endl;
-        formatData(i[j]);
+        formatFeed(i[j]);
     }
 }
 
@@ -115,7 +103,7 @@ Mat EyeBase::getFrame(unsigned camNum){
     return croppedImage;
 }
 
-void EyeBase::formatData(unsigned camNum){
+void EyeBase::formatFeed(unsigned camNum){
     Mat src;
     // Prepare data for image rotation
     vid[camNum]->read(src);
@@ -184,7 +172,7 @@ bool EyeBase::getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& 
 /*
  * Core folder manipulation
  */
-unsigned EyeBase::checkFolder(unsigned u, unsigned start = 0, unsigned end = 399){
+unsigned EyeBase::checkFolder(unsigned u, unsigned start, unsigned end){
     unsigned totalImg = 0;
     ostringstream name;
     ostringstream nameOverlay;
@@ -202,10 +190,10 @@ unsigned EyeBase::checkFolder(unsigned u, unsigned start = 0, unsigned end = 399
     return totalImg;
 }
 
-bool EyeBase::rmFolder(unsigned u){
+bool EyeBase::rmFolder(string u){
     ostringstream name;
     name.str();
-    name << "exec rm -r ../../CalibrationPictures/Cam0" << u << "/*";
+    name << "exec rm -r ../../CalibrationPictures/" << u;
     system(name.str().c_str());
     return true;
 }
@@ -220,52 +208,6 @@ vector<Point3f> EyeBase::Create3DChessboardCorners(Size boardSize, float squareS
         }
     }
     return corners;
-}
-
-/*
- * Based on intrinsic and extrinsic calibration parameters, remapping matrices are produced to
- * create the rectified image. The RMap values are stored in an XML file for future reference.
- */
-void EyeBase::createRMap(){
-    Mat distCoefficients[2];
-    Mat cameraMatrix[2], R[2], P[2];
-    Mat rmap[2][2];
-
-    FileStorage fs1("../CalibrationParam.xml", FileStorage::READ);
-    if( fs1.isOpened() ) {
-        fs1["R1"] >> R[0];
-        fs1["R2"] >> R[1];
-        fs1["P1"] >> P[0];
-        fs1["P2"] >> P[1];
-        fs1.release();
-    }
-    else
-        cout << "Error: Couldn't open CalibrationParam.xml to READ_EXTRINSIC_PARAMETERS\n";
-
-    fs1.open("../InternalParam.xml", FileStorage::READ);
-    if( fs1.isOpened() ) {
-        fs1["K1"] >> cameraMatrix[0];
-        fs1["K2"] >> cameraMatrix[1];
-        fs1["D1"] >> distCoefficients[0];
-        fs1["D2"] >> distCoefficients[1];
-        fs1.release();
-    }
-    else
-        cout << "Error: Couldn't open InternalParam.xml to READ_INTERNAL_PARAMETERS\n";
-
-    initUndistortRectifyMap(cameraMatrix[0], distCoefficients[0], R[0], P[0], cam[1].size, CV_16SC2, rmap[0][0], rmap[0][1]);
-    initUndistortRectifyMap(cameraMatrix[1], distCoefficients[1], R[1], P[1], cam[2].size, CV_16SC2, rmap[1][0], rmap[1][1]);
-
-    fs1.open("../RMapParam.xml", FileStorage::WRITE);
-    if( fs1.isOpened() ) {
-        fs1 << "RMap00" << rmap[0][0];
-        fs1 << "RMap01" << rmap[0][1];
-        fs1 << "RMap10" << rmap[1][0];
-        fs1 << "RMap11" << rmap[1][1];
-        fs1.release();
-    }
-    else
-        cout << "Error: Couldn't open RMapParam.xml to WRITE_MAPPING_PARAMETERS\n";
 }
 
 
