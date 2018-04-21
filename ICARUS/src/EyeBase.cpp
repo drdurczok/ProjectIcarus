@@ -7,14 +7,14 @@ EyeBase::EyeBase()
     board_width = 9;
     boardSize = Size(board_height,board_width);
 
-    unsigned offsetx = 15;
+    unsigned offsetx = 30;
     unsigned offsety = 8;
 
     cam[1].num = 1;
     cam[1].vid = 1;
     cam[1].title = "LCam";
     cam[1].posx = 20;
-    cam[1].angle = 90.;
+    cam[1].angle = 90;
     cam[1].ROI = Rect(1, 1+offsety, 480-offsetx, 480-offsetx);
     cam[1].size = cam[1].ROI.size();
 
