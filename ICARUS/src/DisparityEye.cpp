@@ -1,14 +1,13 @@
 #include "../include/DisparityEye.h"
 
-DisparityEye::DisparityEye()
-{
+DisparityEye::DisparityEye(){
     unsigned i[2] = {1, 2};
     initializeCamera(i,2);
 }
 
-DisparityEye::~DisparityEye()
-{
-
+DisparityEye::~DisparityEye(){
+	vid[1]->release();
+    vid[2]->release();
 }
 
 void DisparityEye::showDepthMap(){
@@ -72,7 +71,7 @@ void DisparityEye::showDepthMap(){
 	Mat distCoefficients[2];
     Mat cameraMatrix[2];
 
-    fs1.open("../InternalParam.xml", FileStorage::READ);
+    fs1.open("../CalibrationParam.xml", FileStorage::READ);
     if( fs1.isOpened() ) {
         fs1["K1"] >> cameraMatrix[0];
         fs1["K2"] >> cameraMatrix[1];
@@ -91,8 +90,8 @@ void DisparityEye::showDepthMap(){
 			break;
 		}
 
-        LeftImgOrg = getFrame(cam[1].vid);
-        RightImgOrg = getFrame(cam[2].vid);
+        LeftImgOrg = getFrame(cam[1].vid, true);
+        RightImgOrg = getFrame(cam[2].vid, true);
 
 
         /*
@@ -155,7 +154,7 @@ void DisparityEye::createDataSet(){
         found[1] = false;
 
         for(unsigned i=cam_start; i<iter; i++){
-            cam[i].frame = getFrame(i);
+            cam[i].frame = getFrame(i, true);
             found[i-cam_start] = findChessboardCorners(cam[i].frame, boardSize, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE); //Use CV_CALIB_FAST_CHECK to increase frames but lower accuracy
             //cornerSubPix(cam[i].frame, foundPoints, Size(5, 5), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1)); //Refine corner detection
             cam[i].frame.copyTo(cam[i].drawToFrame);
@@ -432,8 +431,8 @@ void DisparityEye::cameraFeed(unsigned char flag = 0){
 
         charKey = waitKey(1);           // delay (in ms) and get key press, if any     
 
-        LeftImgOrg = getFrame(cam[1].vid);
-        RightImgOrg = getFrame(cam[2].vid);
+        LeftImgOrg = getFrame(cam[1].vid, true);
+        RightImgOrg = getFrame(cam[2].vid, true);
 
         if(flag & UNDISTORT){
 			undistort(LeftImgOrg, LeftImg, cameraMatrix[0], distCoefficients[0]);

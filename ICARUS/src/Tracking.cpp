@@ -1,11 +1,86 @@
 #include "../include/Tracking.h"
 
 Tracking::Tracking(){
-
+  unsigned i[1] = {0};
+  initializeCamera(i,1);
 }
 
+Tracking::~Tracking(){
+    vid[0]->release();
+}
+
+
+void Tracking::LucasKanade(){
+  const char* windowName = "Fingertip detection";
+  cv::namedWindow(windowName);
+
+  Mat image = getFrame(0,false);
+/*
+  // Obtain first image and set up two feature vectors
+  Mat image_prev, image_next;
+  cvtColor( image, image, CV_BGR2GRAY );
+  vector<Point> features_prev, features_next;
+*/
+
+  std::vector< cv::Point2f > corners;
+  // maxCorners – The maximum number of corners to return. If there are more corners
+  // than that will be found, the strongest of them will be returned
+  int maxCorners = 10;
+  // qualityLevel – Characterizes the minimal accepted quality of image corners;
+  // the value of the parameter is multiplied by the by the best corner quality
+  // measure (which is the min eigenvalue, see cornerMinEigenVal() ,
+  // or the Harris function response, see cornerHarris() ).
+  // The corners, which quality measure is less than the product, will be rejected.
+  // For example, if the best corner has the quality measure = 1500,
+  // and the qualityLevel=0.01 , then all the corners which quality measure is
+  // less than 15 will be rejected.
+  double qualityLevel = 0.01;
+  double minDistance = 20.;       //The minimum possible Euclidean distance between the returned corners
+  // mask – The optional region of interest. If the image is not empty (then it
+  // needs to have the type CV_8UC1 and the same size as image ), it will specify
+  // the region in which the corners are detected
+  cv::Mat mask;
+  int blockSize = 3;              // Size of the averaging block for computing derivative covariation matrix over each pixel neighborhood, see cornerEigenValsAndVecs()
+  bool useHarrisDetector = false; // useHarrisDetector() or cornerMinEigenVal()
+  double k = 0.04;                // k – Free parameter of Harris detector
+
+  
+
+  Mat points_prev, points_next, status, err;
+  char charKey = 0;
+  while (charKey != 27 && vid[0]->isOpened()) {        // until the Esc key is pressed or webcam connection is lost
+    charKey = waitKey(1);                             // delay (in ms) and get key press, if any     
+/*
+    image_prev = image_next.clone();
+    features_prev = features_next;
+    image_next = getFrame(0,false);  // Get next image
+
+    // Find position of feature in new image
+    cv::calcOpticalFlowPyrLK(
+      image_prev, image_next, // 2 consecutive images
+      points_prev, // input point positions in first im
+      points_next, // output point positions in the 2nd
+      status,    // tracking success
+      err      // tracking error
+    );
+
+    imshow(windowName, image_next);
+*/
+    cvtColor(getFrame(0,false), image, CV_BGR2GRAY);
+
+    goodFeaturesToTrack(image, corners, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k);
+
+    for(size_t i=0; i<corners.size(); i++){
+      circle(image, corners[i], 10, Scalar(255.),-1);
+    }
+
+    imshow(windowName, image);
+  }
+  cvDestroyWindow(windowName);
+}
+
+
 void Tracking::ScanFingerTips(){
-  cv::VideoCapture cap(0);
   const char* windowName = "Fingertip detection";
   cv::namedWindow(windowName);
   //cv::setMouseCallback(windowName, CallbackFunc, NULL);
@@ -19,7 +94,7 @@ void Tracking::ScanFingerTips(){
 
   const char* windowName2 = "Fingertip detection2";
   cv::namedWindow(windowName2);
-  int minH = 130, maxH = 160, minS = 10, maxS = 40, minV = 75, maxV = 130;
+  int minH = 70, maxH = 180, minS = 17, maxS = 99, minV = 124, maxV = 187;
   cv::namedWindow(windowName);
   cv::createTrackbar("MinH", windowName2, &minH, 180);
   cv::createTrackbar("MaxH", windowName2, &maxH, 180);
@@ -30,7 +105,7 @@ void Tracking::ScanFingerTips(){
 
   while (1)
   {
-      cap >> frame;
+      frame = getFrame(0,false);
       cv::Mat hsv;
       cv::cvtColor(frame, hsv, CV_BGR2HSV);
       cv::inRange(hsv, cv::Scalar(minH, minS, minV), cv::Scalar(maxH, maxS, maxV), hsv);
@@ -91,12 +166,11 @@ void Tracking::ScanFingerTips(){
       cv::imshow(windowName, frame);
       if (cv::waitKey(30) >= 0) break;
   }
-
+  cvDestroyWindow(windowName);
+  cvDestroyWindow(windowName2);
 }
 
-float Tracking::innerAngle(float px1, float py1, float px2, float py2, float cx1, float cy1)
-{
-
+float Tracking::innerAngle(float px1, float py1, float px2, float py2, float cx1, float cy1){
 	float dist1 = std::sqrt(  (px1-cx1)*(px1-cx1) + (py1-cy1)*(py1-cy1) );
 	float dist2 = std::sqrt(  (px2-cx1)*(px2-cx1) + (py2-cy1)*(py2-cy1) );
 
@@ -138,23 +212,29 @@ float Tracking::innerAngle(float px1, float py1, float px2, float py2, float cx1
 	return A;
 }
 
-void Tracking::VideoFeed(){
-	vid = new VideoCapture(0);
-    if(!vid->isOpened())
-        std::cout << "ERROR: Failed to open camera" << std::endl;
 
-    Mat frame;
+//___________________________________GUI______________________________________
+void Tracking::GUI(){
+  ostringstream header;
+  header.str("");
+  header << "This is the calibration menu\n\n";
 
-    namedWindow("CAM", CV_WINDOW_AUTOSIZE);
-    if(!vid->isOpened()) std::cout << "ERROR: Camera feed not opened." << std::endl;
+  unsigned choice;
+  
+  string option[3];
+  option[0] = "PointDetection";
+  option[1] = "ScanFingerTips";
+  option[2] = "Exit";
 
-    while(true){
-        if(!vid->read(frame)) break;
-        imshow("CAM",frame);
-        char character = waitKey(1000/20);
-        if (character == 27) break;
+  bool loop = true;
+  while(loop == true){
+    choice = Menu(header.str(), option,  sizeof option/sizeof option[0]);
 
-}
-
-    cvDestroyWindow("CAM");
+    switch(choice){
+      case 0: LucasKanade(); break;
+      case 1: ScanFingerTips(); break;
+      case 2: loop = false;  break;
+      default: loop = false;
+    }
+  }
 }

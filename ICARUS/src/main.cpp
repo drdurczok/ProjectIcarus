@@ -7,6 +7,7 @@
 using namespace std;
 
 void disparity();
+void tracking();
 void restore_terminal_settings(void);
 void disable_waiting_for_enter(void);
 static struct termios oldt; //getchar without pressing enter
@@ -14,8 +15,7 @@ static struct termios oldt; //getchar without pressing enter
 int main( int argc, const char** argv)
 {
   GUI gui;
-  Tracking track;
-  
+
   unsigned choice;
   disable_waiting_for_enter();
 
@@ -31,7 +31,7 @@ int main( int argc, const char** argv)
 
     switch(choice){
       case 0: disparity(); break;
-      case 1: track.ScanFingerTips(); break;
+      case 1: tracking(); break;
       case 2: loop = false; break;
       default: loop = false;
     }
@@ -46,6 +46,11 @@ int main( int argc, const char** argv)
 void disparity(){
   DisparityEye sight;
   sight.GUI();
+}
+
+void tracking(){
+  Tracking track;
+  track.GUI();
 }
 
 void restore_terminal_settings(void){

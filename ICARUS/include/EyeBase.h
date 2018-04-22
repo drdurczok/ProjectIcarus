@@ -32,7 +32,7 @@ class EyeBase
 
     protected:
         void initializeCamera(unsigned i[], unsigned);
-        Mat getFrame(unsigned);
+        Mat getFrame(unsigned, bool);
         void formatFeed(unsigned);
 
         double cameraCalibration(vector<Mat>, Mat&, Mat&);    //calibrateCamera, returns RMS(root mean square) - good calibration between 0.1 and 1.0 pixels

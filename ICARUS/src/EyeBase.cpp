@@ -1,7 +1,6 @@
 #include "../include/EyeBase.h"
 
-EyeBase::EyeBase()
-{
+EyeBase::EyeBase(){
     squareEdgeLength = 0.025f; //meters
     board_height = 6;
     board_width = 9;
@@ -9,6 +8,10 @@ EyeBase::EyeBase()
 
     unsigned offsetx = 30;
     unsigned offsety = 8;
+
+    cam[0].num = 0;
+    cam[0].vid = 0;
+    cam[0].title = "WebCam";
 
     cam[1].num = 1;
     cam[1].vid = 1;
@@ -27,10 +30,7 @@ EyeBase::EyeBase()
     cam[2].size = cam[2].ROI.size();
 }
 
-EyeBase::~EyeBase()
-{
-    vid[1]->release();
-    vid[2]->release();
+EyeBase::~EyeBase(){
 }
 
 /*
@@ -87,20 +87,21 @@ unsigned EyeBase::calibrationFromFiles(unsigned u, unsigned start, unsigned end)
 //***********************PRIVATE**************************
 void EyeBase::initializeCamera(unsigned i[], unsigned size){
     for (unsigned j = 0; j<size; j++){
-        vid[i[j]] = new VideoCapture(cam[j+1].vid);
+        vid[i[j]] = new VideoCapture(cam[i[j]].vid);
         if(!vid[i[j]]->isOpened())
             std::cout << "ERROR: Failed to open camera" << std::endl;
         formatFeed(i[j]);
     }
 }
 
-Mat EyeBase::getFrame(unsigned camNum){
+Mat EyeBase::getFrame(unsigned camNum, bool warp){
     Mat warpedImage, croppedImage;
     vid[camNum]->read(cam[camNum].frame);
-    warpAffine(cam[camNum].frame, warpedImage, cam[camNum].rotate, cam[camNum].bbox.size());  
-    croppedImage = warpedImage(cam[camNum].ROI);
-
-    return croppedImage;
+    if(warp==true){
+        warpAffine(cam[camNum].frame, warpedImage, cam[camNum].rotate, cam[camNum].bbox.size());  
+        cam[camNum].frame = warpedImage(cam[camNum].ROI);
+    }
+    return cam[camNum].frame;
 }
 
 void EyeBase::formatFeed(unsigned camNum){
