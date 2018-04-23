@@ -1,7 +1,7 @@
 #include "../include/EyeBase.h"
 
 EyeBase::EyeBase(){
-    squareEdgeLength = 0.025f; //meters
+    squareEdgeLength = 0.026f; //meters
     board_height = 6;
     board_width = 9;
     boardSize = Size(board_height,board_width);
