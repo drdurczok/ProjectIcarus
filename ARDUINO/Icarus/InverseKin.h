@@ -71,7 +71,7 @@ double D_3 = 1;
  */
 
 double A_4 = 1;
-double ang_4 = 145;
+double ang_4 = 145/(2*PI);
 
 double flexion = 0;
 

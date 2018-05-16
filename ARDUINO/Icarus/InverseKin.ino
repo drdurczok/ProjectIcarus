@@ -11,7 +11,8 @@ double calc_sys_1(double alpha){
 double calc_sys_2(double X){
   double alpha;
   alpha = acos( ((X-D_1*cos(init_offsetA))/A_2)-init_offsetA );
-  
+  //radians
+
   return alpha;
 }
 
