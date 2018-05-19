@@ -6,7 +6,7 @@
  *      **********************
  *       *                    *
  *        *                     *
- *         *                     *  C_!
+ *         *                     *  C_1
  *      A_1 *                     *
  *           *                     *
  *            *                     *
@@ -17,28 +17,29 @@ double A_1 = 1;
 double B_1 = 1;
 double C_1 = 1;
 double D_1 = 1;
-double init_offsetA = 0;
+double init_offsetA = 5*PI/180;  //Radians
 
 /* System 2
  *  
- *      *
+ *      *  
  *      * *
  *      *   *
  *      *     *
  *  B_2 *       *
  *      *         *
- *      *           *
+ *  X_1(*)           *
  *        *           *
  *          *         *
  *    A_2     *       *
  *              *     *
- *                *   *
- *                  * *        D_1
- *                    * * * * * * * * * *
+ *                *  init_offsetB
+ *                  * *       D_1
+ *            alpha(  * * * * * * * * * *
  */               
 
-double A_2 = 1;
+double A_2 = 1.1;
 double B_2 = 1;
+double init_offsetB = 80*PI/180;  //Radians
 
 /* System 3
  *     
