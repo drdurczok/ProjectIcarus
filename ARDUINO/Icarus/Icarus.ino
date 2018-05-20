@@ -1,3 +1,9 @@
+#include <Servo.h>
+
+Servo motor01;
+
+int servo_position = 0;
+
 const double rad2deg = 180/PI;
 const double deg2rad = PI/180;
 
@@ -15,23 +21,16 @@ double coord_1_ang;
 
 void setup() {
   Serial.begin(57600);
+  motor01.attach(9);
 }
 
 void loop() {
-/*The first correction appears in system 2,
- * X_1 with respect to (0,0) needs to consider 
- * the orientation of the palm.
- */
-  
-
-
 /* First Motor Calculations (INVERSE)
  * X_1 - First coordinate point
  * phi - Angle of first motor
  */
   alpha = calc_sys_2(X_1,ang_H);
-  alpha2 = relsys1sys2(alpha);
-  phi = calc_sys_1(alpha2);
+  phi = calc_sys_1(alpha);
 
 /* Save data for first coordinate data (FORWARD)
  * This gives us the new coordinate system
@@ -39,7 +38,6 @@ void loop() {
  */
   coord_1_ang = calc_orien_coord_1(alpha);
   coord_1_X = calc_pos_coord_1(coord_1_ang);
-
 
   Serial.print("Coordinate System 1 Data: X_1 = ");
   Serial.print(X_1);
@@ -52,15 +50,19 @@ void loop() {
   Serial.print("deg\n");
   delay(500);
 
+  //Second Motor
+  //calc_sys_4(X_2);
+  //calc_sys_3();
+
+  motor01.write(-180);
+  delay(10);
+
+
+
   if(X_1<1)
     X_1 = X_1 + 0.05;
   else
     X_1 = 0;
-
-  //Second Motor
-  //calc_sys_4(X_2);
-  //calc_sys_3();
-  
 }
 
 

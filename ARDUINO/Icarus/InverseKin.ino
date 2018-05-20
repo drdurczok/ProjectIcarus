@@ -1,25 +1,21 @@
 #include "InverseKin.h"
 
 double calc_sys_1(double alpha){
-  double E, phi;
-  E = triangle1(A_1,D_1,alpha);
+  double E, phi, alpha2;
+
+  // We need to transfom alpha to fit our new system
+  alpha2 = relsys1sys2(alpha);
+  E = triangle1(A_1,D_1,alpha2);
   phi = asin(A_1*sin(alpha)/E) + acos((pow(C_1,2)+pow(E,2)-pow(B_1,2))/(2*C_1*E));
   
   return phi;
 }
 
-//This system considers the orientation of the palm
+//This system considers the orientation of the palm and motor angle offset
 double calc_sys_2(double X, double ang_H){
-  double r = sqrt( pow(A_2,2) + pow((A_2-X),2) - pow(X,2) );
-  double ang = acos( (pow(r,2)/(2*pow(A_2,2))-1) );
-  return (PI - ang) - (ang_H + init_offsetA);
+  return acos( X/A_2 ) - (ang_H + init_offsetA);
 }
-/*
-double calc_sys_2(double X){
-  //radians
-  return acos( ((X-D_1*cos(init_offsetA))/A_2)-init_offsetA );
-}
-*/
+
 double relsys1sys2(double ang){
   return PI - init_offsetB + ang;
 }
