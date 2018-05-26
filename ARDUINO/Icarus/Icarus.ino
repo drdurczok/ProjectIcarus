@@ -74,8 +74,8 @@ void loop() {
   delay(500);
   
   
-  //motor01.write(-180);
-  //delay(10);
+  motor01.write(phi*rad2deg);
+  delay(10);
 
 
 

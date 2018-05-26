@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.1.15)  13 MAR 2018 20:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6500 64-bit) (preloaded format=pdflatex 2018.1.15)  25 MAY 2018 13:51
 entering extended mode
 **./DOC.tex
 (DOC.tex
@@ -246,7 +246,7 @@ File: IMG/Bebionic_V2_Hand.png Graphic file (type png)
 <use IMG/Bebionic_V2_Hand.png>
 Package pdftex.def Info: IMG/Bebionic_V2_Hand.png  used on input line 66. on in
 put line 66.
-Package pdftex.def Info: Requested size: 227.62204pt x 115.58595pt on input lin
+Package pdftex.def Info: Requested size: 204.85844pt x 104.02975pt on input lin
 e 66.
 <IMG/fingerMech2.png, id=18, 499.11469pt x 191.21437pt>
 File: IMG/fingerMech2.png Graphic file (type png)
@@ -255,108 +255,176 @@ Package pdftex.def Info: IMG/fingerMech2.png  used on input line 73. on input l
 ine 73.
 Package pdftex.def Info: Requested size: 273.14922pt x 104.64886pt on input lin
 e 73.
- [2 <./IMG/Bebionic_V2_Hand.png>]
-<IMG/fingerMech.jpg, id=24, 853.1875pt x 945.5325pt>
+ [2 <./IMG/Bebionic_V2_Hand.png> <./IMG/fingerMech2.png>]
+<IMG/fingerMech.jpg, id=25, 853.1875pt x 945.5325pt>
 File: IMG/fingerMech.jpg Graphic file (type jpg)
 <use IMG/fingerMech.jpg>
-Package pdftex.def Info: IMG/fingerMech.jpg  used on input line 81. on input li
-ne 81.
+Package pdftex.def Info: IMG/fingerMech.jpg  used on input line 82. on input li
+ne 82.
 Package pdftex.def Info: Requested size: 136.5746pt x 151.346pt on input line 8
-1.
-<IMG/stringMech.jpg, id=25, 5203.44pt x 3468.96pt>
+2.
+<IMG/stringMech.jpg, id=26, 5203.44pt x 3468.96pt>
 File: IMG/stringMech.jpg Graphic file (type jpg)
 <use IMG/stringMech.jpg>
-Package pdftex.def Info: IMG/stringMech.jpg  used on input line 89. on input li
-ne 89.
+Package pdftex.def Info: IMG/stringMech.jpg  used on input line 91. on input li
+ne 91.
 Package pdftex.def Info: Requested size: 136.5746pt x 91.04303pt on input line 
-89.
-
-[3 <./IMG/fingerMech2.png> <./IMG/fingerMech.jpg> <./IMG/stringMech.jpg>]
-<IMG/airMuscle.jpg, id=30, 378.41376pt x 299.1175pt>
+91.
+<IMG/airMuscle.jpg, id=27, 378.41376pt x 299.1175pt>
 File: IMG/airMuscle.jpg Graphic file (type jpg)
 <use IMG/airMuscle.jpg>
-Package pdftex.def Info: IMG/airMuscle.jpg  used on input line 97. on input lin
-e 97.
+Package pdftex.def Info: IMG/airMuscle.jpg  used on input line 99. on input lin
+e 99.
 Package pdftex.def Info: Requested size: 182.09485pt x 143.93533pt on input lin
-e 97.
+e 99.
+ [3 <./IMG/fingerMech.jpg> <./IMG/stringMech.jpg>]
 <IMG/HandSens.png, id=31, 275.0275pt x 184.69pt>
 File: IMG/HandSens.png Graphic file (type png)
 <use IMG/HandSens.png>
-Package pdftex.def Info: IMG/HandSens.png  used on input line 109. on input lin
-e 109.
+Package pdftex.def Info: IMG/HandSens.png  used on input line 112. on input lin
+e 112.
 Package pdftex.def Info: Requested size: 227.62204pt x 152.86147pt on input lin
-e 109.
-
-[4 <./IMG/airMuscle.jpg> <./IMG/HandSens.png>]
+e 112.
+ [4 <./IMG/airMuscle.jpg> <./IMG/HandSens.png>]
 <IMG/HandSens02.png, id=36, 1329.96875pt x 783.92876pt>
 File: IMG/HandSens02.png Graphic file (type png)
 <use IMG/HandSens02.png>
-Package pdftex.def Info: IMG/HandSens02.png  used on input line 119. on input l
-ine 119.
+Package pdftex.def Info: IMG/HandSens02.png  used on input line 125. on input l
+ine 125.
 Package pdftex.def Info: Requested size: 227.62204pt x 134.16325pt on input lin
-e 119.
- [5 <./IMG/HandSens02.png (PNG copy)>] [6] [7]
-Underfull \hbox (badness 10000) in paragraph at lines 168--169
+e 125.
+ [5 <./IMG/HandSens02.png (PNG copy)>]
+[6]
+<IMG/Cal_01.jpg, id=44, 451.6875pt x 451.6875pt>
+File: IMG/Cal_01.jpg Graphic file (type jpg)
+<use IMG/Cal_01.jpg>
+Package pdftex.def Info: IMG/Cal_01.jpg  used on input line 193. on input line 
+193.
+Package pdftex.def Info: Requested size: 223.0721pt x 223.07253pt on input line
+ 193.
+<IMG/Cal_02.jpg, id=45, 451.6875pt x 451.6875pt>
+File: IMG/Cal_02.jpg Graphic file (type jpg)
+<use IMG/Cal_02.jpg>
+Package pdftex.def Info: IMG/Cal_02.jpg  used on input line 199. on input line 
+199.
+Package pdftex.def Info: Requested size: 223.0721pt x 223.07253pt on input line
+ 199.
+ [7]
+<IMG/DualCam.jpeg, id=49, 1604.99625pt x 902.37125pt>
+File: IMG/DualCam.jpeg Graphic file (type jpg)
+<use IMG/DualCam.jpeg>
+Package pdftex.def Info: IMG/DualCam.jpeg  used on input line 210. on input lin
+e 210.
+Package pdftex.def Info: Requested size: 227.62204pt x 127.96962pt on input lin
+e 210.
+<IMG/DualCam_Disp.PNG, id=50, 1118.37825pt x 341.47575pt>
+File: IMG/DualCam_Disp.PNG Graphic file (type png)
+<use IMG/DualCam_Disp.PNG>
+Package pdftex.def Info: IMG/DualCam_Disp.PNG  used on input line 213. on input
+ line 213.
+Package pdftex.def Info: Requested size: 455.24408pt x 138.99512pt on input lin
+e 213.
+ [8 <./IMG/Cal_01.jpg> <./IMG/Cal_02.jpg> <./IMG/DualCam.jpeg>]
+Missing character: There is no ‚ in font cmr10!
+Missing character: There is no Ä in font cmr10!
+Missing character: There is no ú in font cmr10!
+Missing character: There is no ‚ in font cmr10!
+Missing character: There is no Ä in font cmr10!
+Missing character: There is no ù in font cmr10!
+Missing character: There is no ‚ in font cmr10!
+Missing character: There is no Ä in font cmr10!
+Missing character: There is no ô in font cmr10!
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 227.
+
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\omscmr.fd"
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 227.
+Missing character: There is no ‚ in font cmr10!
+Missing character: There is no Ä in font cmr10!
+Missing character: There is no ú in font cmr10!
+Missing character: There is no ‚ in font cmr10!
+Missing character: There is no Ä in font cmr10!
+Missing character: There is no ù in font cmr10!
+ [9 <./IMG/DualCam_Disp.PNG>]
+<IMG/ALSA.PNG, id=59, 361.95226pt x 242.70676pt>
+File: IMG/ALSA.PNG Graphic file (type png)
+<use IMG/ALSA.PNG>
+Package pdftex.def Info: IMG/ALSA.PNG  used on input line 267. on input line 26
+7.
+Package pdftex.def Info: Requested size: 178.45836pt x 119.66801pt on input lin
+e 267.
+ [10 <./IMG/ALSA.PNG>] [11]
+Underfull \hbox (badness 10000) in paragraph at lines 313--314
 []\OT1/cmr/m/n/10 SOLIDWORKS. Re-trieved from $\OT1/cmtt/m/n/10 http : / / blog
 s . solidworks . com / tech / 2016 / 08 /
  []
 
 
-Underfull \hbox (badness 3049) in paragraph at lines 171--172
+Underfull \hbox (badness 3049) in paragraph at lines 316--317
 []\OT1/cmr/m/n/10 Kinect. Re-trieved from $\OT1/cmtt/m/n/10 https : / / www . j
 ameco . com / jameco / workshop / howitworks / xboxkinect .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 172--173
+Underfull \hbox (badness 10000) in paragraph at lines 317--318
 []\OT1/cmr/m/n/10 DIGITS. Re-trieved from $\OT1/cmtt/m/n/10 https : / / spectru
 m . ieee . org / video / consumer-[]electronics /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 174--175
+Underfull \hbox (badness 10000) in paragraph at lines 319--320
 []\OT1/cmr/m/n/10 Brandon Treece ,Vi-sion-Sys-tems De-sign. Re-trieved from $\O
 T1/cmtt/m/n/10 https : / /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 174--175
+Underfull \hbox (badness 10000) in paragraph at lines 319--320
 \OT1/cmtt/m/n/10 www . vision-[]systems . com / articles / print / volume-[]22 
 / issue-[]8 / features /
  []
 
 
-Underfull \hbox (badness 6493) in paragraph at lines 176--177
+Underfull \hbox (badness 6493) in paragraph at lines 321--322
 []\OT1/cmr/m/n/10 APUs vs FP-GAs. Re-trieved from $\OT1/cmtt/m/n/10 http : / / 
 www . electronicdesign . com / microprocessors /
  []
 
 
-Underfull \hbox (badness 7504) in paragraph at lines 177--178
+Underfull \hbox (badness 7504) in paragraph at lines 322--323
 []\OT1/cmr/m/n/10 Intel FPGA SDK for OpenCL. Re-trieved from $\OT1/cmtt/m/n/10 
 https : / / www . altera . com / en _ US / pdfs /
  []
 
-[8] (DOC.aux) ) 
+
+Underfull \hbox (badness 1286) in paragraph at lines 326--327
+\OT1/cmtt/m/n/10 fileexchange / 48744-[]lucas-[]kanade-[]tutorial-[]example-[]1
+ ? focused = 3854179 & tab = example$\OT1/cmr/m/n/10 , ver-
+ []
+
+[12] (DOC.aux) ) 
 Here is how much of TeX's memory you used:
- 3169 strings out of 493312
- 49803 string characters out of 3138899
- 115708 words of memory out of 3000000
- 6685 multiletter control sequences out of 15000+200000
+ 3215 strings out of 493312
+ 50578 string characters out of 3138899
+ 114712 words of memory out of 3000000
+ 6721 multiletter control sequences out of 15000+200000
  7491 words of font info for 27 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 41i,8n,39p,762b,360s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx
-10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><
-C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Progra
-m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/M
-iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9
-/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
-e1/public/amsfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publi
-c/amsfonts/cm/cmtt10.pfb>
-Output written on DOC.pdf (9 pages, 6490224 bytes).
+ 41i,8n,39p,1018b,377s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmb
+x10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Progr
+am Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/
+MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.
+9/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program Files/MiKTeX 2.9/fonts/ty
+pe1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publ
+ic/amsfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfo
+nts/cm/cmtt10.pfb>
+Output written on DOC.pdf (13 pages, 8237767 bytes).
 PDF statistics:
- 78 PDF objects out of 1000 (max. 8388607)
+ 102 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 46 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 71 words of extra memory for PDF output out of 10000 (max. 10000000)
 
