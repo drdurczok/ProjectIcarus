@@ -17,3 +17,5 @@
 \contentsline {paragraph}{PocketSphinx}{9}
 \contentsline {paragraph}{ALSA(Advanced Linux Sound Architecture)}{10}
 \contentsline {section}{\numberline {4}Kinematics}{11}
+\contentsline {subsection}{\numberline {4.1}Index Finger}{11}
+\contentsline {subsection}{\numberline {4.2}Thumb}{13}

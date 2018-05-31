@@ -298,11 +298,64 @@ In order to set the hardware parameters for the stream, we need to allocate a va
 We now set the desired hardware parameters using API calls that take the PCM stream handle, the hardware parameters structure and the parameter value. We set the stream to interleaved mode, 16-bit sample size, 1 channel and a 44,100 bps sampling rate. In the case of the sampling rate, sound hardware is not always able to support every sampling rate exactly. We use the function snd\textunderscore pcm\textunderscore hw\textunderscore params\textunderscore set\textunderscore rate\textunderscore near to request the nearest supported sampling rate to the requested value. The hardware parameters are not actually made active until we call the function snd\textunderscore pcm\textunderscore hw\textunderscore params.
 
 \section{Kinematics}
+\subsection{Index Finger}
+We will begin the analysis with the index finger. The mechanical finger may be represented by a simplified kinematic model presented below. Our system has two degrees of freedom, however the structure is much more complicated due to various lever systems and dependent angles. To simplify our mechanism, we may divide the system into four subsystems. Each system will have its own set of equations that will eventually be put together in a programming environment to define the movement of the finger.
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{IMG/IK_01.jpeg}
+\captionof{figure}{Kinematic Model}	   	
+\end{center}
+
+Inverse kinematics for system A. This system is a simple 4 bar linkage mechanism that consists of a crank, coupler, rocker and frame. The motor attaches to the crank and drives the proximal phalange. The motor angle $\varphi$ drives $\alpha$, therefore the inverse kinematic formula has only one unknown variable $\alpha$ that is provided by system B. The rest of the formula consists of constants that are properties of the system. \textbf{\textit{All calculations are provided in the appendix.}}
+
+\begin{center}
+\includegraphics[width=0.45\textwidth]{IMG/IK_02.jpeg}
+\captionof{figure}{4 bar linkage mechanism}	   	
+\end{center}
+
+\[ \varphi = sin^{-1} \bigg(\frac{Asin\alpha}{\sqrt{A^2+D^2-2ADcos\alpha}}\bigg) + cos^{-1} \bigg(\frac{A^2+D^2-2ADcos\alpha-B^2+C^2}{2C\sqrt{A^2+D^2-2ADcos\alpha}}\bigg)\]
+
+Inverse kinematics for system B. This is the simplest possible system being a simple lever. However due to the software constraints, we have to additionally consider the orientation of the base coordinate system (the palm) and the offset from the motors 0 degree position. The formula is provided with the X coordinate from the camera system and based on this information figures out the angle on the four bar linkage mechanism.
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{IMG/IK_03.jpeg}
+\captionof{figure}{Proximal Phalange}	   	
+\end{center}
+
+\[ \alpha = cos^{-1}\bigg(\frac{X}{A}\bigg) - (\theta_{hand} + \theta_{motor}) + (\pi - \alpha_{const}) \]
+
+Provided the two equation above, we have everything we need to control the proximal phalange with the first servo motor. The servo motor is controlled entirely by one X axis coordinate provided by the software. The equations take into account various offsets, such as the orientation of the palm, as well as properties of the system such as orientation of the motor. To optimize the geometry, we may use the first equation to equate a certain rotation of the motor to the angular displacement of the finger.\vspace{12pt}
+
+The second part of the finger is much more complicated. The mechanism is a crossed four bar linkage, which significantly complicates the equations. First we will provide several formulas that create dependencies between various angles of the mechanism.
+
+\begin{center}
+\includegraphics[width=0.28\textwidth]{IMG/IK_04.jpeg}
+\captionof{figure}{Crossed 4 bar linkage mechanism}	   	
+\end{center}
 
 
+This formula provides us with the length the driving string needs to shorten. The only unknown is $\gamma$.
+\[ l_1' = \sqrt{A^2+C^2-2ACcos\gamma}\]
+
+This formula is taken as a proportion of the two triangles formed by the crossed mechanism. It helps us relate opposite angles.
+\[ C' = \frac{CA'}{A} \frac{sin\gamma'}{sin\gamma} \]
+
+Based on the equations above and a few more tricks, we are able to relate both angles from one side of the crossed four bar linkage mechanism. At this point we have all the information required to continue our calculations.
+\[ \gamma' = cos^{-1}\bigg( \frac{-A^2+B^2-C^2+D^2+2ACcos\gamma}{-2CD} \bigg)\]
+
+\[ \alpha = sin^{-1} \bigg( \sqrt{\frac{Bsin\gamma-(C-C')sin\gamma'}{C'}} \bigg) \]
+
+The formula above may be used for an inverse kinematic system for the medial phalange, which is what is included in the Arduino. The last formula is much too complicated to derive for an inverse kinematic system, therefore a numeric solution is necessary. With the forward kinematic equation below, we may create a look up table and relate both $\gamma'$ and $\alpha$ to $\gamma$ which in turn provides us with the necessary information to calculate the shortening of the string and movement of the motor.
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{IMG/IK_05.jpeg}
+\captionof{figure}{Distal Phalange}	   	
+\end{center}
 
 
+\[ X = l_1 cos(\alpha+offsets) - l_2 cos(\gamma') \]
 
+\subsection{Thumb}
 
 \break
 \begin{thebibliography}{1}
