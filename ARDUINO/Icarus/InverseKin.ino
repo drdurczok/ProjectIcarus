@@ -13,11 +13,15 @@ double calc_sys_1(double alpha){
 
 //This system considers the orientation of the palm and motor angle offset
 double calc_sys_2(double X, double ang_H){
-  return acos( X/A_2 ) - (ang_H + init_offsetA);
+  return  acos( X/A_2 ) - (/*ang_H +*/ init_offsetA);
+}
+
+double calc_sys_2_alpha(double ang){
+  return PI + ang - init_offsetC;
 }
 
 double relsys1sys2(double ang){
-  return PI - init_offsetB + ang;
+  return PI + ang - init_offsetB;
 }
 
 double calc_pos_coord_1(double ang){
@@ -32,7 +36,7 @@ double calc_orien_coord_1(double ang){
 
 //This system takes the point at the joint as input, ignoring finger tip
 double calc_sys_3_ang(double X, double ang1, double angH){
-  double ang2 = acos(X/C_3) - (ang1 + angH);
+  double ang2 = acos(X/C_3) - (ang1 /*+ angH*/);
   return gamma = PI - ang2 - init_offsetC;
 }
 

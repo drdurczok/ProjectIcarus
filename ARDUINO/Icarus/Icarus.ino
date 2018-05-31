@@ -8,7 +8,7 @@ const double rad2deg = 180/PI;
 const double deg2rad = PI/180;
 
 //Motor 1
-double alpha,alpha2,phi;
+double alpha,alpha1,alpha2,phi;
 double coord_1_X,coord_1_ang;
 //Motor 2
 double gamma,len;
@@ -17,7 +17,7 @@ double coord_2_X,coord_2_ang;
 //temp input values
 double X_1 = 0; //Domain [0,A_2]
 double X_2 = 0.5; //Domain [-a,X_1+b]
-double ang_H = 10 *deg2rad; //Domain [-90,90] Rad
+double ang_H = 0 *deg2rad; //Domain [-90,90] Rad
 
 
 void setup() {
@@ -30,14 +30,15 @@ void loop() {
  * X_1 - First coordinate point
  * phi - Angle of first motor
  */
-  alpha = calc_sys_2(X_1,ang_H);
+  alpha1 = calc_sys_2(X_1,ang_H);
+  alpha = calc_sys_2_alpha(alpha1);
   phi = calc_sys_1(alpha);
 
 /* Save data for first coordinate data (FORWARD)
  * This gives us the new coordinate system
  * for the next set of systems.
  */
-  coord_1_ang = calc_orien_coord_1(alpha);
+  coord_1_ang = calc_orien_coord_1(alpha1);
   coord_1_X = calc_pos_coord_1(coord_1_ang);
 
   Serial.print("Coordinate System 1 Data: X_1 = ");
@@ -46,11 +47,19 @@ void loop() {
   Serial.print(coord_1_X);
   Serial.print(") Orien = ");
   Serial.print(coord_1_ang*rad2deg);
-  Serial.print("deg\t|  Ang pos of motor 1: PHI = ");
+  Serial.print("deg    \t|  Ang pos of motor 1: PHI = ");
   Serial.print(phi*rad2deg);
-  Serial.print("deg\n");
+  Serial.print("deg\t");
+  Serial.print("(alpha ");
+  Serial.print(alpha*rad2deg);
+  Serial.print(" | theta ");
+  Serial.print(alpha1*rad2deg);
+  Serial.print(")\n");
   delay(500);
 
+/*
+ * 
+ * 
   //Second Motor
   //calc_sys_4(X_2);
   gamma = calc_sys_3_ang(X_2,coord_1_X,ang_H); //X_2,coord_1_X,ang_H
@@ -74,14 +83,17 @@ void loop() {
   delay(500);
   
   
-  motor01.write(phi*rad2deg);
-  delay(10);
+  //motor01.write(-180);
+  //delay(10);
+
+
+  
+*/
 
 
 
-
-  if(X_1<1)
-    X_1 = X_1 + 0.05;
+  if(X_1<52)
+    X_1 = X_1 + 1;
   else
     X_1 = 0;
     
