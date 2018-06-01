@@ -41,4 +41,19 @@ double calc_sys_4(double X, unsigned i){
   return flexion - acos((X-D_3[i]*cos(flexion))/A_4[i]);
 }
 
+void display_IK_Index_B(double X_2, double gamma, double len, double coord_2_ang, double coord_2_X){
+  Serial.print("Coordinate System 2 Data: X_2 = ");
+  Serial.print(X_2);
+  Serial.print(" (Corr X_2 = ");
+  Serial.print(coord_2_X);
+  Serial.print(") Orien = ");
+  Serial.print(coord_2_ang*rad2deg);
+  Serial.print("deg\t|  Len of string: L = ");
+  Serial.print(len);
+  Serial.print("mm");
+  Serial.print(" (gamma = ");
+  Serial.print(gamma*rad2deg);
+  Serial.print("deg)\n\n");
+  delay(500);
+}
 

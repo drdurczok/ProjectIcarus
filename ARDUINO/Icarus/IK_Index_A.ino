@@ -51,14 +51,7 @@ double calc_orien_coord_1(double ang, unsigned i){
   return ang + init_offsetA[i];
 }
 
-void display_IK_Index(double X_1, double theta, double phi){
-/* Save data for first coordinate data (FORWARD)
- * This gives us the new coordinate system
- * for the next set of systems.
- */
-  coord_1_ang = calc_orien_coord_1(theta,i);
-  coord_1_X = calc_pos_coord_1(coord_1_ang,i);
-
+void display_IK_Index_A(double X_1, double theta, double phi, double coord_1_ang, double coord_1_X){
   Serial.print("Coordinate System 1 Data: X_1 = ");
   Serial.print(X_1);
   Serial.print(" (Corr X_1 = ");
