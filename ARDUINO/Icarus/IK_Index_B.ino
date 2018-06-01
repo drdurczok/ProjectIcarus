@@ -53,7 +53,7 @@ void display_IK_Index_B(double X_2, double gamma, double len, double coord_2_ang
   Serial.print("mm");
   Serial.print(" (gamma = ");
   Serial.print(gamma*rad2deg);
-  Serial.print("deg)\n\n");
+  Serial.print("deg)\n");
   delay(500);
 }
 

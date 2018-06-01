@@ -56,8 +56,8 @@ void loop() {
 /*
   //motor01.write(-180);
   //delay(10);
-*/
 
+*/
 
 
   if(X_1<54)
@@ -65,10 +65,10 @@ void loop() {
   else
     X_1 = 0;
 
-  if(X_2<50)
+  if(X_2<45)
     X_2 = X_2 + 1;
   else
-    X_2 = 30;
+    X_2 = 0;
 }
 
 
