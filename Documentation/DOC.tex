@@ -355,7 +355,18 @@ The formula above may be used for an inverse kinematic system for the medial pha
 
 \[ X = l_1 cos(\alpha+offsets) - l_2 cos(\gamma') \]
 
+
 \subsection{Thumb}
+
+\subsection{Arduino}
+The formulas derived earlier are for the purpose of controlling the hand, therefore they need a controller. The Arduino Nano is the board of choice being that it is very similar to the Arduino UNO (where all the testing was done) and is very compact. The Atmega328's 8-bit CPU running at 16MHz is more than sufficient for calculating our equations in real time. The Nano has only 6 PWM pins, however the provided servo libraries support many more. A servo only requires a pulse 1ms long, so a driving frequency of 1kHz. Such a frequency is easily accomplished by the integrated CPU and we may actually use any of the outputs on the device. The 14 digital pins and 8 analog summed up for a total of 22 pins is more than sufficient for wiring up our device. The servo motors are powered by an external power supply, therefore the Arduino Nano has the sole task of controlling the motors.
+
+\begin{center}
+\includegraphics[width=\textwidth]{IMG/Nano.png}
+\end{center}
+
+An external device will provide the parameters necessary for our equations. We will  now review the code structure. For each motor, there exists a separate INO file that contains all the necessary equations and conversions in reusable methods. This allows us to reuse many of the formulas. Additionally, there exist parameter files that carry the mechanisms properties. 
+
 
 \break
 \begin{thebibliography}{1}

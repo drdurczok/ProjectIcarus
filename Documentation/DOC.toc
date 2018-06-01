@@ -19,3 +19,4 @@
 \contentsline {section}{\numberline {4}Kinematics}{11}
 \contentsline {subsection}{\numberline {4.1}Index Finger}{11}
 \contentsline {subsection}{\numberline {4.2}Thumb}{13}
+\contentsline {subsection}{\numberline {4.3}Arduino}{13}
