@@ -5,12 +5,12 @@
  * the motor controlling the proximal phalange
  */
 
-double calc_sys_1(double alpha, unsigned i){
-  double E, phi, alpha2;
+double calc_sys_1(double theta, unsigned i){
+  double E, phi, alpha;
 
   // We need to transfom alpha to fit our new system with function rel_sys1_sys2
-  alpha2 = rel_sys1_sys2(alpha,i);
-  E = triangle1(A_1[i],D_1[i],alpha2);
+  alpha = rel_sys1_sys2(theta,i);
+  E = triangle1(A_1[i],D_1[i],alpha);
   phi = asin(A_1[i]*sin(alpha)/E) + acos((pow(C_1[i],2)+pow(E,2)-pow(B_1[i],2))/(2*C_1[i]*E));
   
   return phi;
@@ -51,12 +51,12 @@ double calc_orien_coord_1(double ang, unsigned i){
   return ang + init_offsetA[i];
 }
 
-void display_IK_Index(double X_1, double alpha, double phi){
+void display_IK_Index(double X_1, double theta, double phi){
 /* Save data for first coordinate data (FORWARD)
  * This gives us the new coordinate system
  * for the next set of systems.
  */
-  coord_1_ang = calc_orien_coord_1(alpha,i);
+  coord_1_ang = calc_orien_coord_1(theta,i);
   coord_1_X = calc_pos_coord_1(coord_1_ang,i);
 
   Serial.print("Coordinate System 1 Data: X_1 = ");
@@ -68,8 +68,8 @@ void display_IK_Index(double X_1, double alpha, double phi){
   Serial.print("deg    \t|  Ang pos of motor 1: PHI = ");
   Serial.print(phi*rad2deg);
   Serial.print("deg\t");
-  Serial.print("(alpha ");
-  Serial.print(alpha*rad2deg);
+  Serial.print("(theta ");
+  Serial.print(theta*rad2deg);
   Serial.print(")\n");
 }
 

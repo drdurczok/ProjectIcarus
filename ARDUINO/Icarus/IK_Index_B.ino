@@ -6,12 +6,12 @@
  */
  
 //This system takes the point at the joint as input, ignoring finger tip
-double calc_sys_3_ang(double X, double ang1, double angH){
+double calc_sys_3_ang(double X, double ang1, double angH, unsigned i){
   double ang2 = acos(X/C_3[i]) - (ang1 /*+ angH*/);
   return gamma = PI - ang2 - init_offsetC[i];
 }
 
-double calc_sys_3_len(double gamma){
+double calc_sys_3_len(double gamma, unsigned i){
   return sqrt( pow(B_2[i],2)+pow(C_3[i],2)-2*B_2[i]*C_3[i]*cos(gamma) );
 }
 
@@ -20,7 +20,7 @@ double calc_pos_coord_2(double ang, double len){
   return len*cos(ang);
 }
 
-double calc_orien_coord_2(double gamma, double len){
+double calc_orien_coord_2(double gamma, double len, unsigned i){
   //Return orientation of coordinate system
   double ang = asin( (C_3[i]*sin(gamma))/len );
   return PI - ang - init_offsetD[i];
@@ -35,9 +35,10 @@ double calc_sys_3(){
   len = sqrt( pow(B_2,2)+pow(C_3,2)-2*B_2*C_3*cos(gamma) );
   return len;
 }
-
-double calc_sys_4(double X){
-  return flexion - acos((X-D_3*cos(flexion))/A_4);
-}
 */
+
+double calc_sys_4(double X, unsigned i){
+  return flexion - acos((X-D_3[i]*cos(flexion))/A_4[i]);
+}
+
 

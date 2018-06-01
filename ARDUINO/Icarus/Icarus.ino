@@ -8,7 +8,7 @@ const double rad2deg = 180/PI;
 const double deg2rad = PI/180;
 
 //Motor 1
-double alpha,phi;
+double theta,phi;
 double coord_1_X,coord_1_ang;
 //Motor 2
 double gamma,len;
@@ -31,10 +31,10 @@ void loop() {
  * X_1 - First coordinate point
  * phi - Angle of first motor
  */
-  alpha = calc_sys_2(X_1,ang_H,i);
-  phi = calc_sys_1(alpha,i);
+  theta = calc_sys_2(X_1,ang_H,i);
+  phi = calc_sys_1(theta,i);
 
-  //display_IK_Index(X_1,alpha,phi);
+  display_IK_Index(X_1,theta,phi);
   delay(500);
 
 /*
