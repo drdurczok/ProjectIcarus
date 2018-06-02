@@ -209,17 +209,39 @@ The vision system will be comprised of several steps. The first being to discern
 \begin{center}
 \includegraphics[width=0.5\textwidth]{IMG/DualCam.jpeg}
 \captionof{figure}{Dual Camera Setup}	
-
-\includegraphics[width=\textwidth]{IMG/DualCam_Disp.PNG}
-\captionof{figure}{Disparity Map}   	
 \end{center}
+
+\break
+Here we may compare the two very different technologies. The dual camera system relies on very precise calibration to create accurate epipolar lines. These lines reduce the number of calculations needed to find matching points as they are used as lines along which the pixels are compared between images. That is why we have noise present along what seems like horizontal lines, better calibration would reduce those. A disadvantage of such a system is that there needs to be consistent light levels for this to work. Most environments do not provide a bright and reliable light source, therefore some additional preparation is necessary for such a system to work consistently.
+
+The Kinect on the other hand uses infrared light to create a grid of points. It uses its IR camera to measure the size of various points and gauge their distance. Based on all this data it is capable of creating a disparity map. Additionally, since it creates its own source of invisible light, it will work in various situations where the dual camera set-up wouldn't. The Kinect relies on complex algorithms only provided by Microsoft Windows and their SDK packages. The reason the Kinect is so reliable is because of the machine learning done at Micosoft to make the software capable of such tasks.
+
+\begin{center}
+\includegraphics[width=\textwidth]{IMG/DualCam_Disp.PNG}
+\captionof{figure}{Dual Camera Disparity Map}   	
+\end{center}
+
+\begin{figure}[!hb]
+    \begin{minipage}[b]{0.49\textwidth}
+    	   \centering
+		\includegraphics[width=\textwidth]{IMG/KIN_02.png}
+	\end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.49\textwidth}
+	    \centering
+		\includegraphics[width=\textwidth]{IMG/KIN_03.png}
+	\end{minipage}
+	\captionof{figure}{Kinect Disparity Map}
+\end{figure}
+
+
 
 \subsubsection{Audio System}
 The general process of the application consists of several key steps. We begin with interval audio recordings. After each interval recording, it decodes the .raw file and searches for a keyword. If the keyword was spoken, the recording re-initiates. The second .raw file is decoded to receive a string. This string needs to be compared to the applications look up table. The final part is the calling of the function which is most appropriate based on the returned string. 
 Many other classes make up the individual actions of the application. These “action” classes are very easy to add and are what makes the program modular. 
 To accomplish all of this we needed to take advantage of language and audio processing API’s. These are briefly introduced and summarized below:
 
-\paragraph{PocketSphinx}
+\paragraph{PocketSphinx} 
 Pocket-Sphinx is a lightweight speech recognition engine, specifically tuned for handheld and mobile devices. The libraries are written in C and are dependent on the Sphinx-Base library. \vspace{12pt}
 
 \noindent For the library to function properly, we need to provide additional models and dictionaries:
@@ -268,8 +290,7 @@ A period stores frames, each of which contains the samples captured at one point
 	\end{minipage}
     \hfill
     \begin{minipage}[b]{0.49\textwidth}
-		The Application Buffer (Over and Under Run), illustrates the breakdown of a buffer into periods, frames and samples with some hypothetical values. Here, left and right channel information is stored alternately within a frame; this is called interleaved mode. A non-interleaved mode, where all the sample data for one channel is stored followed by the data for the next channel, also is supported. 	
-		\captionof{figure}{}   	
+		The Application Buffer (Over and Under Run), illustrates the breakdown of a buffer into periods, frames and samples with some hypothetical values. Here, left and right channel information is stored alternately within a frame; this is called interleaved mode. A non-interleaved mode, where all the sample data for one channel is stored followed by the data for the next channel, also is supported.\vspace{12pt} 	
 	\end{minipage}
 \end{figure}
 
@@ -297,6 +318,7 @@ In order to set the hardware parameters for the stream, we need to allocate a va
 
 We now set the desired hardware parameters using API calls that take the PCM stream handle, the hardware parameters structure and the parameter value. We set the stream to interleaved mode, 16-bit sample size, 1 channel and a 44,100 bps sampling rate. In the case of the sampling rate, sound hardware is not always able to support every sampling rate exactly. We use the function snd\textunderscore pcm\textunderscore hw\textunderscore params\textunderscore set\textunderscore rate\textunderscore near to request the nearest supported sampling rate to the requested value. The hardware parameters are not actually made active until we call the function snd\textunderscore pcm\textunderscore hw\textunderscore params.
 
+\break
 \section{Kinematics}
 \subsection{Index Finger}
 We will begin the analysis with the index finger. The mechanical finger may be represented by a simplified kinematic model presented below. Our system has two degrees of freedom, however the structure is much more complicated due to various lever systems and dependent angles. To simplify our mechanism, we may divide the system into four subsystems. Each system will have its own set of equations that will eventually be put together in a programming environment to define the movement of the finger.
@@ -357,6 +379,24 @@ The formula above may be used for an inverse kinematic system for the medial pha
 
 
 \subsection{Thumb}
+Although the thumb has two degrees of freedom as in the previous example, it is much simpler. Both joints are rotational, however in two different planes. The forward kinematics as well as the inverse kinematics are both relatively simple.
+
+\begin{figure}[!hb]
+    \begin{minipage}[b]{0.49\textwidth}
+    	\centering
+		\includegraphics[width=\textwidth]{IMG/IK_06.jpeg}
+	\end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.49\textwidth}
+		\[ \theta_1 = cos^{-1}\bigg(\frac{X_3}{A}+B*sin(\theta_2)\bigg)\]
+		\[ \theta_2 = cos^{-1}\bigg(\frac{X_2}{B}\bigg) \]\vspace{80pt} 	
+	\end{minipage}
+\end{figure}
+
+
+
+
+
 
 \subsection{Arduino}
 The formulas derived earlier are for the purpose of controlling the hand, therefore they need a controller. The Arduino Nano is the board of choice being that it is very similar to the Arduino UNO (where all the testing was done) and is very compact. The Atmega328's 8-bit CPU running at 16MHz is more than sufficient for calculating our equations in real time. The Nano has only 6 PWM pins, however the provided servo libraries support many more. A servo only requires a pulse 1ms long, so a driving frequency of 1kHz is needed. Such a frequency is easily accomplished by the integrated CPU and we may actually use any of the outputs on the device. The 14 digital pins and 8 analog summed up for a total of 22 pins is more than sufficient for wiring up our device. The servo motors are powered by an external power supply, therefore the Arduino Nano has the sole task of controlling the motors.
@@ -382,6 +422,8 @@ We may now take a look at the medial and proximal phalange drive of the index fi
 \end{center}
 
 The layout of the data follows suite. Instead of the angle of the motor, we derive the amount the driving string is shortened. Once again the data correlates to real world measurements. By calculating the length of the string, we are free to write any method to accompany our driving motor mechanism. In the case of the servo, we will simply wind a string around a disk. This data also considers the orientation of the previous system involving the proximal phalange. The input value is corrected and used for processing. 
+
+The thumb is the simplest mechanism, we only have two equations, two inputs and two outputs. The formula provided above was coded into a method and reliably controls our motors.
 
 
 \break

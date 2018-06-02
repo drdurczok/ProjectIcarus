@@ -79,4 +79,24 @@ double ang_4[] = {145/(2*PI)};
 
 double flexion = 0;
 
+/* Thumb - System 5
+ *                      *   
+ *                    *****  axis of rotation: theta1
+ *                      *   
+ *                      *
+ *                      * A_5  
+ *                      *
+ *                  *   *
+ *           B_5      * *
+ *  ******************* *   
+ *                        *  axis of rotation: theta2
+ *                          *
+ *                        
+ */
+
+double A_5[] = {2};
+double B_5[] = {2};
+
+
+
 #endif
