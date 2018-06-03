@@ -20,3 +20,6 @@
 \contentsline {subsection}{\numberline {4.1}Index Finger}{12}
 \contentsline {subsection}{\numberline {4.2}Thumb}{14}
 \contentsline {subsection}{\numberline {4.3}Arduino}{15}
+\contentsline {subsubsection}{\numberline {4.3.1}Communications}{16}
+\contentsline {section}{\numberline {5}Hand Prototype}{16}
+\contentsline {section}{References}{18}

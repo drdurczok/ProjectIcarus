@@ -425,8 +425,49 @@ The layout of the data follows suite. Instead of the angle of the motor, we deri
 
 The thumb is the simplest mechanism, we only have two equations, two inputs and two outputs. The formula provided above was coded into a method and reliably controls our motors.
 
+\subsubsection{Communications}
+The Arduino Nano communicates with the PC through the mini-B USB connection serial port. The connection is established in the setup() function by a method Serial.begin (). This method possess one argument, speed of serial connection (default is 9600 bits per second). The method Serial.print() prints data to the serial port as human-readable ASCII text.
+
+\begin{figure}[!hb]
+    \begin{minipage}[b]{0.49\textwidth}
+    	\centering
+		\includegraphics[width=\textwidth]{IMG/BT.jpeg}
+		\captionof{figure}{Bluetooth Module Wiring}	   	
+	\end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.49\textwidth}
+    	\centering
+		\includegraphics[width=0.8\textwidth]{IMG/BT_02.jpeg}
+		\captionof{figure}{Bluetooth Module Code}   	
+	\end{minipage}
+\end{figure}
+
+\section{Hand Prototype}
+With the kinematics and control method vigorously defined, we may put together a prototype for the mechanical hand and create simulations to test whether it will meet our requirements.
+
+The mechanical hand needs to have the full dexterity of the human hand, which means that the mechanism dimensions need to be chosen so the range of motion is proper. Additionally, we must maintain the same speeds and accelerations as its flesh counterpart. For this it is important to select a lightweight material and motors. We may make use of an FDM printer to develop a versatile model out of PLA plastic. This solution is the fastest, cheapest and allows for rapid prototyping. The joints are made of smooth metal rods, which may help in fluid motion by reducing joint friction.
+
+*****MOTOR SELECTION*******\vspace{30pt}
+
+With the requirements defined and various solutions provided, we may develop a model in CAD software. During the design process, we must keep in mind that the parts must be printable on a FDM printer. Our software of choice is Solidworks as it carries additional features such as simulations and renderings that may greatly assist us in the prototyping phase. Below we may view some images of the first prototype.
+
+*****CAD PICTURES*******\vspace{30pt}
+
+
+The inbuilt simulation software allows us to animate the assembly and check its range of motion. Additionally we may calculate speeds and accelerations during different stages of the movement.
+
+*****VEL + ACC CHARTS*******\vspace{30pt}
+
+*****COMPARE TO HUMAN HAND*******\vspace{30pt}
+
+We may also check the gripping force of the hand. Assuming the fingertip will be covered with Fiberflex 40D filament, we will have a friction coefficient of  **** we will be able to lift a 420 gram cylinder.
+
+
+Additional design considerations include a self locking mechanism, so when the hand is turned off, it keeps the open palm position. This is ensured by springs attached to the back of each finger and by servo holding torque.
+
 
 \break
+\addcontentsline{toc}{section}{References}
 \begin{thebibliography}{1}
 	\bibitem{bebionic} BeBionic. Retrieved from {\url{http://bebionic.com/the_hand/technical_information/}} 
 	\bibitem{vincent} VincentSystems. Retrieved from {\url{  https://vincentsystems.de/en/}} 
@@ -446,6 +487,7 @@ The thumb is the simplest mechanism, we only have two equations, two inputs and 
 	\bibitem{VisionProcessing} Video and Image Processing Suite Intel FPGA IP. Retrieved from {\url{https://www.altera.com/products/intellectual-property/ip/dsp/m-alt-vipsuite.html}}
 	\bibitem{Grip} A comparison of the grip force distribution in natural hands and in prosthetic hands. Retrieved from {\url{https://pdfs.semanticscholar.org/f600/c0ad7d6ecb7510b1b8e8f1318ffa03bb48cd.pdf}}
 	\bibitem{LK01} Lucas-Kanade Tutorial Example 1 Retrieved from {\url{https://www.mathworks.com/matlabcentral/fileexchange/48744-lucas-kanade-tutorial-example-1?focused=3854179&tab=example}}, version 1.0 by Zhiyuan
+	\bibitem{ARDSerial} Arduino Serial Connection Retrieved from {\url{https://www.arduino.cc/en/Reference/SoftwareSerial}}
 
 
 
