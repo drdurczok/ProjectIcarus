@@ -1,6 +1,11 @@
 #include <Servo.h>
 
-Servo motor01;
+//First Finger Motors
+Servo motor01, motor02;
+//Second Finger Motors
+Servo motor03, motor04;
+//Thumb Motors
+Servo motor05, motor06;
 
 int servo_position = 0;
 
@@ -25,9 +30,16 @@ double ang_H = 0 *deg2rad; //Domain [-90,90] Rad
 
 unsigned i = 0;
 
+bool flag = 0;
+
 void setup() {
   Serial.begin(57600);
-  motor01.attach(9);
+  motor01.attach(2);  
+  motor02.attach(4);
+  motor03.attach(6);  
+  motor04.attach(8);
+  motor05.attach(10);  
+  motor06.attach(12);
 }
 
 void loop() {
@@ -44,7 +56,7 @@ void loop() {
   coord_1_ang = calc_orien_coord_1(theta,i);
   coord_1_X = calc_pos_coord_1(coord_1_ang,i);
 
-  display_IK_Index_A(X_1,theta,phi,coord_1_ang,coord_1_X);
+  //display_IK_Index_A(X_1,theta,phi,coord_1_ang,coord_1_X);
 
   //Second Motor
   //calc_sys_4(X_2,i);
@@ -54,26 +66,32 @@ void loop() {
   coord_2_ang = calc_orien_coord_2(gamma,len,i);
   coord_2_X = calc_pos_coord_2(coord_2_ang,len);
 
-  display_IK_Index_B(X_2,gamma,len,coord_2_ang, coord_2_X);
+  //display_IK_Index_B(X_2,gamma,len,coord_2_ang, coord_2_X);
 
   theta2 = calc_thumb_B(X_4,0);
   theta1 = calc_thumb_A(X_3,theta2,0);
 
-  display_IK_Thumb(X_3,X_4,theta1,theta2);
-  delay(500);
+  //display_IK_Thumb(X_3,X_4,theta1,theta2);
+  //delay(500);
 
 /*
   //motor01.write(-180);
   //delay(10);
 
 */
+//Motor Control
+  motor01.write(173-phi*rad2deg);
+  motor03.write(190-phi*rad2deg);
+  delay(15);
 
 
-  if(X_1<54)
+  if(X_1==54) flag = 1;
+  if(X_1==0) flag = 0;
+  if(flag==0)
     X_1 = X_1 + 1;
   else
-    X_1 = 0;
-
+    X_1 = X_1 - 1;
+    
   if(X_2<45)
     X_2 = X_2 + 1;
   else
